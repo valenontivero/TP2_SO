@@ -1,0 +1,13 @@
+#ifndef _VIDEODRIVER_H
+#define _VIDEODRIVER_H
+
+#define red     0xFF0000
+#define green   0x00FF00
+#define blue    0x0000FF
+#define white   0xFFFFFF
+
+void putpixel(char r, char g, char b, int x, int y);
+
+void drawWhiteLine();
+
+#endif
