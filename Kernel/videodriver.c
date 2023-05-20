@@ -59,7 +59,9 @@ void putPixel(char r, char g, char b, int x, int y) {
 
 void drawWhiteLine() {
     for(int i = 0; i < VBE_mode_info->width * (VBE_mode_info->bpp / 8); i++) {
-        putPixel(0xff, 0xff, 0xff, i, 0);
+        putPixel(0xff, 0xff, 0xff, i, 3);
+        putPixel(0xff, 0xff, 0xff, i, 4);
+        putPixel(0xff, 0xff, 0xff, i, 5);
     }
 }
 
@@ -71,9 +73,9 @@ void drawRect(int x, int y, int width, int height) {
 	}
 }
 
-void * getPixel(int x, int y) {
+/* void * getPixel(int x, int y) {
 	return VBE_mode_info->framebuffer + (VBE_mode_info->bpp / 8) * (VBE_mode_info->width * y + x);
-}
+} */
 
 
 void printChar(char c, int x, int y) {
@@ -92,7 +94,7 @@ void printChar(char c, int x, int y) {
 	}
 }
 
-void printString(char * string, int x, int y) {
+void printStr(char * string, int x, int y) {
 	int line = 0;
 	int i = 0, j = 0;
 	while (string[i] != 0) {
@@ -103,4 +105,50 @@ void printString(char * string, int x, int y) {
 			j = 0;
 		}
 	}
+}
+
+int line = 0;
+int column = 0;
+
+#define MAX_LINES VBE_mode_info->height / CHAR_HEIGHT
+#define MAX_COLUMNS VBE_mode_info->width / CHAR_WIDTH - 1
+
+void printString(char * string) {
+	int i = 0;
+	while (string[i] != 0) {
+		if (string[i] == '\n') {
+			line++;
+			column = 0;
+		} else {
+			printChar(string[i], column * CHAR_WIDTH, line * CHAR_HEIGHT);
+			column++;
+			if (column >= MAX_COLUMNS) {
+				line++;
+				column = 0;
+			}
+		}
+		if (line >= MAX_LINES) {
+			moveOneLineUp();
+		}
+		i++;
+	}
+}
+
+void printLn(char * string) {
+	printString(string);
+	line++;
+	column = 0;
+	if (line >= MAX_LINES) {
+		moveOneLineUp();
+	}
+}
+
+void moveOneLineUp() {
+	char * dst = VBE_mode_info->framebuffer;
+	char * src = dst + VBE_mode_info->pitch * CHAR_HEIGHT;
+	for (int i = 0; i < VBE_mode_info->pitch * (VBE_mode_info->height - CHAR_HEIGHT); i++) {
+		dst[i] = src[i];
+	}
+	memset(VBE_mode_info->framebuffer + VBE_mode_info->pitch * (VBE_mode_info->height - CHAR_HEIGHT), 0, VBE_mode_info->pitch * CHAR_HEIGHT);
+	line--;
 }

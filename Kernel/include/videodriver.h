@@ -12,6 +12,8 @@ void drawWhiteLine();
 
 void drawRect(int x, int y, int width, int height);
 
-void printChar(char c, int x, int y);
+void printString(char * string);
+
+void printLn(char * string);
 
 #endif
