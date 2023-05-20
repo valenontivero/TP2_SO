@@ -1,5 +1,6 @@
 
 #include <stdint.h>
+#include <font.h>
 
 struct vbe_mode_info_structure {
 	uint16_t attributes;		// deprecated, only bit 7 should be of interest to you, and it indicates the mode supports a linear frame buffer.
@@ -60,4 +61,46 @@ void drawWhiteLine() {
     for(int i = 0; i < VBE_mode_info->width * (VBE_mode_info->bpp / 8); i++) {
         putPixel(0xff, 0xff, 0xff, i, 0);
     }
+}
+
+void drawRect(int x, int y, int width, int height) {
+	for (int i = y; i < y + height; i++) {
+		for (int j = x; j < x + width; j++) {
+			putPixel(0xff, 0xff, 0xff, j, i);
+		}
+	}
+}
+
+void * getPixel(int x, int y) {
+	return VBE_mode_info->framebuffer + (VBE_mode_info->bpp / 8) * (VBE_mode_info->width * y + x);
+}
+
+
+void printChar(char c, int x, int y) {
+	if (c < FIRST_CHAR || c > LAST_CHAR )
+		return;
+
+	char * charMap = font[c-32];
+	for (int i = 0; i < CHAR_HEIGHT; i++) {
+		char mask = 0b1000000;
+		for (int j = 0; j < CHAR_WIDTH; j++) {
+			if (*charMap & mask)
+				putPixel(0xff, 0xff, 0xff, x+j, y+i);
+			mask >>= 1;
+		}
+		charMap++;
+	}
+}
+
+void printString(char * string, int x, int y) {
+	int line = 0;
+	int i = 0, j = 0;
+	while (string[i] != 0) {
+		printChar(string[i], x + j * CHAR_WIDTH, y + line * CHAR_HEIGHT);
+		i++; j++;
+		if (x + j * CHAR_WIDTH > VBE_mode_info->width - 9) {
+			line++;
+			j = 0;
+		}
+	}
 }

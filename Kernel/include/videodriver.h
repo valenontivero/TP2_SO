@@ -6,8 +6,12 @@
 #define blue    0x0000FF
 #define white   0xFFFFFF
 
-void putpixel(char r, char g, char b, int x, int y);
+void putPixel(char r, char g, char b, int x, int y);
 
 void drawWhiteLine();
+
+void drawRect(int x, int y, int width, int height);
+
+void printChar(char c, int x, int y);
 
 #endif
