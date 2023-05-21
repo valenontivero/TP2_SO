@@ -14,8 +14,10 @@ void drawRect(int x, int y, int width, int height);
 
 void printString(char * string);
 
-void printStringN(char * string, int length);
+void printStringN(char * string, uint64_t length);
 
 void printLn(char * string);
+
+void moveOneLineUp();
 
 #endif

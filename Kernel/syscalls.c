@@ -2,14 +2,17 @@
 #include <videodriver.h>
 #include <defs.h>
 #include <syscalls.h>
+#include <keyboard.h>
 
 
 void syscallHandler(uint64_t id, uint64_t arg0, uint64_t arg1, uint64_t arg2, uint64_t arg3, uint64_t arg4, uint64_t arg5) {
     switch(id) {
         case 0:
-            return sys_read(arg0, arg1, arg2);
+            sys_read(arg0, arg1, arg2);
+            break;
         case 1:
-            return sys_write(arg0, arg1, arg2);
+            sys_write(arg0, arg1, arg2);
+            break;
             /*
         case 2:
 

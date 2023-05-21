@@ -1,7 +1,5 @@
-//#include <stdint.h>
 #include <string.h>
-
-extern unsigned char getKey(); // pasarlo a keyboard.h
+#include <keyboard.h>
 
 #define BUFFER_SIZE 512
 
