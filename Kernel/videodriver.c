@@ -1,6 +1,8 @@
 
 #include <stdint.h>
 #include <font.h>
+#include <videodriver.h>
+#include <lib.h>
 
 struct vbe_mode_info_structure {
 	uint16_t attributes;		// deprecated, only bit 7 should be of interest to you, and it indicates the mode supports a linear frame buffer.
@@ -45,12 +47,9 @@ typedef struct vbe_mode_info_structure * VBEInfoPtr;
 
 VBEInfoPtr VBE_mode_info = (VBEInfoPtr) 0x0000000000005C00;
 
-/* void putPixel(uint32_t hexcolor, uint32_t x, uint32_t y) {
-	
-} */
 
 void putPixel(char r, char g, char b, int x, int y) {
-    char * videoPtr = VBE_mode_info->framebuffer;
+    char * videoPtr = (char *) ((uint64_t)VBE_mode_info->framebuffer);
     int offset = y * VBE_mode_info->pitch + x * (VBE_mode_info->bpp / 8);
     videoPtr[offset] = b;
     videoPtr[offset+1] = g;
@@ -82,7 +81,7 @@ void printChar(char c, int x, int y) {
 	if (c < FIRST_CHAR || c > LAST_CHAR )
 		return;
 
-	char * charMap = font[c-32];
+	const unsigned char * charMap = font[c-32];
 	for (int i = 0; i < CHAR_HEIGHT; i++) {
 		char mask = 0b1000000;
 		for (int j = 0; j < CHAR_WIDTH; j++) {
@@ -166,11 +165,11 @@ void printLn(char * string) {
 }
 
 void moveOneLineUp() {
-	char * dst = VBE_mode_info->framebuffer;
+	char * dst = (char *) (uint64_t)(VBE_mode_info->framebuffer);
 	char * src = dst + VBE_mode_info->pitch * CHAR_HEIGHT;
 	for (int i = 0; i < VBE_mode_info->pitch * (VBE_mode_info->height - CHAR_HEIGHT); i++) {
 		dst[i] = src[i];
 	}
-	memset(VBE_mode_info->framebuffer + VBE_mode_info->pitch * (VBE_mode_info->height - CHAR_HEIGHT), 0, VBE_mode_info->pitch * CHAR_HEIGHT);
+	memset((void *) (uint64_t)(VBE_mode_info->framebuffer + VBE_mode_info->pitch * (VBE_mode_info->height - CHAR_HEIGHT)), 0, VBE_mode_info->pitch * CHAR_HEIGHT);
 	line--;
 }
