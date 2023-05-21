@@ -134,6 +134,28 @@ void printString(char * string) {
 	}
 }
 
+void printStringN(char * string, uint64_t length) {
+	int i = 0;
+	while (string[i] != 0 && length > 0) {
+		if (string[i] == '\n') {
+			line++;
+			column = 0;
+		} else {
+			printChar(string[i], column * CHAR_WIDTH, line * CHAR_HEIGHT);
+			column++;
+			if (column >= MAX_COLUMNS) {
+				line++;
+				column = 0;
+			}
+		}
+		if (line >= MAX_LINES) {
+			moveOneLineUp();
+		}
+		i++;
+		length--;
+	}
+}
+
 void printLn(char * string) {
 	printString(string);
 	line++;

@@ -14,6 +14,8 @@ void drawRect(int x, int y, int width, int height);
 
 void printString(char * string);
 
+void printStringN(char * string, int length);
+
 void printLn(char * string);
 
 #endif
