@@ -1,4 +1,5 @@
-GLOBAL cpuVendor
+GLOBAL cpuVendor 
+GLOBAL getKey
 GLOBAL getRax, getRbx, getRcx, getRdx, getRsi, getRdi, getRbp, getRsp, getR8, getR9, getR10, getR11, getR12, getR13, getR14, getR15
 
 section .text
@@ -26,6 +27,18 @@ cpuVendor:
 	mov rsp, rbp
 	pop rbp
 	ret
+
+
+getKey:
+	push rbp
+	mov rbp, rsp
+
+	in al, 0x60
+
+	mov rsp, rbp
+	pop rbp
+	ret
+
 
 ; return registers functions PREGUNTAR LA PARTE DE ARMADO DE STACK
 getRax:
