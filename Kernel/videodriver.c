@@ -83,7 +83,12 @@ int column = 0;
 #define MAX_LINES VBE_mode_info->height / CHAR_HEIGHT
 #define MAX_COLUMNS VBE_mode_info->width / CHAR_WIDTH - 1
 
+void moveCursor(int x);
+void eraseCursor();
+void drawCursor();
+
 void printChar(char c, int x, int y) {
+	eraseCursor();
 	if (c == '\b') {
 		if (x > 0) {
 			column -= 2;
@@ -101,8 +106,18 @@ void printChar(char c, int x, int y) {
 				}
 			}
 		}
+		moveCursor(-1);
 		return;
-	} 
+	} else if (c == '\t') {
+		if (column + 4 < MAX_COLUMNS) {
+			column += 4;
+		} else {
+			line++;
+			column = 0;
+		}
+		moveCursor(5);
+		return;
+	}
 
 	if (c < FIRST_CHAR || c > LAST_CHAR )
 		return;
@@ -117,6 +132,7 @@ void printChar(char c, int x, int y) {
 		}
 		charMap++;
 	}
+	moveCursor(1);
 }
 
 /* void printStr(char * string, int x, int y) {
@@ -138,16 +154,20 @@ void printString(char * string) {
 		if (string[i] == '\n') {
 			line++;
 			column = 0;
+			eraseCursor();
+			moveCursor(MAX_COLUMNS - column);
 		} else {
 			printChar(string[i], column * CHAR_WIDTH, line * CHAR_HEIGHT);
 			column++;
-			if (column >= MAX_COLUMNS) {
+			if (column > MAX_COLUMNS) {
 				line++;
 				column = 0;
 			}
 		}
 		if (line >= MAX_LINES) {
 			moveOneLineUp();
+			eraseCursor();
+			moveCursor(-(MAX_COLUMNS - column));
 		}
 		i++;
 	}
@@ -159,6 +179,8 @@ void printStringN(char * string, uint64_t length) {
 		if (string[i] == '\n') {
 			line++;
 			column = 0;
+			eraseCursor();
+			moveCursor(MAX_COLUMNS - column);
 		} else {
 			printChar(string[i], column * CHAR_WIDTH, line * CHAR_HEIGHT);
 			column++;
@@ -169,6 +191,8 @@ void printStringN(char * string, uint64_t length) {
 		}
 		if (line >= MAX_LINES) {
 			moveOneLineUp();
+			eraseCursor();
+			moveCursor(-(MAX_COLUMNS - column));
 		}
 		i++;
 		length--;
@@ -192,4 +216,38 @@ void moveOneLineUp() {
 	}
 	memset((void *) (uint64_t)(VBE_mode_info->framebuffer + VBE_mode_info->pitch * (VBE_mode_info->height - CHAR_HEIGHT)), 0, VBE_mode_info->pitch * CHAR_HEIGHT);
 	line--;
+}
+
+int cursorline = 0;
+int cursorcolumn = 0;
+
+void moveCursor(int x) {
+	cursorcolumn += x;
+	if (cursorcolumn > MAX_COLUMNS) {
+		cursorline++;
+		if (x == 1)
+			cursorcolumn = 1;
+		else
+			cursorcolumn = 0;
+	} else if (cursorcolumn < 0) {
+		cursorline--;
+		cursorcolumn = MAX_COLUMNS - 1;
+	}
+	drawCursor();
+}
+
+void drawCursor() {
+	for (int i = cursorline * CHAR_HEIGHT; i < (cursorline + 1) * CHAR_HEIGHT; i++) {
+		for (int j = cursorcolumn * CHAR_WIDTH; j < (cursorcolumn + 1) * CHAR_WIDTH; j++) {
+			putPixel(0xff, 0xff, 0xff, j, i);
+		}
+	}
+}
+
+void eraseCursor() {
+	for (int i = cursorline * CHAR_HEIGHT; i < (cursorline + 1) * CHAR_HEIGHT; i++) {
+		for (int j = cursorcolumn * CHAR_WIDTH; j < (cursorcolumn + 1) * CHAR_WIDTH; j++) {
+			putPixel(0, 0, 0, j, i);
+		}
+	}
 }
