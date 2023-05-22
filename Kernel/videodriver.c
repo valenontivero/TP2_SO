@@ -77,17 +77,12 @@ void drawRect(int x, int y, int width, int height) {
 } */
 
 
-int line = 0;
-int column = 0;
+int line = 0, column = 0;
 
 #define MAX_LINES VBE_mode_info->height / CHAR_HEIGHT
 #define MAX_COLUMNS VBE_mode_info->width / CHAR_WIDTH - 1
 
-void moveCursor(int x);
-void eraseCursor();
-void drawCursor();
-
-void printChar(char c, int x, int y) {
+void printChar(char c, int x, int y, Color color) {
 	eraseCursor();
 	if (c == '\b') {
 		if (x > 0) {
@@ -127,7 +122,7 @@ void printChar(char c, int x, int y) {
 		char mask = 0b1000000;
 		for (int j = 0; j < CHAR_WIDTH; j++) {
 			if (*charMap & mask)
-				putPixel(0xff, 0xff, 0xff, x+j, y+i);
+				putPixel(color.r, color.g, color.b, x+j, y+i);
 			mask >>= 1;
 		}
 		charMap++;
@@ -148,32 +143,25 @@ void printChar(char c, int x, int y) {
 	}
 } */
 
-void printString(char * string) {
-	int i = 0;
-	while (string[i] != 0) {
-		if (string[i] == '\n') {
-			line++;
-			column = 0;
-			eraseCursor();
-			moveCursor(MAX_COLUMNS - column);
-		} else {
-			printChar(string[i], column * CHAR_WIDTH, line * CHAR_HEIGHT);
-			column++;
-			if (column > MAX_COLUMNS) {
-				line++;
-				column = 0;
-			}
-		}
-		if (line >= MAX_LINES) {
-			moveOneLineUp();
-			eraseCursor();
-			moveCursor(-(MAX_COLUMNS - column));
-		}
-		i++;
-	}
+unsigned int strlen(char* str) {
+    unsigned int i = 0;
+    while (str[i] != 0) {
+        i++;
+    }
+    return i;
 }
 
+void printString(char * string) {
+	printStringN(string, strlen(string));
+}
+
+Color white = {0xFF, 0xFF, 0xFF};
+
 void printStringN(char * string, uint64_t length) {
+	printStringNColor(string, length, white);
+}
+
+void printStringNColor(char * string, uint64_t length, Color color) {
 	int i = 0;
 	while (string[i] != 0 && length > 0) {
 		if (string[i] == '\n') {
@@ -182,7 +170,7 @@ void printStringN(char * string, uint64_t length) {
 			eraseCursor();
 			moveCursor(MAX_COLUMNS - column);
 		} else {
-			printChar(string[i], column * CHAR_WIDTH, line * CHAR_HEIGHT);
+			printChar(string[i], column * CHAR_WIDTH, line * CHAR_HEIGHT, color);
 			column++;
 			if (column >= MAX_COLUMNS) {
 				line++;
@@ -198,6 +186,7 @@ void printStringN(char * string, uint64_t length) {
 		length--;
 	}
 }
+
 
 void printLn(char * string) {
 	printString(string);

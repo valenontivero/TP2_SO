@@ -13,9 +13,10 @@ void syscallHandler(uint64_t id, uint64_t arg0, uint64_t arg1, uint64_t arg2, ui
         case 1:
             sys_write(arg0, arg1, arg2);
             break;
-            /*
         case 2:
-
+            sys_write_color(arg0, arg1, arg2, arg3);
+            break;
+            /*
         case 3:
 
         case 4:
@@ -43,3 +44,14 @@ static void sys_write(uint64_t fd, uint64_t buffer, uint64_t length) {
         printStringN((char *) buffer, length);
     }
 }
+
+static void sys_write_color(uint64_t fd, uint64_t buffer, uint64_t length, uint64_t color) {
+    if (fd == STDOUT) {
+        Color c;
+        c.r = (char) color;
+        c.g = (char) (color >> 8);
+        c.b = (char) (color >> 16);
+        printStringNColor((char *) buffer, length, c);
+    }
+}
+

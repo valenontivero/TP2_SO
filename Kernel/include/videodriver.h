@@ -1,10 +1,7 @@
 #ifndef _VIDEODRIVER_H
 #define _VIDEODRIVER_H
 
-#define red     0xFF0000
-#define green   0x00FF00
-#define blue    0x0000FF
-#define white   0xFFFFFF
+#include <colors.h>
 
 void putPixel(char r, char g, char b, int x, int y);
 
@@ -19,5 +16,13 @@ void printStringN(char * string, uint64_t length);
 void printLn(char * string);
 
 void moveOneLineUp();
+
+void printStringNColor(char * buffer, uint64_t length, Color color);
+
+void moveCursor(int x);
+
+void eraseCursor();
+
+void drawCursor();
 
 #endif
