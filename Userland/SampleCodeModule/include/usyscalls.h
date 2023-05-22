@@ -1,8 +1,10 @@
 #ifndef USYSCALLS_H
 #define USYSCALLS_H
 
-void sys_read(unsigned int fd, char* buffer, unsigned int size);
+#include <stdint.h>
 
-void sys_write(unsigned int fd, const char* buffer, unsigned int size);
+uint64_t sys_read(unsigned int fd, char* buffer, unsigned int size);
+
+uint64_t sys_write(unsigned int fd, const char* buffer, unsigned int size);
 
 #endif

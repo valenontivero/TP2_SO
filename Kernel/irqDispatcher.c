@@ -1,6 +1,7 @@
 #include <time.h>
 #include <stdint.h>
 #include <keyboard.h>
+#include <videodriver.h>
 
 static void int_20();
 

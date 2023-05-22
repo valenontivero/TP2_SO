@@ -77,7 +77,33 @@ void drawRect(int x, int y, int width, int height) {
 } */
 
 
+int line = 0;
+int column = 0;
+
+#define MAX_LINES VBE_mode_info->height / CHAR_HEIGHT
+#define MAX_COLUMNS VBE_mode_info->width / CHAR_WIDTH - 1
+
 void printChar(char c, int x, int y) {
+	if (c == '\b') {
+		if (x > 0) {
+			column -= 2;
+			for (int i = y; i < y + CHAR_HEIGHT; i++) {
+				for (int j = x - CHAR_WIDTH; j < x; j++) {
+					putPixel(0, 0, 0, j, i);
+				}
+			}
+		} else if (line > 0) {
+			line--;
+			column = MAX_COLUMNS - 2;
+			for (int i = line * CHAR_HEIGHT; i < (line + 1) * CHAR_HEIGHT; i++) {
+				for (int j = (column + 1) * CHAR_WIDTH; j < (MAX_COLUMNS + 1) * CHAR_WIDTH; j++) {
+					putPixel(0, 0, 0, j, i);
+				}
+			}
+		}
+		return;
+	} 
+
 	if (c < FIRST_CHAR || c > LAST_CHAR )
 		return;
 
@@ -93,7 +119,7 @@ void printChar(char c, int x, int y) {
 	}
 }
 
-void printStr(char * string, int x, int y) {
+/* void printStr(char * string, int x, int y) {
 	int line = 0;
 	int i = 0, j = 0;
 	while (string[i] != 0) {
@@ -104,13 +130,7 @@ void printStr(char * string, int x, int y) {
 			j = 0;
 		}
 	}
-}
-
-int line = 0;
-int column = 0;
-
-#define MAX_LINES VBE_mode_info->height / CHAR_HEIGHT
-#define MAX_COLUMNS VBE_mode_info->width / CHAR_WIDTH - 1
+} */
 
 void printString(char * string) {
 	int i = 0;

@@ -13,3 +13,6 @@
 #IDEs
 .vscode
 .idea
+
+#Docker
+.bash_history
