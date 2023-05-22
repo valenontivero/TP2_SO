@@ -4,6 +4,7 @@
 #include <moduleLoader.h>
 #include <naiveConsole.h>
 #include <videodriver.h>
+#include <idtLoader.h>
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -83,13 +84,15 @@ void * initializeKernelBinary()
 
 int main()
 {	
-	// drawWhiteLine();
+/* 	// drawWhiteLine();
 	// drawRect(10, 0, 5, 5);
 	printString("Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estandar de las industrias desde el ano 1500, ");
 	printLn("");
 	printString("Dignissim cras tincidunt lobortis feugiat vivamus. Amet est placerat in egestas erat imperdiet. Neque ornare aenean euismod elementum nisi quis eleifend. Dignissim cras tincidunt lobortis feugiat vivamus. Amet est placerat in egestas erat imperdiet. Neque ornare aenean euismod elementum nisi quis eleifend.");
 	printString("Hola\nEsto\nes\nuna\nprueba\n");
-	printLn("Hola\nEsto\nes\nuna\nprueba");
+	printLn("Hola\nEsto\nes\nuna\nprueba"); */
 
+	load_idt(); //Setup idt before terminal runs
+	((EntryPoint)sampleCodeModuleAddress)(); //Calling sampleCodeModule's main address
 	return 0;
 }

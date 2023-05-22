@@ -1,6 +1,6 @@
 section .text
-GLOBAL syscall
-syscall:
+GLOBAL sys_call
+sys_call:
     push rbp
     mov rbp, rsp
     int 80h

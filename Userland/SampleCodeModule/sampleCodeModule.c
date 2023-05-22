@@ -1,8 +1,7 @@
 /* sampleCodeModule.c */
-#include <stdio.h>
 #include <userio.h>
 
-
-int main(){
+int main() {
 	print("Hello World!\n");
+	return 0;
 }
