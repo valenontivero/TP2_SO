@@ -168,7 +168,7 @@ void printStringNColor(char * string, uint64_t length, Color color) {
 			line++;
 			column = 0;
 			eraseCursor();
-			moveCursor(MAX_COLUMNS - column);
+			moveCursor(MAX_COLUMNS + 1);
 		} else {
 			printChar(string[i], column * CHAR_WIDTH, line * CHAR_HEIGHT, color);
 			column++;
