@@ -74,7 +74,7 @@ void drawRect(int x, int y, int width, int height) {
 	}
 }
 
-int line = 0, column = 0;
+int line = 1, column = 0;
 
 
 char getPixel(int x, int y) {
@@ -95,9 +95,8 @@ char isSpaceEmpty(int x, int y) {
 }
 
 void printChar(char c, int x, int y, Color color) {
-	eraseCursor();
 	if (c == '\b') {
-		if (x > 1 * CHAR_WIDTH) {
+		if (x > CHAR_WIDTH) {
 			column -= 2;
 			for (int i = y; i < y + CHAR_HEIGHT; i++) {
 				for (int j = x - CHAR_WIDTH; j < x; j++) {
@@ -109,16 +108,15 @@ void printChar(char c, int x, int y, Color color) {
 			column = MAX_COLUMNS - 2;
 			int c = 0;
 			for (int i = line * CHAR_HEIGHT; i < (line + 1) * CHAR_HEIGHT; i++) {
-				for (int j = (column + 1) * CHAR_WIDTH; j < (MAX_COLUMNS + 1) * CHAR_WIDTH; j++) {
+				for (int j = (column + 1) * CHAR_WIDTH; j < (MAX_COLUMNS + 2) * CHAR_WIDTH; j++) {
 					putPixel(0, 0, 0, j, i);
 				}
 			}
-			while (isSpaceEmpty(column * CHAR_WIDTH, line * CHAR_HEIGHT)) {
+			while (isSpaceEmpty(column * CHAR_WIDTH, line * CHAR_HEIGHT) && column > 1) {
 				column--;
 				c++;
 			}
 		}
-		moveCursor();
 		return;
 	} else if (c == '\t') {
 		if (column + 4 < MAX_COLUMNS) {
@@ -127,7 +125,6 @@ void printChar(char c, int x, int y, Color color) {
 			line++;
 			column = 0;
 		}
-		moveCursor();
 		return;
 	}
 
@@ -144,7 +141,6 @@ void printChar(char c, int x, int y, Color color) {
 		}
 		charMap++;
 	}
-	moveCursor();
 }
 
 /* void printStr(char * string, int x, int y) {
@@ -180,15 +176,15 @@ void printStringN(char * string, uint64_t length) {
 
 void printStringNColor(char * string, uint64_t length, Color color) {
 	int i = 0;
+	eraseCursor();
 	while (string[i] != 0 && length > 0) {
-		eraseCursor();
 		if (string[i] == '\n') {
 			line++;
 			column = 0;
 		} else {
 			column++;
 			printChar(string[i], column * CHAR_WIDTH, line * CHAR_HEIGHT, color);
-			if (column >= MAX_COLUMNS) {
+			if (column >= MAX_COLUMNS - 1) {
 				line++;
 				column = 0;
 			}
