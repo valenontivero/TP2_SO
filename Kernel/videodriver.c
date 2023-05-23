@@ -4,6 +4,9 @@
 #include <videodriver.h>
 #include <lib.h>
 
+#define MAX_LINES VBE_mode_info->height / CHAR_HEIGHT
+#define MAX_COLUMNS VBE_mode_info->width / CHAR_WIDTH - 1
+
 struct vbe_mode_info_structure {
 	uint16_t attributes;		// deprecated, only bit 7 should be of interest to you, and it indicates the mode supports a linear frame buffer.
 	uint8_t window_a;			// deprecated
@@ -47,7 +50,6 @@ typedef struct vbe_mode_info_structure * VBEInfoPtr;
 
 VBEInfoPtr VBE_mode_info = (VBEInfoPtr) 0x0000000000005C00;
 
-
 void putPixel(char r, char g, char b, int x, int y) {
     char * videoPtr = (char *) ((uint64_t)VBE_mode_info->framebuffer);
     int offset = y * VBE_mode_info->pitch + x * (VBE_mode_info->bpp / 8);
@@ -72,20 +74,30 @@ void drawRect(int x, int y, int width, int height) {
 	}
 }
 
-/* void * getPixel(int x, int y) {
-	return VBE_mode_info->framebuffer + (VBE_mode_info->bpp / 8) * (VBE_mode_info->width * y + x);
-} */
-
-
 int line = 0, column = 0;
 
-#define MAX_LINES VBE_mode_info->height / CHAR_HEIGHT
-#define MAX_COLUMNS VBE_mode_info->width / CHAR_WIDTH - 1
+
+char getPixel(int x, int y) {
+	char * videoPtr = (char *) ((uint64_t)VBE_mode_info->framebuffer);
+	int offset = y * VBE_mode_info->pitch + x * (VBE_mode_info->bpp / 8);
+	return videoPtr[offset];
+}
+
+char isSpaceEmpty(int x, int y) {
+	for (int i = y; i < y + CHAR_HEIGHT; i++) {
+		for (int j = x; j < x + CHAR_WIDTH; j++) {
+			if (getPixel(j, i) != 0) {
+				return 0;
+			}
+		}
+	}
+	return 1;
+}
 
 void printChar(char c, int x, int y, Color color) {
 	eraseCursor();
 	if (c == '\b') {
-		if (x > 0) {
+		if (x > 1 * CHAR_WIDTH) {
 			column -= 2;
 			for (int i = y; i < y + CHAR_HEIGHT; i++) {
 				for (int j = x - CHAR_WIDTH; j < x; j++) {
@@ -95,13 +107,18 @@ void printChar(char c, int x, int y, Color color) {
 		} else if (line > 0) {
 			line--;
 			column = MAX_COLUMNS - 2;
+			int c = 0;
 			for (int i = line * CHAR_HEIGHT; i < (line + 1) * CHAR_HEIGHT; i++) {
 				for (int j = (column + 1) * CHAR_WIDTH; j < (MAX_COLUMNS + 1) * CHAR_WIDTH; j++) {
 					putPixel(0, 0, 0, j, i);
 				}
 			}
+			while (isSpaceEmpty(column * CHAR_WIDTH, line * CHAR_HEIGHT)) {
+				column--;
+				c++;
+			}
 		}
-		moveCursor(-1);
+		moveCursor();
 		return;
 	} else if (c == '\t') {
 		if (column + 4 < MAX_COLUMNS) {
@@ -110,7 +127,7 @@ void printChar(char c, int x, int y, Color color) {
 			line++;
 			column = 0;
 		}
-		moveCursor(5);
+		moveCursor();
 		return;
 	}
 
@@ -127,7 +144,7 @@ void printChar(char c, int x, int y, Color color) {
 		}
 		charMap++;
 	}
-	moveCursor(1);
+	moveCursor();
 }
 
 /* void printStr(char * string, int x, int y) {
@@ -164,14 +181,13 @@ void printStringN(char * string, uint64_t length) {
 void printStringNColor(char * string, uint64_t length, Color color) {
 	int i = 0;
 	while (string[i] != 0 && length > 0) {
+		eraseCursor();
 		if (string[i] == '\n') {
 			line++;
 			column = 0;
-			eraseCursor();
-			moveCursor(MAX_COLUMNS + 1);
 		} else {
-			printChar(string[i], column * CHAR_WIDTH, line * CHAR_HEIGHT, color);
 			column++;
+			printChar(string[i], column * CHAR_WIDTH, line * CHAR_HEIGHT, color);
 			if (column >= MAX_COLUMNS) {
 				line++;
 				column = 0;
@@ -179,12 +195,11 @@ void printStringNColor(char * string, uint64_t length, Color color) {
 		}
 		if (line >= MAX_LINES) {
 			moveOneLineUp();
-			eraseCursor();
-			moveCursor(-(MAX_COLUMNS - column));
 		}
 		i++;
 		length--;
 	}
+	moveCursor();
 }
 
 
@@ -195,6 +210,7 @@ void printLn(char * string) {
 	if (line >= MAX_LINES) {
 		moveOneLineUp();
 	}
+	moveCursor();
 }
 
 void moveOneLineUp() {
@@ -207,35 +223,17 @@ void moveOneLineUp() {
 	line--;
 }
 
-int cursorline = 0;
-int cursorcolumn = 0;
-
-void moveCursor(int x) {
-	cursorcolumn += x;
-	if (cursorcolumn > MAX_COLUMNS) {
-		cursorline++;
-		if (x == 1)
-			cursorcolumn = 1;
-		else
-			cursorcolumn = 0;
-	} else if (cursorcolumn < 0) {
-		cursorline--;
-		cursorcolumn = MAX_COLUMNS - 1;
-	}
-	drawCursor();
-}
-
-void drawCursor() {
-	for (int i = cursorline * CHAR_HEIGHT; i < (cursorline + 1) * CHAR_HEIGHT; i++) {
-		for (int j = cursorcolumn * CHAR_WIDTH; j < (cursorcolumn + 1) * CHAR_WIDTH; j++) {
+void moveCursor() {
+	for (int i = line * CHAR_HEIGHT; i < (line + 1) * CHAR_HEIGHT; i++) {
+		for (int j = (column + 1) * CHAR_WIDTH; j < (column + 2) * CHAR_WIDTH; j++) {
 			putPixel(0xff, 0xff, 0xff, j, i);
 		}
 	}
 }
 
 void eraseCursor() {
-	for (int i = cursorline * CHAR_HEIGHT; i < (cursorline + 1) * CHAR_HEIGHT; i++) {
-		for (int j = cursorcolumn * CHAR_WIDTH; j < (cursorcolumn + 1) * CHAR_WIDTH; j++) {
+	for (int i = line * CHAR_HEIGHT; i < (line + 1) * CHAR_HEIGHT; i++) {
+		for (int j = (column + 1) * CHAR_WIDTH; j < (column + 2) * CHAR_WIDTH; j++) {
 			putPixel(0, 0, 0, j, i);
 		}
 	}

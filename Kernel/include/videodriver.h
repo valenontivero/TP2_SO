@@ -19,10 +19,8 @@ void moveOneLineUp();
 
 void printStringNColor(char * buffer, uint64_t length, Color color);
 
-void moveCursor(int x);
+void moveCursor();
 
 void eraseCursor();
-
-void drawCursor();
 
 #endif
