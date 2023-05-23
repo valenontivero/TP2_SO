@@ -2,6 +2,7 @@
 #define _VIDEODRIVER_H
 
 #include <colors.h>
+#include <stdint.h>
 
 void putPixel(char r, char g, char b, int x, int y);
 
