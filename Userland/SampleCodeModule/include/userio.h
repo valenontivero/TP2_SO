@@ -15,4 +15,6 @@ char getChar();
 
 unsigned int strlen(char *str);
 
+void printRegs();
+
 #endif
