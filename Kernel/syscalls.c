@@ -4,6 +4,7 @@
 #include <syscalls.h>
 #include <keyboard.h>
 
+extern const uint64_t registers[17];
 
 void syscallHandler(uint64_t id, uint64_t arg0, uint64_t arg1, uint64_t arg2, uint64_t arg3, uint64_t arg4, uint64_t arg5) {
     switch(id) {
@@ -16,9 +17,10 @@ void syscallHandler(uint64_t id, uint64_t arg0, uint64_t arg1, uint64_t arg2, ui
         case 2:
             sys_write_color(arg0, arg1, arg2, arg3);
             break;
-            /*
         case 3:
-
+            sys_get_registers(arg0);
+            break;
+            /*
         case 4:
         */
     }
@@ -52,6 +54,12 @@ static void sys_write_color(uint64_t fd, uint64_t buffer, uint64_t length, uint6
         c.g = (char) (color >> 8);
         c.b = (char) (color >> 16);
         printStringNColor((char *) buffer, length, c);
+    }
+}
+
+static void sys_get_registers(uint64_t regsBuff) {
+    for(int i = 0; i < 17; i++) {
+        ((uint64_t *)regsBuff)[i] = registers[i];
     }
 }
 

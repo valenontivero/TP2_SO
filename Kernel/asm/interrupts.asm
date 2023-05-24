@@ -16,6 +16,8 @@ GLOBAL _int80Handler
 
 GLOBAL _exception0Handler
 
+GLOBAL registers
+
 EXTERN irqDispatcher
 EXTERN exceptionDispatcher
 EXTERN syscallHandler
@@ -115,6 +117,42 @@ picSlaveMask:
     pop     rbp
     retn
 
+saveRegisters:
+	;mov[registers], rax done below
+	mov[registers + 8], rbx
+	mov[registers + 16], rcx
+	mov[registers + 24], rdx
+	mov[registers + 32], rsi
+	mov[registers + 40], rdi
+	mov[registers + 48], rbp
+	;mov[registers+56], rsp done below
+	mov[registers + 64], r8
+	mov[registers + 72], r9
+	mov[registers + 80], r10
+	mov[registers + 88], r11
+	mov[registers + 96], r12
+	mov[registers + 104], r13
+	mov[registers + 112], r14
+	mov[registers + 120], r15
+	;mov[registers+128], rip done below
+
+	mov rax, rsp
+	add rax, 160
+	mov[registers + 56], rax ;RSP
+
+	mov rax, [rsp + 15*8]
+	mov[registers + 128], rax ; RIP
+
+	mov rax, [rsp + 14*8]	; RAX
+	mov[registers], rax
+	
+	; signal pic EOI (End of Interrupt)
+	mov al, 20h
+	out 20h, al
+
+	popState
+	iretq
+
 
 ;8254 Timer (Timer Tick)
 _irq00Handler:
@@ -122,7 +160,21 @@ _irq00Handler:
 
 ;Keyboard
 _irq01Handler:
-	irqHandlerMaster 1
+	pushState
+
+	in al, 0x60
+	cmp al, 0x1D; Left Control key
+	je saveRegisters
+
+	mov rdi, 1 ; pasaje de parametro
+	call irqDispatcher
+
+	; signal pic EOI (End of Interrupt)
+	mov al, 20h
+	out 20h, al
+
+	popState
+	iretq
 
 ;Cascade pic never called
 _irq02Handler:
@@ -161,3 +213,4 @@ haltcpu:
 
 SECTION .bss
 	aux resq 1
+	registers resq 17 ; registers for screenshot 

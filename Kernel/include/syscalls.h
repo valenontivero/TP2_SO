@@ -11,4 +11,6 @@ static void sys_write(uint64_t fd, uint64_t buffer, uint64_t length);
 
 static void sys_write_color(uint64_t fd, uint64_t buffer, uint64_t length, uint64_t color);
 
+static void sys_get_registers(uint64_t regsBuff);
+
 #endif

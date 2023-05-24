@@ -18,3 +18,7 @@ uint64_t sys_write_color(unsigned int fd, const char* buffer, unsigned int size,
     c += color.b; */
     return sys_call((uint64_t) 2, (uint64_t) fd, (uint64_t) buffer, (uint64_t) size, color, (uint64_t) 0);
 }
+
+uint64_t sys_get_regs(uint64_t * regsBuff) {
+    return sys_call((uint64_t) 3, (uint64_t) regsBuff, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0);
+}
