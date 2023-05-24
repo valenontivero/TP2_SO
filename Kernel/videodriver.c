@@ -96,6 +96,8 @@ char isSpaceEmpty(int x, int y) {
 
 void printChar(char c, int x, int y, Color color) {
 	if (c == '\b') {
+		if (x <= 0 && y <= 0)
+			return;
 		if (x > CHAR_WIDTH) {
 			column -= 2;
 			for (int i = y; i < y + CHAR_HEIGHT; i++) {
@@ -112,7 +114,7 @@ void printChar(char c, int x, int y, Color color) {
 					putPixel(0, 0, 0, j, i);
 				}
 			}
-			while (isSpaceEmpty(column * CHAR_WIDTH, line * CHAR_HEIGHT) && column > 1) {
+			while (isSpaceEmpty(column * CHAR_WIDTH, line * CHAR_HEIGHT) && column >= 1) {
 				column--;
 				c++;
 			}
