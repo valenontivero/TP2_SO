@@ -24,4 +24,6 @@ void moveCursor();
 
 void eraseCursor();
 
+void clearScreen();
+
 #endif

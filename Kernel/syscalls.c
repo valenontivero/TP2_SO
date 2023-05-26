@@ -27,9 +27,9 @@ void syscallHandler(uint64_t id, uint64_t arg0, uint64_t arg1, uint64_t arg2, ui
         case 5:
             sys_get_date(arg0);
             break;
-            /*
         case 6:
-        */
+            sys_clear_screen();
+            break;
     }
     //ver de agregar excepción si no existe el id
 }
@@ -76,5 +76,9 @@ static void sys_get_time(char * buffer) {
 
 static void sys_get_date(char * buffer) {
     dateToStr(buffer);
+}
+
+static void sys_clear_screen() {
+    clearScreen();
 }
 

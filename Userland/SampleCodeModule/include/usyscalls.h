@@ -15,4 +15,6 @@ uint64_t sys_get_time(char *buffer);
 
 uint64_t sys_get_date(char *buffer);
 
+uint64_t sys_clear_screen();
+
 #endif

@@ -17,5 +17,7 @@ static void sys_get_time(char *buffer);
 
 static void sys_get_date(char *buffer);
 
+static void sys_clear_screen();
+
 
 #endif

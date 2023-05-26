@@ -236,3 +236,10 @@ void eraseCursor() {
 		}
 	}
 }
+
+void clearScreen() {
+	memset((void *) (uint64_t)(VBE_mode_info->framebuffer), 0, VBE_mode_info->pitch * VBE_mode_info->height);
+	line = 1;
+	column = 0;
+	moveCursor();
+}

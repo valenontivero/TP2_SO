@@ -78,21 +78,21 @@ void analizeBuffer(char * buffer) {
 		printColor("\n\nTime of OS: ", YELLOW);
 		printColor(getTime(), CYAN);
 		print("\n");
-	}else if (strcmp(buffer, "date")) {
+	} else if (strcmp(buffer, "date")) {
 		printColor("\n\nDate of OS: ", YELLOW);
 		printColor(getDate(), CYAN);
 		print("\n");
 	} else if (strcmp(buffer, "registers")) {
 		printColor("\naca hacer el dump de los registros conseguidos en el screenshot:\n", GREEN);
 	} else if (strcmp(buffer, "clear")) {
-		printColor("\nborrar pantalla:\n", GREEN);
+		sys_clear_screen();
 	} else if (strcmp(buffer, "pong")) {
 		printColor("\nir a jugar al pong\n", GREEN);
 	} else if (strcmp(buffer, "div0")) {
 		printColor("\nexception\n", GREEN);
 	} else if (strcmp(buffer, "invalidop")) {
 		printColor("\nexception\n", GREEN);
-	}else{
+	} else if (!strcmp(buffer, "")) {
 		printColor("\nCommand not found. Type \"help\" for command list\n", RED);
 	}
 }
