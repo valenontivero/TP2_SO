@@ -2,6 +2,8 @@
 #include <userio.h>
 #include <colors.h>
 
+extern void divideByZero();
+
 void analizeBuffer(char * buffer);
 
 static char *commands[] = {
@@ -89,7 +91,7 @@ void analizeBuffer(char * buffer) {
 	} else if (strcmp(buffer, "pong")) {
 		printColor("\nir a jugar al pong\n", GREEN);
 	} else if (strcmp(buffer, "div0")) {
-		printColor("\nexception\n", GREEN);
+		divideByZero();
 	} else if (strcmp(buffer, "invalidop")) {
 		printColor("\nexception\n", GREEN);
 	} else if (!strcmp(buffer, "")) {

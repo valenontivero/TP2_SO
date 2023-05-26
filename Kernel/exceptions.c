@@ -1,3 +1,4 @@
+#include <videodriver.h>
 
 #define ZERO_EXCEPTION_ID 0
 
@@ -9,5 +10,6 @@ void exceptionDispatcher(int exception) {
 }
 
 static void zero_division() {
-	// Handler para manejar excepcíon
+	// Handler para manejar excepcion
+	printString("Cannot divide by zero");
 }
