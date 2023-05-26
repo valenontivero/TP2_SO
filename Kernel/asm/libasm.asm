@@ -1,5 +1,6 @@
 GLOBAL cpuVendor 
 GLOBAL getKey
+GLOBAL clock
 
 section .text
 	
@@ -37,3 +38,21 @@ getKey:
 	mov rsp, rbp
 	pop rbp
 	ret
+
+
+; Start Clock
+
+clock:
+	push rbp
+	mov rbp, rsp
+
+	mov al, dil
+	out 70h, al
+	xor rax, rax
+	in al, 71h
+
+	mov rsp, rbp
+	pop rbp
+	ret
+
+; End Clock 

@@ -3,6 +3,7 @@
 #include <defs.h>
 #include <syscalls.h>
 #include <keyboard.h>
+#include <clock.h>
 
 extern const uint64_t registers[17];
 
@@ -20,8 +21,14 @@ void syscallHandler(uint64_t id, uint64_t arg0, uint64_t arg1, uint64_t arg2, ui
         case 3:
             sys_get_registers(arg0);
             break;
-            /*
         case 4:
+            sys_get_time(arg0);
+            break;
+        case 5:
+            sys_get_date(arg0);
+            break;
+            /*
+        case 6:
         */
     }
     //ver de agregar excepción si no existe el id
@@ -61,5 +68,13 @@ static void sys_get_registers(uint64_t regsBuff) {
     for(int i = 0; i < 17; i++) {
         ((uint64_t *)regsBuff)[i] = registers[i];
     }
+}
+
+static void sys_get_time(char * buffer) {
+    timeToStr(buffer);
+}
+
+static void sys_get_date(char * buffer) {
+    dateToStr(buffer);
 }
 

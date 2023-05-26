@@ -13,4 +13,9 @@ static void sys_write_color(uint64_t fd, uint64_t buffer, uint64_t length, uint6
 
 static void sys_get_registers(uint64_t regsBuff);
 
+static void sys_get_time(char *buffer);
+
+static void sys_get_date(char *buffer);
+
+
 #endif
