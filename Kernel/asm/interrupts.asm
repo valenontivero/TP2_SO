@@ -17,6 +17,7 @@ GLOBAL _int80Handler
 GLOBAL _exception0Handler
 
 GLOBAL registers
+GLOBAL excepRegs
 
 EXTERN irqDispatcher
 EXTERN exceptionDispatcher
@@ -77,13 +78,38 @@ SECTION .text
 
 
 %macro exceptionHandler 1
-	pushState
+; When exception occurs we bring RIP value getting the return address of the interrpution
+    mov [excepRegs + (1*8)], rax    ;rax
+    mov rax, [rsp]
+    mov [excepRegs], rax            ;rip
+    pushState
 
-	mov rdi, %1 ; pasaje de parametro
-	call exceptionDispatcher
+    mov [excepRegs + (2*8)], rbx
+    mov [excepRegs + (3*8)], rcx
+    mov [excepRegs + (4*8)], rdx
+    mov [excepRegs + (5*8)], rsi
+    mov [excepRegs + (6*8)], rdi
+    mov [excepRegs + (7*8)], rbp
+    mov rax, rsp 
+    add rax, 0x28 ; Add bytes to compensate for the values pushed since the exception occurred and called the exception dispatcher
+    mov [excepRegs + (8*8)], rax    ;rsp
+    mov [excepRegs + (9*8)], r8
+    mov [excepRegs + (10*8)], r9
+    mov [excepRegs + (11*8)], r10 
+    mov [excepRegs + (12*8)], r11 
+    mov [excepRegs + (13*8)], r12 
+    mov [excepRegs + (14*8)], r13 
+    mov [excepRegs + (15*8)], r14 
+    mov [excepRegs + (16*8)], r15 
+    mov rax, [rsp+8] ; Value of RFLAGS (it is pushed when an interrupt occurs).
+    mov [excepRegs + (17*8)], rax    ;rflags
 
-	popState
-	iretq
+    mov rdi, %1 ; pasaje de parametro
+    mov rsi, excepRegs
+    call exceptionDispatcher
+
+    popState
+    iretq
 %endmacro
 
 
@@ -119,29 +145,29 @@ picSlaveMask:
 
 saveRegisters:
 	;mov[registers], rax done below
-	mov[registers + 8], rbx
-	mov[registers + 16], rcx
-	mov[registers + 24], rdx
-	mov[registers + 32], rsi
-	mov[registers + 40], rdi
-	mov[registers + 48], rbp
-	;mov[registers+56], rsp done below
-	mov[registers + 64], r8
-	mov[registers + 72], r9
-	mov[registers + 80], r10
-	mov[registers + 88], r11
-	mov[registers + 96], r12
-	mov[registers + 104], r13
-	mov[registers + 112], r14
-	mov[registers + 120], r15
-	;mov[registers+128], rip done below
+	mov[registers + (1*8)], rbx
+	mov[registers + (2*8)], rcx
+	mov[registers + (3*8)], rdx
+	mov[registers + (4*8)], rsi
+	mov[registers + (5*8)], rdi
+	mov[registers + (6*8)], rbp
+	;mov[registers+ (7*8)], rsp done below
+	mov[registers + (8*8)], r8
+	mov[registers + (9*8)], r9
+	mov[registers + (10*8)], r10
+	mov[registers + (11*8)], r11
+	mov[registers + (12*8)], r12
+	mov[registers + (13*8)], r13
+	mov[registers + (14*8)], r14
+	mov[registers + (15*8)], r15
+	;mov[registers+ (16*8)], rip done below
 
 	mov rax, rsp
 	add rax, 160
-	mov[registers + 56], rax ;RSP
+	mov[registers + (7*8)], rax ;RSP
 
 	mov rax, [rsp + 15*8]
-	mov[registers + 128], rax ; RIP
+	mov[registers + (16*8)], rax ; RIP
 
 	mov rax, [rsp + 14*8]	; RAX
 	mov[registers], rax
@@ -213,4 +239,5 @@ haltcpu:
 
 SECTION .bss
 	aux resq 1
-	registers resq 17 ; registers for screenshot 
+	registers resq 17 ; registers for screenshot
+	excepRegs resq 18 ; registers for exceptions

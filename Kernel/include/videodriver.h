@@ -18,6 +18,8 @@ void printLn(char * string);
 
 void moveOneLineUp();
 
+void printStringColor(char * string, Color color);
+
 void printStringNColor(char * buffer, uint64_t length, Color color);
 
 void moveCursor();

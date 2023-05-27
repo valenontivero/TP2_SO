@@ -85,7 +85,7 @@ void analizeBuffer(char * buffer) {
 		printColor(getDate(), CYAN);
 		print("\n");
 	} else if (strcmp(buffer, "registers")) {
-		printColor("\naca hacer el dump de los registros conseguidos en el screenshot:\n", GREEN);
+		
 	} else if (strcmp(buffer, "clear")) {
 		sys_clear_screen();
 	} else if (strcmp(buffer, "pong")) {

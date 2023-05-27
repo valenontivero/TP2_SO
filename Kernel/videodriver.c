@@ -170,10 +170,12 @@ void printString(char * string) {
 	printStringN(string, strlen(string));
 }
 
-Color white = {0xFF, 0xFF, 0xFF};
-
 void printStringN(char * string, uint64_t length) {
-	printStringNColor(string, length, white);
+	printStringNColor(string, length, WHITE);
+}
+
+void printStringColor(char * string, Color color) {
+	printStringNColor(string, strlen(string), color);
 }
 
 void printStringNColor(char * string, uint64_t length, Color color) {
