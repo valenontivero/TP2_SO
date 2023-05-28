@@ -1,22 +1,30 @@
 /* sampleCodeModule.c */
 #include <userio.h>
+#include <usyscalls.h>
 #include <colors.h>
 
 extern void divideByZero();
 
+extern void invalidOpcode();
+
+extern void fillRegs();
+
 void analizeBuffer(char * buffer);
+
+static char * commandsNames[] = {"help", "time", "date", "registers", "fillregs", "div0", "invalidop", "pong", "clear"};
 
 static char *commands[] = {
 	"\thelp: gives you a list of all existants commands.\n",
 	"\ttime: prints the time of the OS.\n",
 	"\tdate: prints the date of the OS.\n",
 	"\tregisters: print the state of the registers at the time you screenshot them with CTRL key.\n",
-	"\tdiv0: \n",
+	"\tfillregs: fill the registers with stepped values for testing.\n",
+	"\tdiv0: divide by zero to trigger exception\n",
 	"\tinvalidop: \n",
 	"\tpong: go to play the \"pong\" game.\n",
 	"\tclear: clears the OS screen.\n"
 };
-#define COMMANDS_QUANTITY 8
+#define COMMANDS_QUANTITY 9
 
 char * getTime(){
 	static char bufferTime[9];
@@ -49,6 +57,18 @@ int main() {
 				printChar(c);
 				count--;
 			}
+		} else if (c == '\t') {
+			// analize the first letter of the buffer, and if it matches with a command, complete it
+			int i = 0;
+			while (i < COMMANDS_QUANTITY && commandsNames[i][0] != buffer[0]) {
+				i++;
+			}
+			if (i < COMMANDS_QUANTITY) {
+				while (commandsNames[i][count] != 0) {
+					buffer[count] = commandsNames[i][count];
+					printColorChar(commandsNames[i][count++], 0xffffff);
+				}
+			}
 		} else if (c != 0xFF && c > 0) {
 			printColorChar(c, 0xffffff);
 			buffer[count++] = c;
@@ -73,19 +93,19 @@ int strcmp(char * str1, char * str2) {
 void analizeBuffer(char * buffer) {
 	if (strcmp(buffer, "help") || strcmp(buffer, "HELP")) {
 		printColor("\n\nComandos disponibles:\n\n", YELLOW);
-		for (int i = 0; i < COMMANDS_QUANTITY; i++){
+		for (int i = 0; i < COMMANDS_QUANTITY; i++) {
 			printColor(commands[i], CYAN);
 		}
 	} else if (strcmp(buffer, "time")) {
-		printColor("\n\nTime of OS: ", YELLOW);
-		printColor(getTime(), CYAN);
-		print("\n");
+		printfColor("\n\nTime of OS: ", YELLOW);
+		printfColor("%s\n", CYAN, getTime());
 	} else if (strcmp(buffer, "date")) {
-		printColor("\n\nDate of OS: ", YELLOW);
-		printColor(getDate(), CYAN);
-		print("\n");
+		printfColor("\n\nDate of OS: ", YELLOW);
+		printfColor("%s\n", CYAN, getDate());
 	} else if (strcmp(buffer, "registers")) {
-		
+		printRegs();
+	} else if (strcmp(buffer, "fillregs")) {
+		fillRegs();
 	} else if (strcmp(buffer, "clear")) {
 		sys_clear_screen();
 	} else if (strcmp(buffer, "pong")) {
@@ -93,7 +113,16 @@ void analizeBuffer(char * buffer) {
 	} else if (strcmp(buffer, "div0")) {
 		divideByZero();
 	} else if (strcmp(buffer, "invalidop")) {
-		printColor("\nexception\n", GREEN);
+		invalidOpcode();
+	} else if (strcmp(buffer, "scanf")) {
+		char * format = "%s %d %c";
+		char * str;
+		int num;
+		char c;
+		scanf(format, str, &num, &c);
+		printf("\n\n");
+		printfColor(format, CYAN, str, num, c);
+		printf("\n\n");
 	} else if (!strcmp(buffer, "")) {
 		printColor("\nCommand not found. Type \"help\" for command list\n", RED);
 	}

@@ -70,12 +70,12 @@ static void sys_get_registers(uint64_t regsBuff) {
     }
 }
 
-static void sys_get_time(char * buffer) {
-    timeToStr(buffer);
+static void sys_get_time(uint64_t buffer) {
+    timeToStr((char *) buffer);
 }
 
-static void sys_get_date(char * buffer) {
-    dateToStr(buffer);
+static void sys_get_date(uint64_t buffer) {
+    dateToStr((char *) buffer);
 }
 
 static void sys_clear_screen() {
