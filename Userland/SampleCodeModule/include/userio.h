@@ -23,6 +23,6 @@ void printf(char *format, ...);
 
 void printfColor(char *format, uint64_t color, ...);
 
-int scanf(char *format, ...);
+// int scanf(char *format, ...);
 
 #endif

@@ -114,15 +114,6 @@ void analizeBuffer(char * buffer) {
 		divideByZero();
 	} else if (strcmp(buffer, "invalidop")) {
 		invalidOpcode();
-	} else if (strcmp(buffer, "scanf")) {
-		char * format = "%s %d %c";
-		char * str;
-		int num;
-		char c;
-		scanf(format, str, &num, &c);
-		printf("\n\n");
-		printfColor(format, CYAN, str, num, c);
-		printf("\n\n");
 	} else if (!strcmp(buffer, "")) {
 		printColor("\nCommand not found. Type \"help\" for command list\n", RED);
 	}
