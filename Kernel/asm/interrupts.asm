@@ -15,6 +15,7 @@ GLOBAL _irq05Handler
 GLOBAL _int80Handler
 
 GLOBAL _exception0Handler
+GLOBAL _exception6Handler
 
 GLOBAL registers
 GLOBAL excepRegs
@@ -229,6 +230,10 @@ _int80Handler:
 ;Zero Division Exception
 _exception0Handler:
 	exceptionHandler 0
+
+;Invalid Opcde Exception
+_exception6Handler:
+	exceptionHandler 6
 
 haltcpu:
 	cli
