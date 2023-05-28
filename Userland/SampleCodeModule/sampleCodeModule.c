@@ -4,12 +4,12 @@
 #include <colors.h>
 
 extern void divideByZero();
-
 extern void invalidOpcode();
-
 extern void fillRegs();
 
-void analizeBuffer(char * buffer);
+int strncmp(char * str1, char * str2, int length);
+void strcpy(char * dest, char * src);
+void analizeBuffer(char * buffer, int count);
 
 static char * commandsNames[] = {"help", "time", "date", "registers", "fillregs", "div0", "invalidop", "pong", "clear"};
 
@@ -45,12 +45,16 @@ int main() {
 
 	int count = 0;	
 	char buffer[1024] = {0};
+	char oldBuffer[1024] = {0};
+	char flag = 0; // Used for up arrow
 	while(1) {
 		char c = getChar();
 		if (c == '\n') {
-			analizeBuffer(buffer);
-			buffer[0] = 0;
+			buffer[count] = 0;
+			analizeBuffer(buffer, count);
 			printColor("\nben@OS: $> ", GREEN);
+			strcpy(oldBuffer, buffer);
+			flag = 1;
 			count = 0;
 		} else if (c == '\b') {
 			if (count > 0) {
@@ -58,19 +62,33 @@ int main() {
 				count--;
 			}
 		} else if (c == '\t') {
-			// analize the first letter of the buffer, and if it matches with a command, complete it
+			// analize count letters of the buffer and see if match with any command, if so, complete the command
 			int i = 0;
-			while (i < COMMANDS_QUANTITY && commandsNames[i][0] != buffer[0]) {
+			while (i < COMMANDS_QUANTITY && !strncmp(buffer, commandsNames[i], count)) {
 				i++;
 			}
 			if (i < COMMANDS_QUANTITY) {
 				while (commandsNames[i][count] != 0) {
+					printChar(commandsNames[i][count]);
 					buffer[count] = commandsNames[i][count];
-					printColorChar(commandsNames[i][count++], 0xffffff);
+					count++;
 				}
 			}
-		} else if (c != 0xFF && c > 0) {
-			printColorChar(c, 0xffffff);
+		} else if (c == 17 && flag) {
+			// up arrow
+			strcpy(buffer, oldBuffer);
+			count = strlen(buffer);
+			print(buffer);
+			flag = 0;
+		} else if (c == 20 && !flag) {
+			// down arrow
+			while (count > 0) {
+				printChar('\b');
+				count--;
+			}
+			flag = 1;
+		} else if (c != 0xFF && c > 20) {
+			printChar(c);
 			buffer[count++] = c;
 			buffer[count] = 0;
 		}
@@ -79,42 +97,50 @@ int main() {
 	return 0;
 }
 
-int strcmp(char * str1, char * str2) {
+int strncmp(char * str1, char * str2, int length) {
 	int i = 0;
-	while (str1[i] != 0 && str2[i] != 0) {
-		if (str1[i] != str2[i]) {
-			return 0;
-		}
+	while (i < length && str1[i] != 0 && str2[i] != 0 && str1[i] == str2[i]) {
 		i++;
 	}
-	return str1[i] == str2[i];
+	return i == length;
 }
 
-void analizeBuffer(char * buffer) {
-	if (strcmp(buffer, "help") || strcmp(buffer, "HELP")) {
+void strcpy(char * dest, char * src) {
+	int i = 0;
+	while (src[i] != 0) {
+		dest[i] = src[i];
+		i++;
+	}
+	dest[i] = 0;
+}
+
+void analizeBuffer(char * buffer, int count) {
+	if (count <= 0)
+		return;
+	if (strncmp(buffer, "help", count) || strncmp(buffer, "HELP", count)) {
 		printColor("\n\nComandos disponibles:\n\n", YELLOW);
 		for (int i = 0; i < COMMANDS_QUANTITY; i++) {
 			printColor(commands[i], CYAN);
 		}
-	} else if (strcmp(buffer, "time")) {
+	} else if (strncmp(buffer, "time", count)) {
 		printfColor("\n\nTime of OS: ", YELLOW);
 		printfColor("%s\n", CYAN, getTime());
-	} else if (strcmp(buffer, "date")) {
+	} else if (strncmp(buffer, "date", count)) {
 		printfColor("\n\nDate of OS: ", YELLOW);
 		printfColor("%s\n", CYAN, getDate());
-	} else if (strcmp(buffer, "registers")) {
+	} else if (strncmp(buffer, "registers", count)) {
 		printRegs();
-	} else if (strcmp(buffer, "fillregs")) {
+	} else if (strncmp(buffer, "fillregs", count)) {
 		fillRegs();
-	} else if (strcmp(buffer, "clear")) {
+	} else if (strncmp(buffer, "clear", count)) {
 		sys_clear_screen();
-	} else if (strcmp(buffer, "pong")) {
+	} else if (strncmp(buffer, "pong", count)) {
 		printColor("\nir a jugar al pong\n", GREEN);
-	} else if (strcmp(buffer, "div0")) {
+	} else if (strncmp(buffer, "div0", count)) {
 		divideByZero();
-	} else if (strcmp(buffer, "invalidop")) {
+	} else if (strncmp(buffer, "invalidop", count)) {
 		invalidOpcode();
-	} else if (!strcmp(buffer, "")) {
+	} else if (count > 0) {
 		printColor("\nCommand not found. Type \"help\" for command list\n", RED);
 	}
 }
