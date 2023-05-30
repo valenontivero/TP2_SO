@@ -20,10 +20,13 @@
 #define SI2 987
 #define DO3 1046
 
-static void play_sound(uint32_t nFrequence);
-static void nosound();
+extern uint8_t inb(uint16_t port);
+extern void outb(uint16_t port, uint8_t value);
 
-void beep();
+void play_sound(uint32_t nFrequence);
+void nosound();
+
+void beep(/* int freq, int duration */);
 
 void playNote(int freq, int duration, int waitAfter);
 void playBSong();

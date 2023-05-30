@@ -8,7 +8,7 @@ void putPixel(char r, char g, char b, int x, int y);
 
 void drawWhiteLine();
 
-void drawRect(int x, int y, int width, int height);
+void drawRect(int x, int y, int width, int height, int color);
 
 void printString(char * string);
 
@@ -27,6 +27,12 @@ void moveCursor();
 void eraseCursor();
 
 void clearScreen();
+
+uint16_t getHeight();
+
+uint16_t getWidth();
+
+void toggleCursor();
 
 // void drawImage(int * image);
 

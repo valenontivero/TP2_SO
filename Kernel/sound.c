@@ -2,7 +2,7 @@
 #include <sound.h>
 
 //Play sound using built in speaker
-static void play_sound(uint32_t nFrequence) {
+void play_sound(uint32_t nFrequence) {
     uint32_t Div;
     uint8_t tmp;
 
@@ -20,7 +20,7 @@ static void play_sound(uint32_t nFrequence) {
 }
 
 //make it shutup
-static void nosound() {
+void nosound() {
     uint8_t tmp = inb(0x61) & 0xFC;
     outb(0x61, tmp);
 }
@@ -45,19 +45,23 @@ void playBSong() {
 }
 
 //Make a beep
-void beep() {
+void beep(/* int freq, int duration */) {
+    // Wall sound
     play_sound(226);
     timer_wait(2);
     nosound();
 
     timer_wait(10);
 
+
+    // Paddle hit sound
     play_sound(459);
     timer_wait(4);
     nosound();
 
     timer_wait(10);
 
+    // Score sound ?
     play_sound(490);
     timer_wait(8);
     nosound();

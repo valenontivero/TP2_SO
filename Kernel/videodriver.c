@@ -66,16 +66,16 @@ void drawWhiteLine() {
     }
 }
 
-void drawRect(int x, int y, int width, int height) {
+void drawRect(int x, int y, int width, int height, int color) {
 	for (int i = y; i < y + height; i++) {
 		for (int j = x; j < x + width; j++) {
-			putPixel(0xff, 0xff, 0xff, j, i);
+			putPixel(color >> 16, color >> 8, color, j, i);
 		}
 	}
 }
 
 int line = 1, column = 0;
-
+int showCursor = 1;
 
 char getPixel(int x, int y) {
 	char * videoPtr = (char *) ((uint64_t)VBE_mode_info->framebuffer);
@@ -224,17 +224,21 @@ void moveOneLineUp() {
 }
 
 void moveCursor() {
-	for (int i = line * CHAR_HEIGHT; i < (line + 1) * CHAR_HEIGHT; i++) {
-		for (int j = (column + 1) * CHAR_WIDTH; j < (column + 2) * CHAR_WIDTH; j++) {
-			putPixel(0xff, 0xff, 0xff, j, i);
+	if (showCursor) {
+		for (int i = line * CHAR_HEIGHT; i < (line + 1) * CHAR_HEIGHT; i++) {
+			for (int j = (column + 1) * CHAR_WIDTH; j < (column + 2) * CHAR_WIDTH; j++) {
+				putPixel(0xff, 0xff, 0xff, j, i);
+			}
 		}
 	}
 }
 
 void eraseCursor() {
-	for (int i = line * CHAR_HEIGHT; i < (line + 1) * CHAR_HEIGHT; i++) {
-		for (int j = (column + 1) * CHAR_WIDTH; j < (column + 2) * CHAR_WIDTH; j++) {
-			putPixel(0, 0, 0, j, i);
+	if (showCursor) {
+		for (int i = line * CHAR_HEIGHT; i < (line + 1) * CHAR_HEIGHT; i++) {
+			for (int j = (column + 1) * CHAR_WIDTH; j < (column + 2) * CHAR_WIDTH; j++) {
+				putPixel(0, 0, 0, j, i);
+			}
 		}
 	}
 }
@@ -244,6 +248,20 @@ void clearScreen() {
 	line = 1;
 	column = 0;
 	moveCursor();
+}
+
+uint16_t getHeight() {
+	return VBE_mode_info->height;
+}
+
+uint16_t getWidth() {
+	return VBE_mode_info->width;
+}
+
+void toggleCursor() {
+	if (showCursor)
+		eraseCursor();
+	showCursor = !showCursor;
 }
 
 /* void drawImage(int * image) {
