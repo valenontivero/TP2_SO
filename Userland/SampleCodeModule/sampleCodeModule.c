@@ -8,6 +8,7 @@ extern void invalidOpcode();
 extern void fillRegs();
 
 int strncmp(char * str1, char * str2, int length);
+int commandMatch(char * str1, char * str2, int length);
 void strcpy(char * dest, char * src);
 void analizeBuffer(char * buffer, int count);
 
@@ -20,7 +21,7 @@ static char *commands[] = {
 	"\tregisters: print the state of the registers at the time you screenshot them with CTRL key.\n",
 	"\tfillregs: fill the registers with stepped values for testing.\n",
 	"\tdiv0: divide by zero to trigger exception\n",
-	"\tinvalidop: \n",
+	"\tinvalidop: trigger invalid operation code exception\n",
 	"\tpong: go to play the \"pong\" game.\n",
 	"\tclear: clears the OS screen.\n"
 };
@@ -76,6 +77,10 @@ int main() {
 			}
 		} else if (c == 17 && flag) {
 			// up arrow
+			while (count > 0) {
+				printChar('\b');
+				count--;
+			}
 			strcpy(buffer, oldBuffer);
 			count = strlen(buffer);
 			print(buffer);
@@ -105,6 +110,16 @@ int strncmp(char * str1, char * str2, int length) {
 	return i == length;
 }
 
+int commandMatch(char * str1, char * command, int count) {
+	int i = 0;
+	if (count != strlen(command))
+		return 0;
+	while (str1[i] != 0 && command[i] != 0 && str1[i] == command[i] && i < count) {
+		i++;
+	}
+	return str1[i] == command[i];
+}
+
 void strcpy(char * dest, char * src) {
 	int i = 0;
 	while (src[i] != 0) {
@@ -114,31 +129,37 @@ void strcpy(char * dest, char * src) {
 	dest[i] = 0;
 }
 
+void fillRegisters() {
+	printColor("\n\nFilling registers...\n", YELLOW);
+	printColor("Press CTRL to save them.\n", CYAN);
+	fillRegs();
+}
+
 void analizeBuffer(char * buffer, int count) {
 	if (count <= 0)
 		return;
-	if (strncmp(buffer, "help", count) || strncmp(buffer, "HELP", count)) {
+	if (commandMatch(buffer, "help", count) || commandMatch(buffer, "HELP", count)) {
 		printColor("\n\nComandos disponibles:\n\n", YELLOW);
 		for (int i = 0; i < COMMANDS_QUANTITY; i++) {
 			printColor(commands[i], CYAN);
 		}
-	} else if (strncmp(buffer, "time", count)) {
+	} else if (commandMatch(buffer, "time", count)) {
 		printfColor("\n\nTime of OS: ", YELLOW);
 		printfColor("%s\n", CYAN, getTime());
-	} else if (strncmp(buffer, "date", count)) {
+	} else if (commandMatch(buffer, "date", count)) {
 		printfColor("\n\nDate of OS: ", YELLOW);
 		printfColor("%s\n", CYAN, getDate());
-	} else if (strncmp(buffer, "registers", count)) {
+	} else if (commandMatch(buffer, "registers", count)) {
 		printRegs();
-	} else if (strncmp(buffer, "fillregs", count)) {
-		fillRegs();
-	} else if (strncmp(buffer, "clear", count)) {
+	} else if (commandMatch(buffer, "fillregs", count)) {
+		fillRegisters();
+	} else if (commandMatch(buffer, "clear", count)) {
 		sys_clear_screen();
-	} else if (strncmp(buffer, "pong", count)) {
+	} else if (commandMatch(buffer, "pong", count)) {
 		printColor("\nir a jugar al pong\n", GREEN);
-	} else if (strncmp(buffer, "div0", count)) {
+	} else if (commandMatch(buffer, "div0", count)) {
 		divideByZero();
-	} else if (strncmp(buffer, "invalidop", count)) {
+	} else if (commandMatch(buffer, "invalidop", count)) {
 		invalidOpcode();
 	} else if (count > 0) {
 		printColor("\nCommand not found. Type \"help\" for command list\n", RED);

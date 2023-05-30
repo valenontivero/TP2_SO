@@ -26,6 +26,7 @@ From the x64BareBones project directory run:
 
   user@linux:$ ./run.sh
 
+Be aware that you may need to change your audio device on the run.sh script.
 
 Author: Rodrigo Rearden (RowDaBoat)
 Collaborator: Augusto Nizzo McIntosh

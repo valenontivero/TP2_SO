@@ -5,6 +5,7 @@
 #include <naiveConsole.h>
 #include <videodriver.h>
 #include <idtLoader.h>
+#include <sound.h>
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -93,6 +94,7 @@ int main()
 	printLn("Hola\nEsto\nes\nuna\nprueba"); */
 
 	load_idt(); //Setup idt before terminal runs
+	// beep();
 	((EntryPoint)sampleCodeModuleAddress)(); //Calling sampleCodeModule's main address
 	return 0;
 }

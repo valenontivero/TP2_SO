@@ -8,4 +8,8 @@ void * memcpy(void * destination, const void * source, uint64_t length);
 
 char *cpuVendor(char *result);
 
+/* Used for sound */
+void outb(int memoryMap, int output); 
+int inb(int memoryMap);
+
 #endif

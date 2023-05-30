@@ -245,3 +245,11 @@ void clearScreen() {
 	column = 0;
 	moveCursor();
 }
+
+/* void drawImage(int * image) {
+	for (int i = 0; i < VBE_mode_info->height; i++) {
+		for (int j = 0; j < VBE_mode_info->width; j++) {
+			putPixel(image[i * VBE_mode_info->width + j] >> 16, image[i * VBE_mode_info->width + j] >> 8, image[i * VBE_mode_info->width + j], j, i);
+		}
+	}
+} */

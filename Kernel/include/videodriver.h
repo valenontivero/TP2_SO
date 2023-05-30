@@ -28,4 +28,6 @@ void eraseCursor();
 
 void clearScreen();
 
+// void drawImage(int * image);
+
 #endif
