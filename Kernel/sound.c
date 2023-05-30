@@ -35,37 +35,121 @@ void playNote(int freq, int duration, int waitAfter) {
 }
 
 void playBSong() {
-    playNote(MI, 3, 2);
-    playNote(LA, 3, 2);
-    playNote(SI, 3, 2);
-    playNote(DO2, 2, 3);
-    playNote(DO2, 1, 1);
-    playNote(DO2, 1, 3);
-
-    playNote(DO2, 2, 1);
-    playNote(DO2, 1, 3);
-
-    playNote(DO2, 2, 1);
-    playNote(DO2, 1, 3);
-
-    playNote(DO2, 3, 1);
-
-    playNote(SI, 3, 2);
-    playNote(LA, 3, 2);
+    // tempos de 20 ticks
+    // primera parte
+    playNote(MI, 1, 2);
+    playNote(LA, 1, 2);
+    playNote(SI, 1, 2);
     playNote(DO2, 3, 2);
-    playNote(LA, 5, 0);
+
+    playNote(DO2, 1, 2);
+    playNote(DO2, 1, 4);
+
+    playNote(DO2, 1, 2);
+    playNote(DO2, 1, 2);
+    playNote(DO2, 1, 2);
+    playNote(DO2, 1, 4);
+
+    playNote(DO2, 1, 2);
+    playNote(DO2, 1, 4);
+
+    playNote(DO2, 1, 2);
+    playNote(SI, 1, 2);
+    playNote(LA, 1, 2);
+    playNote(DO2, 6, 2);
+    playNote(LA, 8, 20);
+
+    // 2da parte
+    playNote(MI, 1, 2);
+    playNote(LA, 1, 2);
+    playNote(SI, 1, 2);
+    playNote(DO2, 3, 2);
+
+    playNote(DO2, 1, 2);
+    playNote(DO2, 1, 4);
+
+    playNote(DO2, 1, 2);
+    playNote(DO2, 1, 2);
+    playNote(DO2, 1, 2);
+    playNote(DO2, 1, 4);
+
+    playNote(DO2, 1, 2);
+    playNote(DO2, 1, 4);
+
+    playNote(DO2, 1, 2);
+    playNote(SI, 1, 2);
+    playNote(LA, 1, 2);
+    playNote(RE2, 20, 12);
+    
+
+    //parte tres
+    playNote(SI, 1, 2);
+    playNote(DO2, 1, 2);
+    playNote(SI, 1, 2);
+    playNote(RE2, 3, 2);
+
+    playNote(RE2, 1, 2);
+    playNote(RE2, 1, 4);
+
+    playNote(RE2, 1, 2);
+    playNote(RE2, 1, 2);
+    playNote(RE2, 1, 2);
+    playNote(RE2, 1, 4);
+
+    playNote(MI2, 1, 2);
+    playNote(RE2, 1, 4);
+
+    playNote(RE2, 1, 2);
+    playNote(MI2, 1, 2);
+    playNote(RE2, 6, 2);
+    playNote(DO2, 20, 12);
+
+    //PARTE 4
+    playNote(MI, 1, 2);
+    playNote(LA, 1, 2);
+    playNote(SI, 1, 2);
+    playNote(DO2, 3, 2);
+
+    playNote(DO2, 1, 2);
+    playNote(DO2, 1, 4);
+
+    playNote(DO2, 1, 2);
+    playNote(DO2, 1, 2);
+    playNote(SI, 1, 2);
+    playNote(SI, 1, 4);
+
+    playNote(SI, 2, 2);
+    playNote(SI, 2, 4);
+
+    playNote(SI, 1, 2);
+    playNote(DO2, 1, 2);
+    playNote(LA, 16, 4);
+
+    //BOMBOS
+    playNote(90, 1, 3);
+    playNote(90, 1, 2);
+    playNote(90, 2, 16);
 }
 
-/* DO MI FA# LA SOL MI DO la fa# fa# fa# sol
-fa# fa# fa# sol la# si
-si re# fa RE# DO# si la fa do# do# do# re#
-mi sol# la# DO# si sol#
-DO MI FA# LA SOL MI DO la fa# fa# fa# sol
-fa# fa# fa# sol la# si */
-
 void playSimpsons() {
-    playNote(DO, 3, 2);
-    playNote(MI, 3, 2);
+    playNote(DO, 2, 4);
+    playNote(MI, 2, 4);
+    playNote(FASharp, 2, 4);
+    playNote(LA, 2, 3);
+    playNote(SOL, 3, 4);
+    playNote(MI, 2, 2);
+    playNote(DO, 2, 2);
+    playNote(LA, 2, 3);
+    playNote(FASharp, 1, 2);
+    playNote(FASharp, 1, 2);
+    playNote(FASharp, 1, 2);
+    playNote(SOL, 2, 5);
+    playNote(FASharp, 1, 2);
+    playNote(FASharp, 1, 2);
+    playNote(FASharp, 1, 2);
+    playNote(SOL, 1, 3);
+    playNote(LA, 6, 6);
+    playNote(SI2, 2, 2);
 
 }
 //Make a beep

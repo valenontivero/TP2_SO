@@ -97,7 +97,8 @@ int main()
 	load_idt(); //Setup idt before terminal runs
 	// beep();
 	drawImage(diego, 100, 100);
-	playBSong();
+	playSimpsons();
+	//playBSong();
 	while (1) {}
 	((EntryPoint)sampleCodeModuleAddress)(); //Calling sampleCodeModule's main address
 	return 0;
