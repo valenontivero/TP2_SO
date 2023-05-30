@@ -17,4 +17,12 @@ uint64_t sys_get_date(char *buffer);
 
 uint64_t sys_clear_screen();
 
+uint64_t sys_draw_rectangle(int x, int y, int width, int height, int color);
+
+uint64_t sys_play_sound(int freq, int duration);
+
+uint64_t sys_get_screen_size(uint16_t * width, uint16_t * height);
+
+uint64_t sys_toggle_cursor();
+
 #endif

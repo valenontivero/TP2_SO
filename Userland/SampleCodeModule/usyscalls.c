@@ -34,3 +34,19 @@ uint64_t sys_get_date(char * buffer){
 uint64_t sys_clear_screen(){
     return sys_call((uint64_t)6, (uint64_t)0, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0);
 }
+
+uint64_t sys_draw_rectangle(int x, int y, int width, int height, int color) {
+    return sys_call((uint64_t) 7, (uint64_t) x, (uint64_t) y, (uint64_t) width, (uint64_t) height, (uint64_t) color);
+}
+
+uint64_t sys_play_sound(int freq, int duration) {
+    return sys_call((uint64_t) 8, (uint64_t) freq, (uint64_t) duration, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0);
+}
+
+uint64_t sys_get_screen_size(uint16_t * width, uint16_t * height) {
+    return sys_call((uint64_t) 9, (uint64_t) width, (uint64_t) height, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0);
+}
+
+uint64_t sys_toggle_cursor() {
+    return sys_call((uint64_t) 10, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0);
+}

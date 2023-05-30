@@ -4,6 +4,7 @@
 #include <syscalls.h>
 #include <keyboard.h>
 #include <clock.h>
+#include <sound.h>
 
 extern const uint64_t registers[17];
 
@@ -29,6 +30,15 @@ void syscallHandler(uint64_t id, uint64_t arg0, uint64_t arg1, uint64_t arg2, ui
             break;
         case 6:
             sys_clear_screen();
+            break;
+        case 7:
+            sys_draw_rect(arg0, arg1, arg2, arg3, arg4);
+            break;
+        case 8:
+            sys_play_sound(arg0, arg1);
+            break;
+        case 9:
+            sys_get_screensize(arg0, arg1);
             break;
     }
     //ver de agregar excepción si no existe el id
@@ -82,3 +92,21 @@ static void sys_clear_screen() {
     clearScreen();
 }
 
+static void sys_draw_rect(uint64_t x, uint64_t y, uint64_t width, uint64_t height, uint64_t color) {
+    drawRect( (int) x, (int) y, (int) width, (int) height, (int) color );
+}
+
+static void sys_play_sound(int freq, int duration) {
+    beep(freq, duration);
+}
+
+static void sys_get_screensize(uint64_t width, uint64_t height) {
+    uint16_t * w = (uint16_t *) width;
+    uint16_t * h = (uint16_t *) height;
+    *w = getWidth();
+    *h = getHeight();
+}
+
+static void sys_toggle_cursor() {
+    toggleCursor();
+}
