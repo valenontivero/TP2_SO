@@ -34,6 +34,6 @@ uint16_t getWidth();
 
 void toggleCursor();
 
-// void drawImage(int * image);
+void drawImage(unsigned long int * image, int width, int height);
 
 #endif

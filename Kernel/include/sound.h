@@ -7,6 +7,7 @@
 #define RE 293
 #define MI 329
 #define FA 349
+#define FASharp 370
 #define SOL 392
 #define LA 440
 #define SI 493
@@ -27,5 +28,6 @@ void beep(/* int freq, int duration */);
 
 void playNote(int freq, int duration, int waitAfter);
 void playBSong();
+void playSimpsons();
 
 #endif /* SOUND_H */

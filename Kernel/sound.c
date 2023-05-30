@@ -35,17 +35,39 @@ void playNote(int freq, int duration, int waitAfter) {
 }
 
 void playBSong() {
-    playNote(MI, 3, 3);
-    playNote(LA, 3, 3);
-    playNote(SI, 3, 3);
-    for (int i = 0; i < 8; i++)
-        playNote(DO2, 3, 3);
+    playNote(MI, 3, 2);
+    playNote(LA, 3, 2);
+    playNote(SI, 3, 2);
+    playNote(DO2, 2, 3);
+    playNote(DO2, 1, 1);
+    playNote(DO2, 1, 3);
+
+    playNote(DO2, 2, 1);
+    playNote(DO2, 1, 3);
+
+    playNote(DO2, 2, 1);
+    playNote(DO2, 1, 3);
+
+    playNote(DO2, 3, 1);
+
     playNote(SI, 3, 2);
     playNote(LA, 3, 2);
     playNote(DO2, 3, 2);
     playNote(LA, 5, 0);
 }
 
+/* DO MI FA# LA SOL MI DO la fa# fa# fa# sol
+fa# fa# fa# sol la# si
+si re# fa RE# DO# si la fa do# do# do# re#
+mi sol# la# DO# si sol#
+DO MI FA# LA SOL MI DO la fa# fa# fa# sol
+fa# fa# fa# sol la# si */
+
+void playSimpsons() {
+    playNote(DO, 3, 2);
+    playNote(MI, 3, 2);
+
+}
 //Make a beep
 void beep(/* int freq, int duration */) {
     // Wall sound

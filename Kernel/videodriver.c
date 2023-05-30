@@ -264,10 +264,10 @@ void toggleCursor() {
 	showCursor = !showCursor;
 }
 
-/* void drawImage(int * image) {
-	for (int i = 0; i < VBE_mode_info->height; i++) {
-		for (int j = 0; j < VBE_mode_info->width; j++) {
-			putPixel(image[i * VBE_mode_info->width + j] >> 16, image[i * VBE_mode_info->width + j] >> 8, image[i * VBE_mode_info->width + j], j, i);
+void drawImage(unsigned long int * image, int width, int height) {
+	for (int i = 0, o = 0; i < height; i++, o += 7) {
+		for (int j = 0, k = 0; j < width; j++, k += 7) {
+			drawRect(k, o, 7, 7, image[i * width + j]);
 		}
 	}
-} */
+}
