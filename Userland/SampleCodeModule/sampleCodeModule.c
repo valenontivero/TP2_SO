@@ -7,6 +7,8 @@ extern void divideByZero();
 extern void invalidOpcode();
 extern void fillRegs();
 
+void pong();
+
 int strncmp(char * str1, char * str2, int length);
 int commandMatch(char * str1, char * str2, int length);
 void strcpy(char * dest, char * src);
@@ -157,6 +159,7 @@ void analizeBuffer(char * buffer, int count) {
 		sys_clear_screen();
 	} else if (commandMatch(buffer, "pong", count)) {
 		printColor("\nir a jugar al pong\n", GREEN);
+		pong();
 	} else if (commandMatch(buffer, "div0", count)) {
 		divideByZero();
 	} else if (commandMatch(buffer, "invalidop", count)) {
