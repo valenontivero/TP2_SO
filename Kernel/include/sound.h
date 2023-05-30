@@ -20,9 +20,6 @@
 #define SI2 987
 #define DO3 1046
 
-extern uint8_t inb(uint16_t port);
-extern void outb(uint16_t port, uint8_t value);
-
 void play_sound(uint32_t nFrequence);
 void nosound();
 

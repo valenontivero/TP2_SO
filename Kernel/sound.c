@@ -1,5 +1,7 @@
 // codigo de osdev
 #include <sound.h>
+#include <lib.h>
+#include <time.h>
 
 //Play sound using built in speaker
 void play_sound(uint32_t nFrequence) {
@@ -33,15 +35,15 @@ void playNote(int freq, int duration, int waitAfter) {
 }
 
 void playBSong() {
-    playNote(MI2, 3, 3);
-    playNote(LA2, 3, 3);
-    playNote(SI2, 3, 3);
+    playNote(MI, 3, 3);
+    playNote(LA, 3, 3);
+    playNote(SI, 3, 3);
     for (int i = 0; i < 8; i++)
-        playNote(DO3, 3, 3);
-    playNote(SI2, 3, 2);
-    playNote(LA2, 3, 2);
-    playNote(DO3, 3, 2);
-    playNote(LA2, 5, 0);
+        playNote(DO2, 3, 3);
+    playNote(SI, 3, 2);
+    playNote(LA, 3, 2);
+    playNote(DO2, 3, 2);
+    playNote(LA, 5, 0);
 }
 
 //Make a beep

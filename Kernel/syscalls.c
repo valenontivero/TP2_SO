@@ -40,6 +40,9 @@ void syscallHandler(uint64_t id, uint64_t arg0, uint64_t arg1, uint64_t arg2, ui
         case 9:
             sys_get_screensize(arg0, arg1);
             break;
+        case 10:
+            sys_toggle_cursor();
+            break;
     }
     //ver de agregar excepción si no existe el id
 }

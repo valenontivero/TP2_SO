@@ -82,7 +82,7 @@ void handleMovement(Player * player1, Player * player2, char c) {
 
 void pong() {
     sys_clear_screen();
-    sys_toggle_cursor(); // TODO: Fix it
+    sys_toggle_cursor();
 
     uint16_t width;
     uint16_t height;
