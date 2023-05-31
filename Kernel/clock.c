@@ -11,35 +11,40 @@
 
 extern unsigned char clock(unsigned char mode); // assembly function
 
-static unsigned int decode(unsigned char time){
+static unsigned int decode(unsigned char time) {
     return (time >> 4) * 10 + (time & 0x0F);
 }
 
-unsigned int seconds(){
+unsigned int seconds() {
     return decode(clock(SECONDS));
 }
 
-unsigned int minutes(){
+unsigned int minutes() {
     return decode(clock(MINUTES));
 }
 
-unsigned int hours(){
-    return decode(clock(HOURS)) + TIME_ZONE;
+unsigned int hours() {
+    int hour = decode(clock(HOURS));
+    return hour + TIME_ZONE < 0 ? hour + TIME_ZONE + 24 : hour + TIME_ZONE;
 }
 
-unsigned int day(){
+unsigned int day() {
+    int hour = decode(clock(HOURS));
+    if (hour + TIME_ZONE < 0) {
+        return decode(clock(DAYS)) - 1;
+    }
     return decode(clock(DAYS));
 }
 
-unsigned int month(){
+unsigned int month() {
     return decode(clock(MONTH));
 }
 
-unsigned int year(){
+unsigned int year() {
     return decode(clock(YEAR));
 }
 
-void timeToStr(char* dest){
+void timeToStr(char* dest) {
     dest[2] = dest[5] = ':';
     uint8_t s, m, h = hours();
     dest[0] = (h/10) % 10 + '0';
@@ -52,7 +57,7 @@ void timeToStr(char* dest){
     dest[7] = s % 10 + '0';
 }
 
-void dateToStr(char* dest){
+void dateToStr(char* dest) {
     dest[2] = dest [5] = '/';
     uint8_t d = day(), m, y;
     dest[0] = (d/10) % 10 + '0';
