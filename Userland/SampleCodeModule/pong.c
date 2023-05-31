@@ -25,11 +25,11 @@ typedef struct Player {
 #define PLAYER2_UP 17
 #define PLAYER2_DOWN 20
 
-#define PLAYER_WIDTH 10
+#define PLAYER_WIDTH 15
 #define PLAYER_HEIGHT 150
 
 #define PLAYER1_MOVE_AMOUNT 30
-#define PLAYER2_MOVE_AMOUNT 15
+#define PLAYER2_MOVE_AMOUNT 30
 
 uint16_t width;
 uint16_t height;
@@ -45,7 +45,7 @@ void drawBall(int x, int y, int radius, int color) {
     int i, j;
     for (i = -radius; i <= radius; i++) {
         for (j = -radius; j <= radius; j++) {
-            if (i*i + j*j <= radius*radius && x+i != 25 && x+i != width - 25 - PLAYER_WIDTH && x+i != width / 2) {
+            if (i*i + j*j <= radius*radius && !(x+i >= 25 && x+i <= 25 + PLAYER_WIDTH) && !(x+i >= width - 25 - PLAYER_WIDTH && x+i <= width - 25 ) && x+i != width / 2) {
                 sys_draw_rectangle(x + i, y + j, 1, 1, color);
             }
         }
@@ -65,31 +65,32 @@ int isValidKey(char c) {
     return c == PLAYER1_UP || c == PLAYER1_UP2 || c == PLAYER1_DOWN || c == PLAYER1_DOWN2 || c == PLAYER2_UP || c == PLAYER2_DOWN;
 }
 
-void handleMovement(Player * player1, Player * player2, char c) {
-    // Erase player
-    if (c == PLAYER1_UP || c == PLAYER1_UP2) {
-        if (player1->y > 0) {
-            drawPaddle(player1->x, player1->y + PLAYER_HEIGHT - PLAYER1_MOVE_AMOUNT, PLAYER_WIDTH, PLAYER1_MOVE_AMOUNT, BLACK);
-            player1->y -= PLAYER1_MOVE_AMOUNT;
-            drawPaddle(player1->x, player1->y, PLAYER_WIDTH, PLAYER1_MOVE_AMOUNT, WHITE);
-        }
-    } else if (c == PLAYER1_DOWN || c == PLAYER1_DOWN2) {
-        if (player1->y < 600) {
-            drawPaddle(player1->x, player1->y, PLAYER_WIDTH, PLAYER1_MOVE_AMOUNT, BLACK);
-            player1->y += PLAYER1_MOVE_AMOUNT;
-            drawPaddle(player1->x, player1->y + PLAYER_HEIGHT - PLAYER1_MOVE_AMOUNT, PLAYER_WIDTH, PLAYER1_MOVE_AMOUNT, WHITE);
-        }
-    } else if (c == PLAYER2_UP) {
-        if (player2->y > 0) {
-            drawPaddle(player2->x, player2->y + PLAYER_HEIGHT - PLAYER2_MOVE_AMOUNT, PLAYER_WIDTH, PLAYER2_MOVE_AMOUNT, BLACK);
-            player2->y -= PLAYER2_MOVE_AMOUNT;
-            drawPaddle(player2->x, player2->y, PLAYER_WIDTH, PLAYER2_MOVE_AMOUNT, WHITE);
-        }
-    } else if (c == PLAYER2_DOWN) {
-        if (player2->y < 600) {
-            drawPaddle(player2->x, player2->y, PLAYER_WIDTH, PLAYER2_MOVE_AMOUNT, BLACK);
-            player2->y += PLAYER2_MOVE_AMOUNT;
-            drawPaddle(player2->x, player2->y + PLAYER_HEIGHT - PLAYER2_MOVE_AMOUNT, PLAYER_WIDTH, PLAYER2_MOVE_AMOUNT, WHITE);
+void handleMovement(Player * player1, Player * player2, char moves[2]) {
+    for (int i = 0; i < 2 ; i++) {
+        if (moves[i] == PLAYER1_UP) {
+            if (player1->y > 0) {
+                drawPaddle(player1->x, player1->y + PLAYER_HEIGHT - PLAYER1_MOVE_AMOUNT, PLAYER_WIDTH, PLAYER1_MOVE_AMOUNT, BLACK);
+                player1->y -= PLAYER1_MOVE_AMOUNT;
+                drawPaddle(player1->x, player1->y, PLAYER_WIDTH, PLAYER1_MOVE_AMOUNT, WHITE);
+            }
+        } else if (moves[i] == PLAYER1_DOWN) {
+            if (player1->y < 600) {
+                drawPaddle(player1->x, player1->y, PLAYER_WIDTH, PLAYER1_MOVE_AMOUNT, BLACK);
+                player1->y += PLAYER1_MOVE_AMOUNT;
+                drawPaddle(player1->x, player1->y + PLAYER_HEIGHT - PLAYER1_MOVE_AMOUNT, PLAYER_WIDTH, PLAYER1_MOVE_AMOUNT, WHITE);
+            }
+        } else if (moves[i] == PLAYER2_UP) {
+            if (player2->y > 0) {
+                drawPaddle(player2->x, player2->y + PLAYER_HEIGHT - PLAYER2_MOVE_AMOUNT, PLAYER_WIDTH, PLAYER2_MOVE_AMOUNT, BLACK);
+                player2->y -= PLAYER2_MOVE_AMOUNT;
+                drawPaddle(player2->x, player2->y, PLAYER_WIDTH, PLAYER2_MOVE_AMOUNT, WHITE);
+            }
+        } else if (moves[i] == PLAYER2_DOWN) {
+            if (player2->y < 600) {
+                drawPaddle(player2->x, player2->y, PLAYER_WIDTH, PLAYER2_MOVE_AMOUNT, BLACK);
+                player2->y += PLAYER2_MOVE_AMOUNT;
+                drawPaddle(player2->x, player2->y + PLAYER_HEIGHT - PLAYER2_MOVE_AMOUNT, PLAYER_WIDTH, PLAYER2_MOVE_AMOUNT, WHITE);
+            }
         }
     }
 }
@@ -99,8 +100,8 @@ void moveBall(int * ballX, int * ballY, int ballRadius) {
     drawBall(*ballX, *ballY, ballRadius, BLACK);
 
     // Move ball
-    *ballX += ballXDirection;
-    *ballY += ballYDirection;
+    *ballX += ballXDirection * 10;
+    *ballY += ballYDirection * 10;
 
     // Check if ball is out of bounds
     if (*ballX < 0) {
@@ -132,6 +133,29 @@ void win(int color, int player) {
     stop = 1;
 }
 
+short tick() {
+    static uint32_t lastTick = 0;
+    uint32_t currentTicks;
+    sys_get_ticks(&currentTicks);
+    if (currentTicks != lastTick) {
+        lastTick = currentTicks;
+        return 1;
+    }
+    return 0;
+}
+
+void handleKey(char key, char moves[]) {
+    if (key == PLAYER1_UP || key == PLAYER1_UP2) {
+        moves[0] = PLAYER1_UP;
+    } else if (key == PLAYER1_DOWN || key == PLAYER1_DOWN2) {
+        moves[0] = PLAYER1_DOWN;
+    } else if (key == PLAYER2_UP) {
+        moves[1] = PLAYER2_UP;
+    } else if (key == PLAYER2_DOWN) {
+        moves[1] = PLAYER2_DOWN;
+    }
+}
+
 void pong() {
     sys_clear_screen();
     sys_toggle_cursor();
@@ -158,18 +182,24 @@ void pong() {
     // Draw player 2
     drawPaddle(player2.x, player2.y, PLAYER_WIDTH, PLAYER_HEIGHT, WHITE);
 
+    char moves[2] = { 0 };
 
     while (!stop) {
         char c = getChar();
         if (isValidKey(c))
-            handleMovement(&player1, &player2, c);
-        moveBall(&ballX, &ballY, ballRadius);
+            handleKey(c, moves);
 
-        // Check if ball hit player
-        if (ballX <= player1.x + PLAYER_WIDTH && ballX >= player1.x && ballY >= player1.y && ballY <= player1.y + PLAYER_HEIGHT) {
-            ballXDirection = 1;
-        } else if (ballX >= player2.x && ballX <= player2.x + PLAYER_WIDTH && ballY >= player2.y && ballY <= player2.y + PLAYER_HEIGHT) {
-            ballXDirection = -1;
+        if (tick()) {
+            handleMovement(&player1, &player2, moves);
+            moveBall(&ballX, &ballY, ballRadius);
+
+            // Check if ball hit player
+            if (ballX - ballRadius/2 <= player1.x + PLAYER_WIDTH && ballX >= player1.x && ballY >= player1.y && ballY <= player1.y + PLAYER_HEIGHT) {
+                ballXDirection = 1;
+            } else if (ballX + ballRadius/2 >= player2.x && ballX <= player2.x + PLAYER_WIDTH && ballY >= player2.y && ballY <= player2.y + PLAYER_HEIGHT) {
+                ballXDirection = -1;
+            }
+            moves[0] = 0; moves[1] = 0;
         }
     }
     stop = 0;

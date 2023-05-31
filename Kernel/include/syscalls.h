@@ -21,10 +21,12 @@ static void sys_clear_screen();
 
 static void sys_draw_rect(uint64_t x, uint64_t y, uint64_t width, uint64_t height, uint64_t color);
 
-static void sys_play_sound(int freq, int duration);
+static void sys_play_sound(uint64_t freq, uint64_t duration);
 
 static void sys_get_screensize(uint64_t width, uint64_t height);
 
 static void sys_toggle_cursor();
+
+static void sys_get_ticks(uint64_t ticks);
 
 #endif

@@ -99,7 +99,6 @@ int main()
 	drawImage(diego, 100, 100);
 	playSimpsons();
 	//playBSong();
-	while (1) {}
 	((EntryPoint)sampleCodeModuleAddress)(); //Calling sampleCodeModule's main address
 	return 0;
 }

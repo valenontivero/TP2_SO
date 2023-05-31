@@ -50,3 +50,7 @@ uint64_t sys_get_screen_size(uint16_t * width, uint16_t * height) {
 uint64_t sys_toggle_cursor() {
     return sys_call((uint64_t) 10, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0);
 }
+
+uint64_t sys_get_ticks(uint32_t * ticks) {
+    return sys_call((uint64_t) 11, (uint64_t) ticks, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0);
+}

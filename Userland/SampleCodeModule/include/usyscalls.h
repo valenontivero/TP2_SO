@@ -25,4 +25,6 @@ uint64_t sys_get_screen_size(uint16_t * width, uint16_t * height);
 
 uint64_t sys_toggle_cursor();
 
+uint64_t sys_get_ticks(uint32_t * ticks);
+
 #endif

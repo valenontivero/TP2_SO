@@ -8,6 +8,6 @@ docker start arqui
 docker exec -it arqui make clean -C/root/Toolchain
 docker exec -it arqui make clean -C/root/
 docker exec -it arqui make -C/root/Toolchain
-docker exec -it arqui make -C/root/
+docker exec -it arqui env GCC_COLORS="error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01" make -C/root/
 docker stop arqui
 bash run.sh

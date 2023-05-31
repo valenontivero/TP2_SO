@@ -5,6 +5,7 @@
 #include <keyboard.h>
 #include <clock.h>
 #include <sound.h>
+#include <time.h>
 
 extern const uint64_t registers[17];
 
@@ -42,6 +43,9 @@ void syscallHandler(uint64_t id, uint64_t arg0, uint64_t arg1, uint64_t arg2, ui
             break;
         case 10:
             sys_toggle_cursor();
+            break;
+        case 11:
+            sys_get_ticks(arg0);
             break;
     }
     //ver de agregar excepción si no existe el id
@@ -99,8 +103,8 @@ static void sys_draw_rect(uint64_t x, uint64_t y, uint64_t width, uint64_t heigh
     drawRect( (int) x, (int) y, (int) width, (int) height, (int) color );
 }
 
-static void sys_play_sound(int freq, int duration) {
-    beep(freq, duration);
+static void sys_play_sound(uint64_t freq, uint64_t duration) {
+    beep((int) freq, (int) duration);
 }
 
 static void sys_get_screensize(uint64_t width, uint64_t height) {
@@ -112,4 +116,9 @@ static void sys_get_screensize(uint64_t width, uint64_t height) {
 
 static void sys_toggle_cursor() {
     toggleCursor();
+}
+
+static void sys_get_ticks(uint64_t ticks) {
+    uint32_t * t = (uint32_t *) ticks;    
+    *t = ticks_elapsed();
 }
