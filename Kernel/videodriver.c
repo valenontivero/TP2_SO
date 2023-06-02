@@ -4,8 +4,6 @@
 #include <videodriver.h>
 #include <lib.h>
 
-#define MAX_LINES VBE_mode_info->height / CHAR_HEIGHT
-#define MAX_COLUMNS VBE_mode_info->width / CHAR_WIDTH - 1
 
 struct vbe_mode_info_structure {
 	uint16_t attributes;		// deprecated, only bit 7 should be of interest to you, and it indicates the mode supports a linear frame buffer.
@@ -166,7 +164,16 @@ unsigned int strlen(char* str) {
     return i;
 }
 
-void printString(char * string) {
+void printStringPlace(char * string, int x, int y, Color color){
+	int i = 0;
+	while (string[i] != 0) {
+		printChar(string[i], x + i * CHAR_WIDTH, y, color);
+		i++;
+	}
+}
+
+
+void printString(char * string){
 	printStringN(string, strlen(string));
 }
 

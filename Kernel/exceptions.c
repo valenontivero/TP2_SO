@@ -1,17 +1,17 @@
 #include <videodriver.h>
 #include <colors.h>
+#include <exceptions.h>
 
-#define ZERO_EXCEPTION_ID 0
-#define INVALID_OPCODE_EXCEPTION_ID 6
-#define REGS_AMOUNT 18
 
 extern void restart();
 extern const uint64_t excepRegs[REGS_AMOUNT];
 
+
 static void zero_division();
+
 static void invalid_opcode();
 
-void printRegisters();
+
 
 void exceptionDispatcher(int exception) {
 	if (exception == ZERO_EXCEPTION_ID)

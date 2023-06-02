@@ -10,6 +10,10 @@ uint64_t sys_write(unsigned int fd, const char* buffer, unsigned int size) {
     return sys_call((uint64_t) 1, (uint64_t) fd, (uint64_t) buffer, (uint64_t) size, (uint64_t) 0, (uint64_t) 0);
 }
 
+uint64_t sys_write_place(unsigned int fd, const char* buffer, unsigned int size, uint64_t x, uint64_t y) {
+    return sys_call((uint64_t) 2, (uint64_t) fd, (uint64_t) buffer, (uint64_t) size, x, y);
+}
+
 uint64_t sys_write_color(unsigned int fd, const char* buffer, unsigned int size, uint64_t color) {
     /* uint64_t c = color.r;
     c <<= 2;

@@ -71,6 +71,12 @@ static void sys_write(uint64_t fd, uint64_t buffer, uint64_t length) {
     }
 }
 
+static void sys_write_place(uint64_t fd, uint64_t buffer, uint64_t length, uint64_t x, uint64_t y) {
+    if (fd == STDOUT) {
+        printStringNPlace((char *) buffer, length, (int) x, (int) y);
+    }
+}
+
 static void sys_write_color(uint64_t fd, uint64_t buffer, uint64_t length, uint64_t color) {
     if (fd == STDOUT) {
         Color c;

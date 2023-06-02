@@ -2,7 +2,7 @@
 #include <keyboard.h>
 #include <videodriver.h>
 
-#define BUFFER_SIZE 512
+
 
 static char buffer[BUFFER_SIZE] = {0};
 static int elemCount = 0;

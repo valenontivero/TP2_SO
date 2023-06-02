@@ -4,11 +4,23 @@
 #include <colors.h>
 #include <stdint.h>
 
+
+#define MAX_LINES VBE_mode_info->height / CHAR_HEIGHT
+#define MAX_COLUMNS VBE_mode_info->width / CHAR_WIDTH - 1
+
 void putPixel(char r, char g, char b, int x, int y);
 
 void drawWhiteLine();
 
 void drawRect(int x, int y, int width, int height, int color);
+
+char getPixel(int x, int y);
+
+char isSpaceEmpty(int x, int y);
+
+void printChar(char c, int x, int y, Color color);
+
+void printStringPlace(char * string, int x, int y, Color color);
 
 void printString(char * string);
 

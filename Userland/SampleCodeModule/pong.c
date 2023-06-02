@@ -169,6 +169,9 @@ void pong() {
         }
     }
 
+    sys_write_color(1, "Player 1: W and S\nPlayer 2: Up and Down\n", 42, WHITE);
+    sys_write_place(1, 1, "Press any key to start...", 40,5);
+
     // Draw ball
     int ballX = width / 2;
     int ballY = height / 2;
