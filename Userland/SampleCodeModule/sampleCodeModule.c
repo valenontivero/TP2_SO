@@ -3,6 +3,8 @@
 #include <usyscalls.h>
 #include <colors.h>
 
+#define COMMANDS_QUANTITY 9
+
 extern void divideByZero();
 extern void invalidOpcode();
 extern void fillRegs();
@@ -12,11 +14,19 @@ void pong();
 int commandMatch(char * str1, char * str2, int length);
 void analizeBuffer(char * buffer, int count);
 
+static char * commandsNames[] = {"help", "time", "date", "registers", "fillregs", "div0", "invalidop", "pong", "clear"};
 
-
-
-
-
+static char *commands[] = {
+	"\thelp: gives you a list of all existants commands.\n",
+	"\ttime: prints the time of the OS.\n",
+	"\tdate: prints the date of the OS.\n",
+	"\tregisters: print the state of the registers at the time you screenshot them with CTRL key.\n",
+	"\tfillregs: fill the registers with stepped values for testing.\n",
+	"\tdiv0: divide by zero to trigger exception\n",
+	"\tinvalidop: trigger invalid operation code exception\n",
+	"\tpong: go to play the \"pong\" game.\n",
+	"\tclear: clears the OS screen.\n"
+};
 
 int main() {
 	printColor("Welcome to HomerOS. Type \"help\" for command list\n", ORANGE);
@@ -121,6 +131,8 @@ void analizeBuffer(char * buffer, int count) {
 		divideByZero();
 	} else if (commandMatch(buffer, "invalidop", count)) {
 		invalidOpcode();
+	} else if (commandMatch(buffer, "boca", count)) {
+		
 	} else if (count > 0) {
 		printColor("\nCommand not found. Type \"help\" for command list\n", RED);
 	}

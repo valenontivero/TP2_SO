@@ -3,5 +3,4 @@
 
 void load_idt(); // loads idt when OS starts
 
-
 #endif

@@ -4,7 +4,6 @@
 #include <videodriver.h>
 #include <lib.h>
 
-
 struct vbe_mode_info_structure {
 	uint16_t attributes;		// deprecated, only bit 7 should be of interest to you, and it indicates the mode supports a linear frame buffer.
 	uint8_t window_a;			// deprecated
@@ -47,6 +46,9 @@ struct vbe_mode_info_structure {
 typedef struct vbe_mode_info_structure * VBEInfoPtr;
 
 VBEInfoPtr VBE_mode_info = (VBEInfoPtr) 0x0000000000005C00;
+
+#define MAX_LINES VBE_mode_info->height / CHAR_HEIGHT
+#define MAX_COLUMNS VBE_mode_info->width / CHAR_WIDTH - 1
 
 void putPixel(char r, char g, char b, int x, int y) {
     char * videoPtr = (char *) ((uint64_t)VBE_mode_info->framebuffer);
