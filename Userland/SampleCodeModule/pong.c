@@ -1,15 +1,12 @@
 #include <usyscalls.h>
 #include <colors.h>
 #include <userio.h>
+#include <pong.h>
 
 // Pong game
 
-void drawBall(int x, int y, int radius, int color);
-void drawPaddle(int x, int y, int width, int height, int color);
-void drawScore(int score, int color);
-void win(int color, int player);
 
-void pong();
+typedef struct Player * Player;
 
 typedef struct Player {
     int x;
@@ -17,19 +14,6 @@ typedef struct Player {
     int score;
 } Player;
 
-#define PLAYER1_UP 'w'
-#define PLAYER1_UP2 'W'
-#define PLAYER1_DOWN 's'
-#define PLAYER1_DOWN2 'S'
-
-#define PLAYER2_UP 17
-#define PLAYER2_DOWN 20
-
-#define PLAYER_WIDTH 15
-#define PLAYER_HEIGHT 150
-
-#define PLAYER1_MOVE_AMOUNT 30
-#define PLAYER2_MOVE_AMOUNT 30
 
 uint16_t width;
 uint16_t height;

@@ -9,42 +9,18 @@ extern void fillRegs();
 
 void pong();
 
-int strncmp(char * str1, char * str2, int length);
 int commandMatch(char * str1, char * str2, int length);
-void strcpy(char * dest, char * src);
 void analizeBuffer(char * buffer, int count);
 
-static char * commandsNames[] = {"help", "time", "date", "registers", "fillregs", "div0", "invalidop", "pong", "clear"};
 
-static char *commands[] = {
-	"\thelp: gives you a list of all existants commands.\n",
-	"\ttime: prints the time of the OS.\n",
-	"\tdate: prints the date of the OS.\n",
-	"\tregisters: print the state of the registers at the time you screenshot them with CTRL key.\n",
-	"\tfillregs: fill the registers with stepped values for testing.\n",
-	"\tdiv0: divide by zero to trigger exception\n",
-	"\tinvalidop: trigger invalid operation code exception\n",
-	"\tpong: go to play the \"pong\" game.\n",
-	"\tclear: clears the OS screen.\n"
-};
-#define COMMANDS_QUANTITY 9
 
-char * getTime(){
-	static char bufferTime[9];
-	sys_get_time(bufferTime);
-	return bufferTime;
-}
 
-char * getDate(){
-	static char bufferDate[9];
-	sys_get_date(bufferDate);
-	return bufferDate;
-}
+
 
 
 int main() {
-	printColor("Welcome to ben@OS: type \"help\" for command list\n", ORANGE);
-	printColor("\nben@OS: $> ", GREEN);
+	printColor("Welcome to HomerOS. Type \"help\" for command list\n", ORANGE);
+	printColor("\nHomerOS: $> ", GREEN);
 
 	int count = 0;	
 	char buffer[1024] = {0};
@@ -55,7 +31,7 @@ int main() {
 		if (c == '\n') {
 			buffer[count] = 0;
 			analizeBuffer(buffer, count);
-			printColor("\nben@OS: $> ", GREEN);
+			printColor("\nHomerOS: $> ", GREEN);
 			strcpy(oldBuffer, buffer);
 			flag = 1;
 			count = 0;
@@ -104,13 +80,6 @@ int main() {
 	return 0;
 }
 
-int strncmp(char * str1, char * str2, int length) {
-	int i = 0;
-	while (i < length && str1[i] != 0 && str2[i] != 0 && str1[i] == str2[i]) {
-		i++;
-	}
-	return i == length;
-}
 
 int commandMatch(char * str1, char * command, int count) {
 	int i = 0;
@@ -122,20 +91,8 @@ int commandMatch(char * str1, char * command, int count) {
 	return str1[i] == command[i];
 }
 
-void strcpy(char * dest, char * src) {
-	int i = 0;
-	while (src[i] != 0) {
-		dest[i] = src[i];
-		i++;
-	}
-	dest[i] = 0;
-}
 
-void fillRegisters() {
-	printColor("\n\nFilling registers...\n", YELLOW);
-	printColor("Press CTRL to save them.\n", CYAN);
-	fillRegs();
-}
+
 
 void analizeBuffer(char * buffer, int count) {
 	if (count <= 0)

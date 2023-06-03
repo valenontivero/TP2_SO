@@ -177,3 +177,40 @@ void printf(char* format, ...) {
     }
     va_end(args);
 }
+
+void strcpy(char * dest, char * src) {
+	int i = 0;
+	while (src[i] != 0) {
+		dest[i] = src[i];
+		i++;
+	}
+	dest[i] = 0;
+}
+
+
+int strncmp(char * str1, char * str2, int length) {
+	int i = 0;
+	while (i < length && str1[i] != 0 && str2[i] != 0 && str1[i] == str2[i]) {
+		i++;
+	}
+	return i == length;
+}
+
+
+void fillRegisters() {
+	printColor("\n\nFilling registers...\n", YELLOW);
+	printColor("Press CTRL to save them.\n", CYAN);
+	fillRegs();
+}
+
+char * getTime(){
+	static char bufferTime[9];
+	sys_get_time(bufferTime);
+	return bufferTime;
+}
+
+char * getDate(){
+	static char bufferDate[9];
+	sys_get_date(bufferDate);
+	return bufferDate;
+}
