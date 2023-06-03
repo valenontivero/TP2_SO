@@ -1,7 +1,6 @@
 #ifndef PONG_H
 #define PONG_H
 
-
 #define PLAYER1_UP 'w'
 #define PLAYER1_UP2 'W'
 #define PLAYER1_DOWN 's'
@@ -16,8 +15,11 @@
 #define PLAYER1_MOVE_AMOUNT 30
 #define PLAYER2_MOVE_AMOUNT 30
 
-typedef struct Player * Player;
-
+typedef struct Player {
+    int x;
+    int y;
+    int score;
+} Player;
 
 void drawBall(int x, int y, int radius, int color);
 void drawPaddle(int x, int y, int width, int height, int color);

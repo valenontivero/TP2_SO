@@ -5,16 +5,6 @@
 
 // Pong game
 
-
-typedef struct Player * Player;
-
-typedef struct Player {
-    int x;
-    int y;
-    int score;
-} Player;
-
-
 uint16_t width;
 uint16_t height;
 

@@ -166,10 +166,16 @@ unsigned int strlen(char* str) {
 
 void printStringPlace(char * string, int x, int y, Color color){
 	int i = 0;
+	int oldColumn = column;
+	int oldLine = line;
+	column = x / CHAR_WIDTH;
+	line = y / CHAR_HEIGHT;
 	while (string[i] != 0) {
 		printChar(string[i], x + i * CHAR_WIDTH, y, color);
 		i++;
 	}
+	column = oldColumn;
+	line = oldLine;
 }
 
 

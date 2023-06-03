@@ -73,7 +73,7 @@ static void sys_write(uint64_t fd, uint64_t buffer, uint64_t length) {
 
 static void sys_write_place(uint64_t fd, uint64_t buffer, uint64_t length, uint64_t x, uint64_t y) {
     if (fd == STDOUT) {
-        printStringNPlace((char *) buffer, length, (int) x, (int) y);
+        printStringPlace((char *) buffer, (int) x, (int) y, WHITE);
     }
 }
 
