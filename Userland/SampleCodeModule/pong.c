@@ -14,11 +14,18 @@ int ballRadius = 10;
 
 int goalMade = 0;
 
+static int checkBorder(x, y, i){
+    if(y+i > height/10+6 && y-i < height-16) {
+        return 1;
+    }
+    return 0;
+}
+
 void drawBall(int x, int y, int radius, int color) {
     int i, j;
     for (i = -radius; i <= radius; i++) {
         for (j = -radius; j <= radius; j++) {
-            if (i*i + j*j <= radius*radius && !(x+i >= 25 && x+i <= 25 + PLAYER_WIDTH) && !(x+i >= width - 25 - PLAYER_WIDTH && x+i <= width - 25 ) && x+i != width / 2) {
+            if (i*i + j*j <= radius*radius && !(x+i >= 25 && x+i <= 25 + PLAYER_WIDTH) && !(x+i >= width - 25 - PLAYER_WIDTH && x+i <= width - 25 ) && x+i != width / 2 && checkBorder(x, y, i )) {
                 sys_draw_rectangle(x + i, y + j, 1, 1, color);
             }
         }
@@ -41,25 +48,25 @@ int isValidKey(char c) {
 void handleMovement(Player * player1, Player * player2, char moves[2]) {
     for (int i = 0; i < 2 ; i++) {
         if (moves[i] == PLAYER1_UP) {
-            if (player1->y > 0) {
+            if (player1->y > height/10) {
                 drawPaddle(player1->x, player1->y + PLAYER_HEIGHT - PLAYER1_MOVE_AMOUNT, PLAYER_WIDTH, PLAYER1_MOVE_AMOUNT, BLACK);
                 player1->y -= PLAYER1_MOVE_AMOUNT;
                 drawPaddle(player1->x, player1->y, PLAYER_WIDTH, PLAYER1_MOVE_AMOUNT, WHITE);
             }
         } else if (moves[i] == PLAYER1_DOWN) {
-            if (player1->y < 600) {
+            if (player1->y < 580) {
                 drawPaddle(player1->x, player1->y, PLAYER_WIDTH, PLAYER1_MOVE_AMOUNT, BLACK);
                 player1->y += PLAYER1_MOVE_AMOUNT;
                 drawPaddle(player1->x, player1->y + PLAYER_HEIGHT - PLAYER1_MOVE_AMOUNT, PLAYER_WIDTH, PLAYER1_MOVE_AMOUNT, WHITE);
             }
         } else if (moves[i] == PLAYER2_UP) {
-            if (player2->y > 0) {
+            if (player2->y > height/10) {
                 drawPaddle(player2->x, player2->y + PLAYER_HEIGHT - PLAYER2_MOVE_AMOUNT, PLAYER_WIDTH, PLAYER2_MOVE_AMOUNT, BLACK);
                 player2->y -= PLAYER2_MOVE_AMOUNT;
                 drawPaddle(player2->x, player2->y, PLAYER_WIDTH, PLAYER2_MOVE_AMOUNT, WHITE);
             }
         } else if (moves[i] == PLAYER2_DOWN) {
-            if (player2->y < 600) {
+            if (player2->y < 580) {
                 drawPaddle(player2->x, player2->y, PLAYER_WIDTH, PLAYER2_MOVE_AMOUNT, BLACK);
                 player2->y += PLAYER2_MOVE_AMOUNT;
                 drawPaddle(player2->x, player2->y + PLAYER_HEIGHT - PLAYER2_MOVE_AMOUNT, PLAYER_WIDTH, PLAYER2_MOVE_AMOUNT, WHITE);
@@ -100,10 +107,10 @@ void moveBall(int * ballX, int * ballY, int ballRadius, Player * player1, Player
     } else if (*ballX > width) {
         handleGoal(1, player1);
         // win(WHITE, 1);
-    } else if (*ballY < 0) {
+    } else if (*ballY < height/10) {
         ballYDirection = 1;
         wallSound();
-    } else if (*ballY > height) {
+    } else if (*ballY > height-20) {
         ballYDirection = -1;
         wallSound();
     }
@@ -156,11 +163,19 @@ void pong() {
 
     sys_get_screen_size(&width, &height);
 
-    // Draw middle line
-    for (int i = 0; i < height; i++) {
+    // Draw middle line, left and right line
+    for (int i = height/12; i < height-10; i++) {
+        sys_draw_rectangle(10, i, 5, 5, WHITE);
+        sys_draw_rectangle(width-10, i, 5, 5, WHITE);
         if (i % 10 == 0) {
             sys_draw_rectangle(width / 2, i, 1, 5, WHITE);
         }
+    }
+
+    //Draw Top line and Bottom line
+    for (int i = 10; i < width-10; i++) {
+        sys_draw_rectangle(i, height-10, 1, 5, WHITE);
+        sys_draw_rectangle(i, height/12, 1, 5, WHITE);
     }
 
     sys_write_color(1, "Player 1: W and S\nPlayer 2: Up and Down\n", 41, WHITE);
