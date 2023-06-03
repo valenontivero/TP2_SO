@@ -3,6 +3,7 @@
 #include <usyscalls.h>
 #include <colors.h>
 #include <sounds.h>
+#include <videodriver.h>
 
 #define COMMANDS_QUANTITY 9
 
@@ -127,6 +128,9 @@ void analizeBuffer(char * buffer, int count) {
 	} else if (commandMatch(buffer, "invalidop", count)) {
 		invalidOpcode();
 	} else if (commandMatch(buffer, "boca", count)) {
+		drawImage(diego, 100, 100);
+		playBSong();
+		
 		
 	} else if (count > 0) {
 		printColor("\nCommand not found. Type \"help\" for command list\n", RED);
