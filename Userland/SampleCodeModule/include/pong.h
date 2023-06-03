@@ -27,7 +27,7 @@ void drawScore(int score, int color);
 void win(int color, int player);
 void pong();
 int isValidKey(char c);
-void moveBall(int * ballX, int * ballY, int ballRadius);
+void moveBall(int * ballX, int * ballY, int ballRadius, Player * player1, Player * player2);
 short tick() ;
 void handleKey(char key, char moves[]) ;
 

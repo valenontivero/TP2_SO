@@ -2,8 +2,7 @@
 #include <colors.h>
 #include <userio.h>
 #include <pong.h>
-
-// Pong game
+#include <sounds.h>
 
 uint16_t width;
 uint16_t height;
@@ -13,7 +12,7 @@ int ballYDirection = -1;
 
 int ballRadius = 10;
 
-int stop = 0;
+int goalMade = 0;
 
 void drawBall(int x, int y, int radius, int color) {
     int i, j;
@@ -69,7 +68,24 @@ void handleMovement(Player * player1, Player * player2, char moves[2]) {
     }
 }
 
-void moveBall(int * ballX, int * ballY, int ballRadius) {
+void handleGoal(int playerNumber, Player * player) {
+    goalSound();
+    if (playerNumber == 1 ) {
+        player->score++;
+        if (player->score == 3) {
+            win(WHITE, 1);
+        }
+    } else if (playerNumber == 2) {
+        player->score++;
+        if (player->score == 3) {
+            win(WHITE, 2);
+        }
+    }
+    printf("\n\n\n\t\t\tPlayer %d scored!!\n", playerNumber);
+    goalMade = 1;
+}
+
+void moveBall(int * ballX, int * ballY, int ballRadius, Player * player1, Player * player2) {
     // Erase ball, but not players or middle line
     drawBall(*ballX, *ballY, ballRadius, BLACK);
 
@@ -79,13 +95,17 @@ void moveBall(int * ballX, int * ballY, int ballRadius) {
 
     // Check if ball is out of bounds
     if (*ballX < 0) {
-        win(WHITE, 2);
+        handleGoal(2, player2);
+        // win(WHITE, 2);
     } else if (*ballX > width) {
-        win(WHITE, 1);
+        handleGoal(1, player1);
+        // win(WHITE, 1);
     } else if (*ballY < 0) {
         ballYDirection = 1;
+        wallSound();
     } else if (*ballY > height) {
         ballYDirection = -1;
+        wallSound();
     }
 
     // Draw ball
@@ -104,7 +124,7 @@ void win(int color, int player) {
         ;
     }
     sys_toggle_cursor();
-    stop = 1;
+    goalMade = 1;
 }
 
 short tick() {
@@ -143,8 +163,8 @@ void pong() {
         }
     }
 
-    sys_write_color(1, "Player 1: W and S\nPlayer 2: Up and Down\n", 42, WHITE);
-    sys_write_place(1, 1, "Press any key to start...", 40,5);
+    sys_write_color(1, "Player 1: W and S\nPlayer 2: Up and Down\n", 41, WHITE);
+    sys_write_place(1, "Press any key to start...", 26, 50, 50);
 
     // Draw ball
     int ballX = width / 2;
@@ -161,23 +181,44 @@ void pong() {
 
     char moves[2] = { 0 };
 
-    while (!stop) {
-        char c = getChar();
-        if (isValidKey(c))
-            handleKey(c, moves);
+    while (player1.score < 3 && player2.score < 3) {
+        ballX = width / 2;
+        ballY = height / 2;
+        drawBall(ballX, ballY, ballRadius, WHITE);
 
-        if (tick()) {
-            handleMovement(&player1, &player2, moves);
-            moveBall(&ballX, &ballY, ballRadius);
+        while (!goalMade) {
+            char c = getChar();
+            if (isValidKey(c))
+                handleKey(c, moves);
 
-            // Check if ball hit player
-            if (ballX - ballRadius/2 <= player1.x + PLAYER_WIDTH && ballX >= player1.x && ballY >= player1.y && ballY <= player1.y + PLAYER_HEIGHT) {
-                ballXDirection = 1;
-            } else if (ballX + ballRadius/2 >= player2.x && ballX <= player2.x + PLAYER_WIDTH && ballY >= player2.y && ballY <= player2.y + PLAYER_HEIGHT) {
-                ballXDirection = -1;
+            if (tick()) {
+                handleMovement(&player1, &player2, moves);
+                moveBall(&ballX, &ballY, ballRadius, &player1, &player2);
+
+                // Check if ball hit player
+                if (ballX - ballRadius/2 <= player1.x + PLAYER_WIDTH && ballX >= player1.x && ballY >= player1.y && ballY <= player1.y + PLAYER_HEIGHT) {
+                    ballXDirection = 1;
+                    paddleHitSound();
+                } else if (ballX + ballRadius/2 >= player2.x && ballX <= player2.x + PLAYER_WIDTH && ballY >= player2.y && ballY <= player2.y + PLAYER_HEIGHT) {
+                    ballXDirection = -1;
+                    paddleHitSound();
+                }
+                moves[0] = 0; moves[1] = 0;
             }
-            moves[0] = 0; moves[1] = 0;
+
+            // If ESC pressed, exit
+            if (c == 0x01) {
+                return;
+            }
+            // If P pressed, pause
+            if (c == 0x19) {
+                sys_write_place(1, "PAUSED", 6, 50, 50);
+                while (getChar() != 0x19) {
+                    ;
+                }
+                sys_write_place(1, "      ", 6, 50, 50);
+            }
         }
+        goalMade = 0;
     }
-    stop = 0;
 }

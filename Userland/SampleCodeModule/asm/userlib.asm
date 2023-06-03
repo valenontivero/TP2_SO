@@ -5,17 +5,19 @@ GLOBAL fillRegs
 divideByZero:
     mov rax, 3
     mov rbx, 0
-    ; mov rcx, 10
-    ; mov rdi, 60
-    ; mov rsi, 70
-    ; mov rdx, 1
-    ; mov r9, 9
-    ; mov r10, 10
-    ; mov r11, 11
-    ; mov r12, 12
-    ; mov r13, 13
-    ; mov r14, 14
-    ; mov r15, 15
+    mov rcx, 4
+    mov rdx, 5
+    mov rsi, 6
+    mov rdi, 7
+    mov rbp, 8
+    mov r8, 9
+    mov r9, 10
+    mov r10, 11
+    mov r11, 12
+    mov r12, 13
+    mov r13, 14
+    mov r14, 15
+    mov r15, 16
     div rbx
     ret
 
@@ -79,24 +81,8 @@ fillRegs:
     mov r15, 0x26666666
 
 .decr:
-    dec rax
-    dec rbx
-    dec rcx
-    dec rdx
-    dec r8
-    dec r9
-    dec r10
-    dec r11
-    dec r12
-    dec r13
-    dec r14
     dec r15
-    dec rdi
-    dec rsi
-    dec rbp
-
-    cmp r15, 0
-    je .end
+    jz .end
     jmp .decr
 
 .end:

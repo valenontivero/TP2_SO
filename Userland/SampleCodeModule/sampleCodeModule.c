@@ -2,12 +2,12 @@
 #include <userio.h>
 #include <usyscalls.h>
 #include <colors.h>
+#include <sounds.h>
 
 #define COMMANDS_QUANTITY 9
 
 extern void divideByZero();
 extern void invalidOpcode();
-extern void fillRegs();
 
 void pong();
 
@@ -90,7 +90,6 @@ int main() {
 	return 0;
 }
 
-
 int commandMatch(char * str1, char * command, int count) {
 	int i = 0;
 	if (count != strlen(command))
@@ -100,9 +99,6 @@ int commandMatch(char * str1, char * command, int count) {
 	}
 	return str1[i] == command[i];
 }
-
-
-
 
 void analizeBuffer(char * buffer, int count) {
 	if (count <= 0)
@@ -125,7 +121,6 @@ void analizeBuffer(char * buffer, int count) {
 	} else if (commandMatch(buffer, "clear", count)) {
 		sys_clear_screen();
 	} else if (commandMatch(buffer, "pong", count)) {
-		printColor("\nir a jugar al pong\n", GREEN);
 		pong();
 	} else if (commandMatch(buffer, "div0", count)) {
 		divideByZero();

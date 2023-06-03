@@ -10,10 +10,6 @@ uint64_t sys_write(unsigned int fd, const char* buffer, unsigned int size) {
     return sys_call((uint64_t) 1, (uint64_t) fd, (uint64_t) buffer, (uint64_t) size, (uint64_t) 0, (uint64_t) 0);
 }
 
-uint64_t sys_write_place(unsigned int fd, const char* buffer, unsigned int size, uint64_t x, uint64_t y) {
-    return sys_call((uint64_t) 2, (uint64_t) fd, (uint64_t) buffer, (uint64_t) size, x, y);
-}
-
 uint64_t sys_write_color(unsigned int fd, const char* buffer, unsigned int size, uint64_t color) {
     /* uint64_t c = color.r;
     c <<= 2;
@@ -43,8 +39,8 @@ uint64_t sys_draw_rectangle(int x, int y, int width, int height, int color) {
     return sys_call((uint64_t) 7, (uint64_t) x, (uint64_t) y, (uint64_t) width, (uint64_t) height, (uint64_t) color);
 }
 
-uint64_t sys_play_sound(int freq, int duration) {
-    return sys_call((uint64_t) 8, (uint64_t) freq, (uint64_t) duration, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0);
+uint64_t sys_play_sound(int freq, int duration, int waitAfter) {
+    return sys_call((uint64_t) 8, (uint64_t) freq, (uint64_t) duration, (uint64_t) waitAfter, (uint64_t) 0, (uint64_t) 0);
 }
 
 uint64_t sys_get_screen_size(uint16_t * width, uint16_t * height) {
@@ -57,4 +53,8 @@ uint64_t sys_toggle_cursor() {
 
 uint64_t sys_get_ticks(uint32_t * ticks) {
     return sys_call((uint64_t) 11, (uint64_t) ticks, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0);
+}
+
+uint64_t sys_write_place(unsigned int fd, const char* buffer, unsigned int size, int x, int y) {
+    return sys_call((uint64_t) 12, (uint64_t) fd, (uint64_t) buffer, (uint64_t) size, (uint64_t) x, (uint64_t) y);
 }

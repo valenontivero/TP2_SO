@@ -1,6 +1,5 @@
 section .text
 GLOBAL sys_call
-GLOBAL fillRegs
 
 sys_call:
     push rbp

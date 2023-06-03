@@ -36,7 +36,7 @@ void syscallHandler(uint64_t id, uint64_t arg0, uint64_t arg1, uint64_t arg2, ui
             sys_draw_rect(arg0, arg1, arg2, arg3, arg4);
             break;
         case 8:
-            sys_play_sound(arg0, arg1);
+            sys_play_sound(arg0, arg1, arg2);
             break;
         case 9:
             sys_get_screensize(arg0, arg1);
@@ -46,6 +46,9 @@ void syscallHandler(uint64_t id, uint64_t arg0, uint64_t arg1, uint64_t arg2, ui
             break;
         case 11:
             sys_get_ticks(arg0);
+            break;
+        case 12:
+            sys_write_place(arg0, arg1, arg2, arg3, arg4);
             break;
     }
     //ver de agregar excepción si no existe el id
@@ -109,8 +112,8 @@ static void sys_draw_rect(uint64_t x, uint64_t y, uint64_t width, uint64_t heigh
     drawRect( (int) x, (int) y, (int) width, (int) height, (int) color );
 }
 
-static void sys_play_sound(uint64_t freq, uint64_t duration) {
-    beep((int) freq, (int) duration);
+static void sys_play_sound(uint64_t freq, uint64_t duration, uint64_t waitAfter) {
+    playNote((int) freq, (int) duration, (int) waitAfter);
 }
 
 static void sys_get_screensize(uint64_t width, uint64_t height) {

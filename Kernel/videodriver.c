@@ -231,9 +231,7 @@ void printLn(char * string) {
 void moveOneLineUp() {
 	char * dst = (char *) (uint64_t)(VBE_mode_info->framebuffer);
 	char * src = dst + VBE_mode_info->pitch * CHAR_HEIGHT;
-	for (int i = 0; i < VBE_mode_info->pitch * (VBE_mode_info->height - CHAR_HEIGHT); i++) {
-		dst[i] = src[i];
-	}
+	memcpy(dst, src, VBE_mode_info->pitch * (VBE_mode_info->height - CHAR_HEIGHT));
 	memset((void *) (uint64_t)(VBE_mode_info->framebuffer + VBE_mode_info->pitch * (VBE_mode_info->height - CHAR_HEIGHT)), 0, VBE_mode_info->pitch * CHAR_HEIGHT);
 	line--;
 }

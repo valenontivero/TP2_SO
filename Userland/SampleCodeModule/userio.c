@@ -3,6 +3,8 @@
 #include <stdarg.h>
 #include <colors.h>
 
+extern void fillRegs();
+
 void print(char* string) {
     sys_write(1, string, strlen(string));
 }
@@ -58,14 +60,12 @@ void printRegs() {
     uint64_t regs[17];
     char * regsnames[] = {"RAX ", "RBX ", "RCX ", "RDX ", "RSI ", "RDI ", "RBP ", "RSP ", "R8  ", "R9  ", "R10 ", "R11 ", "R12 ",
         "R13 ", "R14 ", "R15 ", "RIP "};
-    print("\n");
+    print("\n\n");
     sys_get_regs(regs);
     for (int i = 0; i < 17; i++) {
         char hex[17];
         intToHex(regs[i], hex);
-        print(regsnames[i]);
-        print(hex);
-        print("\n");
+        printf("%s 0x%s\n", regsnames[i], hex);
     }
 }
 

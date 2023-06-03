@@ -1,7 +1,5 @@
-#ifndef SOUND_H
-#define SOUND_H
-
-#include <stdint.h>
+#ifndef SOUNDS_H
+#define SOUNDS_H
 
 #define DO 261
 #define RE 293
@@ -21,11 +19,15 @@
 #define SI2 987
 #define DO3 1046
 
-void play_sound(uint32_t nFrequence);
-void nosound();
-
-void beep(/* int freq, int duration */);
-
 void playNote(int freq, int duration, int waitAfter);
 
-#endif /* SOUND_H */
+void playBSong();
+void playSimpsons();
+
+void wallSound();
+
+void paddleHitSound();
+
+void goalSound();
+
+#endif /* SOUNDS_H */

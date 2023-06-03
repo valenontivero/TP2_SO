@@ -25,13 +25,11 @@ static void zero_division() {
 	// Handler para manejar excepcion
 	printStringColor("\n\nCannot divide by zero.\n\n", RED);
 	printRegisters();
-	restart();
 }
 
 static void invalid_opcode() {
     printStringColor("\n\nInvalid opcode.\n\n", RED);
     printRegisters();
-    restart();
 }
 
 void intToHex(uint64_t num, char* hex) {
