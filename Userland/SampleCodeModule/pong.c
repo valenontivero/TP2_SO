@@ -14,7 +14,7 @@ int ballRadius = 10;
 
 int goalMade = 0;
 
-static int checkBorder(x, y, i){
+static int checkBorder(int x, int y, int i){
     if(y+i > height/10+6 && y-i < height-16) {
         return 1;
     }

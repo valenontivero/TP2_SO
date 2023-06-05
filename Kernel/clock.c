@@ -7,7 +7,6 @@
 #define DAYS 0x07
 #define MONTH 0x08
 #define YEAR 0x09
-#define TIME_ZONE -3
 
 extern unsigned char clock(unsigned char mode); // assembly function
 
@@ -24,15 +23,10 @@ unsigned int minutes() {
 }
 
 unsigned int hours() {
-    int hour = decode(clock(HOURS));
-    return hour + TIME_ZONE < 0 ? hour + TIME_ZONE + 24 : hour + TIME_ZONE;
+    return decode(clock(HOURS));
 }
 
 unsigned int day() {
-    int hour = decode(clock(HOURS));
-    if (hour + TIME_ZONE < 0) {
-        return decode(clock(DAYS)) - 1;
-    }
     return decode(clock(DAYS));
 }
 

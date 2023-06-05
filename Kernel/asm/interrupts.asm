@@ -91,8 +91,8 @@ SECTION .text
     mov [excepRegs + (5*8)], rsi
     mov [excepRegs + (6*8)], rdi
     mov [excepRegs + (7*8)], rbp
-    mov rax, rsp
-	add rax, 24	; 8 bytes of RIP, 8 bytes of CS and 8 bytes of RFLAGS
+    mov rax, [rsp + 24]
+	; add rax, 24	; 8 bytes of RIP, 8 bytes of CS and 8 bytes of RFLAGS
     mov [excepRegs + (8*8)], rax    ; RSP
     mov [excepRegs + (9*8)], r8
     mov [excepRegs + (10*8)], r9
@@ -176,8 +176,8 @@ saveRegisters:
 	mov[registers + (15*8)], r15
 	;mov[registers+ (16*8)], rip done below
 
-	mov rax, rsp
-	add rax, 18*8	; 112 bytes from pushState + 32 bytes of iretq 
+	mov rax, [rsp+18*8]
+	; add rax, 	; 112 bytes from pushState + 32 bytes of iretq 
 	mov[registers + (7*8)], rax ; RSP
 
 	mov rax, [rsp + 15*8]

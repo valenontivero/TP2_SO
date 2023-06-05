@@ -9,7 +9,7 @@ divideByZero:
     mov rdx, 5
     mov rsi, 6
     mov rdi, 7
-    mov rbp, 8
+    mov rbp, rsp
     mov r8, 9
     mov r9, 10
     mov r10, 11
@@ -70,7 +70,7 @@ fillRegs:
     mov rdx, 0xDDDDDDDD
     mov rsi, 0xCCCCCCCC
     mov rdi, 0xBBBBBBBB
-    mov rbp, 0xBB000000
+    mov rbp, rsp
     mov r8,  0xAAAAAAAA
     mov r9,  0x99999999
     mov r10, 0x88888888
