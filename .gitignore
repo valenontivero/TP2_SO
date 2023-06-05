@@ -16,3 +16,5 @@
 
 #Docker
 .bash_history
+.gdb_history
+*.elf
