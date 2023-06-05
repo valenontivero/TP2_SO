@@ -19,7 +19,7 @@ void analizeBuffer(char * buffer, int count);
 static char * commandsNames[] = {"help", "time", "date", "registers", "fillregs", "div0", "invalidop", "pong", "clear"};
 
 static char *commands[] = {
-	"\thelp: gives you a list of all existants commands.\n",
+	"\thelp: gives you a list of all existent commands.\n",
 	"\ttime: prints the time of the OS.\n",
 	"\tdate: prints the date of the OS.\n",
 	"\tregisters: print the state of the registers at the time you screenshot them with CTRL key.\n",
