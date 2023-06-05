@@ -1,5 +1,6 @@
 #include <sounds.h>
 #include <usyscalls.h>
+#include <userio.h>
 
 void playNote(int freq, int duration, int waitAfter) {
     sys_play_sound(freq, duration, waitAfter);
@@ -30,6 +31,9 @@ void playBSong() {
     playNote(DO2, 6, 2);
     playNote(LA, 8, 20);
 
+    if (getChar() != 0)
+        return;
+
     // 2da parte
     playNote(MI, 1, 2);
     playNote(LA, 1, 2);
@@ -52,6 +56,8 @@ void playBSong() {
     playNote(LA, 1, 2);
     playNote(RE2, 20, 12);
     
+    if (getChar() != 0)
+        return;
 
     //parte tres
     playNote(SI, 1, 2);
@@ -74,6 +80,9 @@ void playBSong() {
     playNote(MI2, 1, 2);
     playNote(RE2, 6, 2);
     playNote(DO2, 20, 12);
+
+    if (getChar() != 0)
+        return;
 
     //PARTE 4
     playNote(MI, 1, 2);
@@ -107,18 +116,34 @@ void playSimpsons() {
     playNote(MI, 2, 4);
     playNote(FASharp, 2, 4);
     playNote(LA, 2, 3);
+
+    if (getChar() != 0)
+        return;
+
     playNote(SOL, 3, 4);
     playNote(MI, 2, 2);
     playNote(DO, 2, 2);
     playNote(LA, 2, 3);
+
+    if (getChar() != 0)
+        return;
+
     playNote(FASharp, 1, 2);
     playNote(FASharp, 1, 2);
     playNote(FASharp, 1, 2);
     playNote(SOL, 2, 5);
+
+    if (getChar() != 0)
+        return;
+
     playNote(FASharp, 1, 2);
     playNote(FASharp, 1, 2);
     playNote(FASharp, 1, 2);
     playNote(SOL, 1, 3);
+
+    if (getChar() != 0)
+        return;
+
     playNote(LA, 6, 6);
     playNote(SI2, 2, 0);
 

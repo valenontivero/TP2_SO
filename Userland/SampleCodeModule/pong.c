@@ -4,6 +4,13 @@
 #include <pong.h>
 #include <sounds.h>
 
+// PLAYER_DISTANCE_FROM_BORDER
+#define PDFB 25
+// Player min height
+#define P_MIN_H height / 10
+// Plyer max height
+#define P_MAX_H 580
+
 uint16_t width;
 uint16_t height;
 
@@ -14,18 +21,29 @@ int ballRadius = 10;
 
 int goalMade = 0;
 
-static int checkBorder(int x, int y, int i){
-    if(y+i > height/10+6 && y-i < height-16) {
-        return 1;
-    }
-    return 0;
+static int checkTopAndBottomBorder(int y, int j) {
+    return y+j > height/12 + 5 && y+j < height - 10;
+}
+
+static int checkLeftAndRightBorder(int x, int i) {
+    return (x+i > 15 && x+i < width - 10);
+}
+
+static char shouldDraw(int x, int y, int radius, int i, int j) {
+    return 
+        i*i + j*j <= radius*radius && // Only draw circle of the square
+        !(x+i >= PDFB && x+i <= PDFB + PLAYER_WIDTH) && 
+        !(x+i >= width - PDFB - PLAYER_WIDTH && x+i <= width - PDFB ) && 
+        x+i != width / 2 && 
+        checkTopAndBottomBorder(y, j) &&
+        checkLeftAndRightBorder(x, i);
 }
 
 void drawBall(int x, int y, int radius, int color) {
     int i, j;
     for (i = -radius; i <= radius; i++) {
         for (j = -radius; j <= radius; j++) {
-            if (i*i + j*j <= radius*radius && !(x+i >= 25 && x+i <= 25 + PLAYER_WIDTH) && !(x+i >= width - 25 - PLAYER_WIDTH && x+i <= width - 25 ) && x+i != width / 2 && checkBorder(x, y, i )) {
+            if (shouldDraw(x, y, radius, i, j)) {
                 sys_draw_rectangle(x + i, y + j, 1, 1, color);
             }
         }
@@ -48,25 +66,25 @@ int isValidKey(char c) {
 void handleMovement(Player * player1, Player * player2, char moves[2]) {
     for (int i = 0; i < 2 ; i++) {
         if (moves[i] == PLAYER1_UP) {
-            if (player1->y > height/10) {
+            if (player1->y > P_MIN_H) {
                 drawPaddle(player1->x, player1->y + PLAYER_HEIGHT - PLAYER1_MOVE_AMOUNT, PLAYER_WIDTH, PLAYER1_MOVE_AMOUNT, BLACK);
                 player1->y -= PLAYER1_MOVE_AMOUNT;
                 drawPaddle(player1->x, player1->y, PLAYER_WIDTH, PLAYER1_MOVE_AMOUNT, WHITE);
             }
         } else if (moves[i] == PLAYER1_DOWN) {
-            if (player1->y < 580) {
+            if (player1->y < P_MAX_H) {
                 drawPaddle(player1->x, player1->y, PLAYER_WIDTH, PLAYER1_MOVE_AMOUNT, BLACK);
                 player1->y += PLAYER1_MOVE_AMOUNT;
                 drawPaddle(player1->x, player1->y + PLAYER_HEIGHT - PLAYER1_MOVE_AMOUNT, PLAYER_WIDTH, PLAYER1_MOVE_AMOUNT, WHITE);
             }
         } else if (moves[i] == PLAYER2_UP) {
-            if (player2->y > height/10) {
+            if (player2->y > P_MIN_H) {
                 drawPaddle(player2->x, player2->y + PLAYER_HEIGHT - PLAYER2_MOVE_AMOUNT, PLAYER_WIDTH, PLAYER2_MOVE_AMOUNT, BLACK);
                 player2->y -= PLAYER2_MOVE_AMOUNT;
                 drawPaddle(player2->x, player2->y, PLAYER_WIDTH, PLAYER2_MOVE_AMOUNT, WHITE);
             }
         } else if (moves[i] == PLAYER2_DOWN) {
-            if (player2->y < 580) {
+            if (player2->y < P_MAX_H) {
                 drawPaddle(player2->x, player2->y, PLAYER_WIDTH, PLAYER2_MOVE_AMOUNT, BLACK);
                 player2->y += PLAYER2_MOVE_AMOUNT;
                 drawPaddle(player2->x, player2->y + PLAYER_HEIGHT - PLAYER2_MOVE_AMOUNT, PLAYER_WIDTH, PLAYER2_MOVE_AMOUNT, WHITE);
@@ -75,7 +93,20 @@ void handleMovement(Player * player1, Player * player2, char moves[2]) {
     }
 }
 
+void printScore(Player * player1, Player * player2) {
+    char score[] = {"Score: 0 - 0"};
+    score[7] = player1->score + '0';
+    score[11] = player2->score + '0';
+    sys_draw_rectangle(455, 15, 13*8, 20, BLACK);
+    sys_write_place(1, score, 13, 455, 15);
+}
+
 void handleGoal(int playerNumber, Player * player) {
+    char text[] = {"Player 0 scored!!"};
+    text[7] = playerNumber + '0';
+    sys_draw_rectangle(440, 35, 13*8, 20, BLACK);
+    sys_write_place(1, text, 17, 440, 35);
+
     goalSound();
     if (playerNumber == 1 ) {
         player->score++;
@@ -88,7 +119,6 @@ void handleGoal(int playerNumber, Player * player) {
             win(WHITE, 2);
         }
     }
-    printf("\n\n\n\t\t\tPlayer %d scored!!\n", playerNumber);
     goalMade = 1;
 }
 
@@ -103,20 +133,21 @@ void moveBall(int * ballX, int * ballY, int ballRadius, Player * player1, Player
     // Check if ball is out of bounds
     if (*ballX < 0) {
         handleGoal(2, player2);
-        // win(WHITE, 2);
+        printScore(player1, player2);
     } else if (*ballX > width) {
         handleGoal(1, player1);
-        // win(WHITE, 1);
-    } else if (*ballY < height/10) {
-        ballYDirection = 1;
-        wallSound();
-    } else if (*ballY > height-20) {
-        ballYDirection = -1;
-        wallSound();
+        printScore(player1, player2);
+    } else {
+        if (*ballY < P_MIN_H) {
+            ballYDirection = 1;
+            wallSound();
+        } else if (*ballY > height-20) {
+            ballYDirection = -1;
+            wallSound();
+        }
+        // Draw ball
+        drawBall(*ballX, *ballY, ballRadius, WHITE);
     }
-
-    // Draw ball
-    drawBall(*ballX, *ballY, ballRadius, WHITE);
 }
 
 void win(int color, int player) {
@@ -126,11 +157,18 @@ void win(int color, int player) {
         winner = "Player 2 wins!";
     }
     sys_write_color(1, winner, 14, color);
-    sys_write_color(1, "\n\nPress any key to continue...", 30, color);
-    while (getChar() == 0) {
+    sys_write_color(1, "\n\nPress R to play again or any key to continue...", 49, color);
+    char c;
+    while ((c = getChar()) == 0) {
         ;
     }
+
     sys_toggle_cursor();
+
+    if (c == 'r' || c == 'R') {
+        pong();
+        return;
+    }
     goalMade = 1;
 }
 
@@ -157,10 +195,6 @@ void handleKey(char key, char moves[]) {
     }
 }
 
-void printScore(Player * player1, Player * player2) {
-    printf("%d - %d", player1->score, player2->score);
-}
-
 void pong() {
     sys_clear_screen();
     sys_toggle_cursor();
@@ -184,19 +218,24 @@ void pong() {
 
     sys_write_color(1, "Player 1: W and S\nPlayer 2: Up and Down\n", 41, WHITE);
     sys_write_place(1, "Press any key to start...", 26, 50, 50);
+    while (getChar() == 0) {
+        ;
+    }
+
+    Player player1 = {PDFB, (height - PLAYER_HEIGHT) / 2, 0};
+    Player player2 = {width - PDFB - PLAYER_WIDTH, (height - PLAYER_HEIGHT) / 2, 0};
 
     // Draw ball
     int ballX = width / 2;
     int ballY = height / 2;
     drawBall(ballX, ballY, ballRadius, WHITE);
 
-    Player player1 = {25, (height - PLAYER_HEIGHT) / 2, 0};
-    Player player2 = {width - 25 - PLAYER_WIDTH, (height - PLAYER_HEIGHT) / 2, 0};
-
     // Draw player 1
     drawPaddle(player1.x, player1.y, PLAYER_WIDTH, PLAYER_HEIGHT, WHITE);
     // Draw player 2
     drawPaddle(player2.x, player2.y, PLAYER_WIDTH, PLAYER_HEIGHT, WHITE);
+
+    printScore(&player1, &player2);
 
     char moves[2] = { 0 };
 
@@ -232,11 +271,9 @@ void pong() {
             }
             // If P pressed, pause
             if (c == 'p') {
-                sys_write_place(1, "PAUSED", 6, 50, 50);
                 while (getChar() != 'p') {
                     ;
                 }
-                sys_write_place(1, "      ", 6, 50, 50);
             }
         }
         goalMade = 0;

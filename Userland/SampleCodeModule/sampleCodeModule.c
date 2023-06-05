@@ -4,6 +4,7 @@
 #include <colors.h>
 #include <sounds.h>
 #include <boca.h>
+#include <homero.h>
 
 #define COMMANDS_QUANTITY 9
 
@@ -41,7 +42,11 @@ int main() {
 		pong();
 	}
 
+	sys_clear_screen();
+	sys_draw_image(homero, 100, 100);
+	printColor("Press anykey to start. If not found, press CTRRRRL \n\n", YELLOW);
 	playSimpsons();
+	sys_clear_screen();
 
 	printColor("Welcome to HomerOS. Type \"help\" for command list\n", ORANGE);
 	printColor("\nHomerOS: $> ", GREEN);
@@ -141,6 +146,7 @@ void analizeBuffer(char * buffer, int count) {
 	} else if (commandMatch(buffer, "invalidop", count)) {
 		invalidOpcode();
 	} else if (commandMatch(buffer, "boca", count)) {
+		sys_clear_screen();
 		sys_draw_image(diego, 100, 100);
 		playBSong();
 		sys_clear_screen();

@@ -278,9 +278,9 @@ void toggleCursor() {
 }
 
 void drawImage(unsigned long int * image, int width, int height) {
-	for (int i = 0, o = 0; i < height; i++, o += 7) {
-		for (int j = 0, k = 0; j < width; j++, k += 7) {
-			drawRect(k, o, 7, 7, image[i * width + j]);
+	for (int i = 0, o = 100; i < height; i++, o += 5) {
+		for (int j = 0, k = 230; j < width; j++, k += 5) {
+			drawRect(k, o, 5, 5, image[i * width + j]);
 		}
 	}
 }
