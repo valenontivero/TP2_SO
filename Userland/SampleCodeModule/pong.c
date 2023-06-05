@@ -7,9 +7,14 @@
 // PLAYER_DISTANCE_FROM_BORDER
 #define PDFB 25
 // Player min height
-#define P_MIN_H height / 10
+#define P_MIN_H height/10
 // Plyer max height
 #define P_MAX_H 580
+
+#define LINE_WIDTH 5
+#define SPACE_TO_LINE 10
+#define LINE_TOP height/12
+#define LINE_BOTTOM (height-5)
 
 uint16_t width;
 uint16_t height;
@@ -22,11 +27,11 @@ int ballRadius = 10;
 int goalMade = 0;
 
 static int checkTopAndBottomBorder(int y, int j) {
-    return y+j > height/12 + 5 && y+j < height - 10;
+    return y+j > LINE_TOP + LINE_WIDTH && y+j < LINE_BOTTOM;
 }
 
 static int checkLeftAndRightBorder(int x, int i) {
-    return (x+i > 15 && x+i < width - 10);
+    return (x+i > SPACE_TO_LINE + LINE_WIDTH && x+i < width - SPACE_TO_LINE - LINE_WIDTH);
 }
 
 static char shouldDraw(int x, int y, int radius, int i, int j) {
@@ -141,7 +146,7 @@ void moveBall(int * ballX, int * ballY, int ballRadius, Player * player1, Player
         if (*ballY < P_MIN_H) {
             ballYDirection = 1;
             wallSound();
-        } else if (*ballY > height-20) {
+        } else if (*ballY > LINE_BOTTOM) {
             ballYDirection = -1;
             wallSound();
         }
@@ -202,18 +207,18 @@ void pong() {
     sys_get_screen_size(&width, &height);
 
     // Draw middle line, left and right line
-    for (int i = height/12; i < height-10; i++) {
-        sys_draw_rectangle(10, i, 5, 5, WHITE);
-        sys_draw_rectangle(width-10, i, 5, 5, WHITE);
+    for (int i = LINE_TOP; i < LINE_BOTTOM; i++) {
+        sys_draw_rectangle(SPACE_TO_LINE, i, LINE_WIDTH, LINE_WIDTH, WHITE);
+        sys_draw_rectangle(width-LINE_WIDTH-SPACE_TO_LINE, i, LINE_WIDTH, LINE_WIDTH, WHITE);
         if (i % 10 == 0) {
-            sys_draw_rectangle(width / 2, i, 1, 5, WHITE);
+            sys_draw_rectangle(width / 2, i, 1, LINE_WIDTH, WHITE);
         }
     }
 
     //Draw Top line and Bottom line
     for (int i = 10; i < width-10; i++) {
-        sys_draw_rectangle(i, height-10, 1, 5, WHITE);
-        sys_draw_rectangle(i, height/12, 1, 5, WHITE);
+        sys_draw_rectangle(i, LINE_BOTTOM, 1, LINE_WIDTH, WHITE);
+        sys_draw_rectangle(i, LINE_TOP, 1, LINE_WIDTH, WHITE);
     }
 
     sys_write_color(1, "Player 1: W and S\nPlayer 2: Up and Down\n", 41, WHITE);
