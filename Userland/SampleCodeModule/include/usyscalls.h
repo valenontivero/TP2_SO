@@ -27,6 +27,8 @@ uint64_t sys_toggle_cursor();
 
 uint64_t sys_get_ticks(uint32_t * ticks);
 
-uint64_t sys_write_place(unsigned int fd, const char* buffer, unsigned int size, int x, int y) ;
+uint64_t sys_write_place(unsigned int fd, const char* buffer, unsigned int size, int x, int y);
+
+uint64_t sys_draw_image(const unsigned long * image, int width, int height);
 
 #endif

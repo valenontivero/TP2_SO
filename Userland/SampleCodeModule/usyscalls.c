@@ -58,3 +58,7 @@ uint64_t sys_get_ticks(uint32_t * ticks) {
 uint64_t sys_write_place(unsigned int fd, const char* buffer, unsigned int size, int x, int y) {
     return sys_call((uint64_t) 12, (uint64_t) fd, (uint64_t) buffer, (uint64_t) size, (uint64_t) x, (uint64_t) y);
 }
+
+uint64_t sys_draw_image(const unsigned long * image, int width, int height) {
+    return sys_call((uint64_t) 13, (uint64_t) image, (uint64_t) width, (uint64_t) height, (uint64_t) 0, (uint64_t) 0);
+}

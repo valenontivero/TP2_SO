@@ -3,7 +3,7 @@
 #include <usyscalls.h>
 #include <colors.h>
 #include <sounds.h>
-
+#include <boca.h>
 
 #define COMMANDS_QUANTITY 9
 
@@ -30,6 +30,19 @@ static char *commands[] = {
 };
 
 int main() {
+	// Choose between terminal or pong()
+	printColor("Welcome to HomerOS. Choose between terminal or pong() (t/p): \n\n", GREEN);
+	char c;
+	do {
+		c = getChar();
+	} while (c != 't' && c != 'p');
+
+	if (c == 'p') {
+		pong();
+	}
+
+	playSimpsons();
+
 	printColor("Welcome to HomerOS. Type \"help\" for command list\n", ORANGE);
 	printColor("\nHomerOS: $> ", GREEN);
 
@@ -81,7 +94,7 @@ int main() {
 				count--;
 			}
 			flag = 1;
-		} else if (c != 0xFF && c > 20) {
+		} else if (c > 20) {
 			printChar(c);
 			buffer[count++] = c;
 			buffer[count] = 0;
@@ -128,9 +141,9 @@ void analizeBuffer(char * buffer, int count) {
 	} else if (commandMatch(buffer, "invalidop", count)) {
 		invalidOpcode();
 	} else if (commandMatch(buffer, "boca", count)) {
+		sys_draw_image(diego, 100, 100);
 		playBSong();
-		
-		
+		sys_clear_screen();
 	} else if (count > 0) {
 		printColor("\nCommand not found. Type \"help\" for command list\n", RED);
 	}

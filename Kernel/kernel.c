@@ -6,7 +6,6 @@
 #include <videodriver.h>
 #include <idtLoader.h>
 #include <sound.h>
-#include "boca.h"
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -54,8 +53,6 @@ int main()
 {	
 	load_idt(); //Setup idt before terminal runs
 	beep();
-	// drawImage(diego, 100, 100);
-	// playBSong();
 	save_original_regs();
 	((EntryPoint)sampleCodeModuleAddress)(); //Calling sampleCodeModule's main address
 	beep();

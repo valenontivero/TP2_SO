@@ -50,6 +50,9 @@ void syscallHandler(uint64_t id, uint64_t arg0, uint64_t arg1, uint64_t arg2, ui
         case 12:
             sys_write_place(arg0, arg1, arg2, arg3, arg4);
             break;
+        case 13:
+            sys_draw_image(arg0, arg1, arg2);
+            break;
     }
     //ver de agregar excepción si no existe el id
 }
@@ -61,7 +64,7 @@ static int64_t sys_read(uint64_t fd, uint64_t buffer, uint64_t length) {
     int i = 0;
     char c;
     char * buff = (char *) buffer;
-    while(i < length && (c = getChar()) != 0xFF) {
+    while(i < length && (c = getChar()) != 0) {
         buff[i] = c;
         i++;
     }
@@ -130,4 +133,8 @@ static void sys_toggle_cursor() {
 static void sys_get_ticks(uint64_t ticks) {
     uint32_t * t = (uint32_t *) ticks;    
     *t = ticks_elapsed();
+}
+
+static void sys_draw_image(uint64_t image, uint64_t width, uint64_t height) {
+    drawImage((unsigned long int *) image, (int) width, (int) height);
 }

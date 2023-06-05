@@ -127,7 +127,7 @@ void win(int color, int player) {
     }
     sys_write_color(1, winner, 14, color);
     sys_write_color(1, "\n\nPress any key to continue...", 30, color);
-    while (getChar() == 0xFF) {
+    while (getChar() == 0) {
         ;
     }
     sys_toggle_cursor();
@@ -155,6 +155,10 @@ void handleKey(char key, char moves[]) {
     } else if (key == PLAYER2_DOWN) {
         moves[1] = PLAYER2_DOWN;
     }
+}
+
+void printScore(Player * player1, Player * player2) {
+    printf("%d - %d", player1->score, player2->score);
 }
 
 void pong() {
@@ -223,12 +227,13 @@ void pong() {
 
             // If ESC pressed, exit
             if (c == 0x01) {
+                sys_clear_screen();
                 return;
             }
             // If P pressed, pause
-            if (c == 0x19) {
+            if (c == 'p') {
                 sys_write_place(1, "PAUSED", 6, 50, 50);
-                while (getChar() != 0x19) {
+                while (getChar() != 'p') {
                     ;
                 }
                 sys_write_place(1, "      ", 6, 50, 50);
