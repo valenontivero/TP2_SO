@@ -74,17 +74,21 @@ static int64_t sys_read(uint64_t fd, uint64_t buffer, uint64_t length) {
 static void sys_write(uint64_t fd, uint64_t buffer, uint64_t length) {
     if (fd == STDOUT) {
         printStringN((char *) buffer, length);
+    } else if (fd == STDERR) {
+        printStringNColor((char *) buffer, length, RED);
     }
 }
 
 static void sys_write_place(uint64_t fd, uint64_t buffer, uint64_t length, uint64_t x, uint64_t y) {
     if (fd == STDOUT) {
         printStringPlace((char *) buffer, (int) x, (int) y, WHITE);
+    } else if (fd == STDERR) {
+        printStringPlace((char *) buffer, (int) x, (int) y, RED);
     }
 }
 
 static void sys_write_color(uint64_t fd, uint64_t buffer, uint64_t length, uint64_t color) {
-    if (fd == STDOUT) {
+    if (fd == STDOUT || fd == STDERR) {
         Color c;
         c.r = (char) color;
         c.g = (char) (color >> 8);
@@ -136,5 +140,5 @@ static void sys_get_ticks(uint64_t ticks) {
 }
 
 static void sys_draw_image(uint64_t image, uint64_t width, uint64_t height) {
-    drawImage((unsigned long int *) image, (int) width, (int) height);
+    drawImage((const unsigned long int *) image, (int) width, (int) height);
 }

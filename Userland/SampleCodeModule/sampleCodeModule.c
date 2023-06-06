@@ -4,7 +4,6 @@
 #include <colors.h>
 #include <sounds.h>
 #include <boca.h>
-#include <homero.h>
 
 #define COMMANDS_QUANTITY 9
 
@@ -33,7 +32,8 @@ static char *commands[] = {
 int main() {
 	// Choose between terminal or pong()
 	printColor("Welcome to HomerOS. Choose between terminal or pong() (t/p): \n\n", GREEN);
-	char c;
+
+	unsigned char c;
 	do {
 		c = getChar();
 	} while (c != 't' && c != 'p');
@@ -42,10 +42,6 @@ int main() {
 		pong();
 	}
 
-	sys_clear_screen();
-	sys_draw_image(homero, 100, 100);
-	printColor("Press anykey to start. If not found, press CTRRRRL \n\n", YELLOW);
-	playSimpsons();
 	sys_clear_screen();
 
 	printColor("Welcome to HomerOS. Type \"help\" for command list\n", ORANGE);
@@ -56,7 +52,7 @@ int main() {
 	char oldBuffer[1024] = {0};
 	char flag = 0; // Used for up arrow
 	while(1) {
-		char c = getChar();
+		unsigned char c = getChar();
 		if (c == '\n') {
 			buffer[count] = 0;
 			analizeBuffer(buffer, count);

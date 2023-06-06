@@ -158,7 +158,7 @@ void printChar(char c, int x, int y, Color color) {
 	}
 } */
 
-unsigned int strlen(char* str) {
+unsigned int strlen(char * str) {
     unsigned int i = 0;
     while (str[i] != 0) {
         i++;
@@ -166,7 +166,7 @@ unsigned int strlen(char* str) {
     return i;
 }
 
-void printStringPlace(char * string, int x, int y, Color color){
+void printStringPlace(char * string, int x, int y, Color color) {
 	int i = 0;
 	int oldColumn = column;
 	int oldLine = line;
@@ -181,7 +181,7 @@ void printStringPlace(char * string, int x, int y, Color color){
 }
 
 
-void printString(char * string){
+void printString(char * string) {
 	printStringN(string, strlen(string));
 }
 
@@ -277,7 +277,7 @@ void toggleCursor() {
 	showCursor = !showCursor;
 }
 
-void drawImage(unsigned long int * image, int width, int height) {
+void drawImage(const unsigned long int * image, int width, int height) {
 	for (int i = 0, o = 100; i < height; i++, o += 5) {
 		for (int j = 0, k = 230; j < width; j++, k += 5) {
 			drawRect(k, o, 5, 5, image[i * width + j]);

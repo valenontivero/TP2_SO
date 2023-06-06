@@ -23,15 +23,15 @@ uint64_t sys_get_regs(uint64_t * regsBuff) {
     return sys_call((uint64_t) 3, (uint64_t) regsBuff, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0);
 }
 
-uint64_t sys_get_time(char * buffer){
+uint64_t sys_get_time(char * buffer) {
     return sys_call((uint64_t)4, (uint64_t)buffer, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0);
 }
 
-uint64_t sys_get_date(char * buffer){
+uint64_t sys_get_date(char * buffer) {
     return sys_call((uint64_t)5, (uint64_t)buffer, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0);
 }
 
-uint64_t sys_clear_screen(){
+uint64_t sys_clear_screen() {
     return sys_call((uint64_t)6, (uint64_t)0, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0);
 }
 

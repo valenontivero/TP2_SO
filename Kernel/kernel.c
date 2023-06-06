@@ -6,6 +6,8 @@
 #include <videodriver.h>
 #include <idtLoader.h>
 #include <sound.h>
+#include <colors.h>
+#include <homero.h>
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -52,8 +54,13 @@ void * initializeKernelBinary()
 int main()
 {	
 	load_idt(); //Setup idt before terminal runs
-	beep();
+	
+	drawImage(homero, 100, 100);
+	printStringColor("Press anykey to start. If not found, press CTRRRRL \n\n", YELLOW);
+	playSimpsons();
+
 	save_original_regs();
+
 	((EntryPoint)sampleCodeModuleAddress)(); //Calling sampleCodeModule's main address
 	beep();
 	return 0;

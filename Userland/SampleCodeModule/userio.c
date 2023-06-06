@@ -178,6 +178,77 @@ void printf(char* format, ...) {
     va_end(args);
 }
 
+uint64_t atoi(char * str) {
+    uint64_t num = 0;
+    int i = 0;
+    while (str[i] && (str[i] >= '0' && str[i] <= '9')) {
+        num = num * 10 + (str[i] - '0');
+        i++;
+    }
+    return num;
+}
+
+int strtoi(char * buffer, int * i) {
+	char str[18];
+	int size = 0;
+	while(buffer[*i] != ' ' && buffer[*i] != '\n' && buffer[*i] != 0) {
+		str[size++] = buffer[*i];
+		(*i)++;
+	}
+	uint64_t out = atoi(str);
+	return out;
+}
+
+void scanf(char * format,...) {
+	char buffer[1024];
+	if(sys_read(STDIN, buffer, 1024) == -1) {
+		return;
+	}
+
+	if(*format != '%') {
+		sys_write(STDERR, "wrong use for scanf\n", 20);
+		return;
+	}
+
+	va_list vl;
+	va_start(vl, format);
+	int buffIdx = 0;
+	while (*format != 0) {
+		if(*format != '%') {
+			if (*format != ' ') {
+		        sys_write(STDERR, "wrong use for scanf\n", 20);
+				return;
+			} else {
+				(*format)++;
+			}
+		}
+		else {
+			(*format)++;
+			switch (*format) {
+            	case 'd':
+				case 'D':
+					*(int *)va_arg( vl, int* ) = strtoi(buffer, &buffIdx);	
+                	break;
+            	case 'c':
+				case 'C':
+					*(char *)va_arg( vl, char* ) = buffer[buffIdx++];
+                	break;
+				case 's':
+                case 'S':
+                    strcpy((char *)va_arg( vl, char* ), buffer + buffIdx);
+                    buffIdx += strlen(buffer + buffIdx) + 1;
+                    break;
+                default:
+                    sys_write(STDERR, "wrong use for scanf\n", 20);
+                    return;
+			}
+			(*format)++;	
+		}
+	}
+	va_end(vl);
+}
+
+
 void strcpy(char * dest, char * src) {
 	int i = 0;
 	while (src[i] != 0) {
@@ -203,13 +274,13 @@ void fillRegisters() {
 	fillRegs();
 }
 
-char * getTime(){
+char * getTime() {
 	static char bufferTime[9];
 	sys_get_time(bufferTime);
 	return bufferTime;
 }
 
-char * getDate(){
+char * getDate() {
 	static char bufferDate[9];
 	sys_get_date(bufferDate);
 	return bufferDate;

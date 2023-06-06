@@ -28,4 +28,6 @@ void beep(/* int freq, int duration */);
 
 void playNote(int freq, int duration, int waitAfter);
 
+void playSimpsons();
+
 #endif /* SOUND_H */

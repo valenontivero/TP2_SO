@@ -76,7 +76,7 @@ void drawBall(int x, int y, int radius, int color) {
 void drawPaddle(int x, int y, int width, int height, int color) {
     int i, j;
     for (i = 0; i < width; i++) {
-        for (j = 0; j < height; j++){
+        for (j = 0; j < height; j++) {
             sys_draw_rectangle(x + i, y + j, 1, 1, color);
         }
     }

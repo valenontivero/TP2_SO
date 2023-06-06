@@ -71,7 +71,7 @@ void keyboard_handler() {
     }
 }
 
-char getChar(){
+char getChar() {
     if (elemCount == 0) { 
         return 0; // buffer is empty
     }

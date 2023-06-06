@@ -22,7 +22,6 @@
 void playNote(int freq, int duration, int waitAfter);
 
 void playBSong();
-void playSimpsons();
 
 void wallSound();
 
