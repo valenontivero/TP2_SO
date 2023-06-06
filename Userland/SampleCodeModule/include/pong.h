@@ -27,6 +27,8 @@ typedef struct Player {
     int score;
 } Player;
 
+void pong();
+
 void drawBall(int x, int y, int radius, int color);
 void drawPaddle(int x, int y, int width, int height, int color);
 void drawScore(int score, int color);
@@ -35,7 +37,6 @@ void pong();
 void moveBall(int * ballX, int * ballY, int ballRadius);
 short tick() ;
 void handleKey(unsigned char key, char moves[]) ;
-
 void handleMovement(char moves[2]) ;
 
 #endif

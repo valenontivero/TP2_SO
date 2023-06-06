@@ -56,7 +56,7 @@ int main()
 	load_idt(); //Setup idt before terminal runs
 	
 	drawImage(homero, 100, 100);
-	printStringColor("Press anykey to start. If not found, press CTRRRRL \n\n", YELLOW);
+	printStringColor("Press any key to start. If not found, press CTRRRRL \n\n", YELLOW);
 	playSimpsons();
 
 	save_original_regs();

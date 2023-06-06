@@ -2,6 +2,7 @@
 #include <userio.h>
 #include <stdarg.h>
 #include <colors.h>
+#include <uStrings.h>
 
 extern void fillRegs();
 
@@ -33,29 +34,6 @@ void putChar(char c) {
     sys_write(1, &c, 1);
 }
 
-unsigned int strlen(char* str) {
-    unsigned int i = 0;
-    while (str[i] != 0) {
-        i++;
-    }
-    return i;
-}
-
-// Convert 64 bit integer to hex string
-void intToHex(uint64_t num, char* hex) {
-    int i = 0;
-    for (i = 15; i >= 0; i--) {
-        int aux = num & 0xF;
-        if (aux < 10) {
-            hex[i] = aux + '0';
-        } else {
-            hex[i] = aux - 10 + 'A';
-        }
-        num >>= 4;
-    }
-    hex[16] = 0;
-}
-
 void printRegs() {
     uint64_t regs[17];
     char * regsnames[] = {"RAX ", "RBX ", "RCX ", "RDX ", "RSI ", "RDI ", "RBP ", "RSP ", "R8  ", "R9  ", "R10 ", "R11 ", "R12 ",
@@ -66,27 +44,6 @@ void printRegs() {
         char hex[17];
         intToHex(regs[i], hex);
         printf("%s 0x%s\n", regsnames[i], hex);
-    }
-}
-
-void intToStr(int num, char* str) {
-    int i = 0;
-    if (num < 0) {
-        str[i] = '-';
-        i++;
-        num = -num;
-    }
-    int aux = num;
-    while (aux > 0) {
-        aux /= 10;
-        i++;
-    }
-    str[i] = 0;
-    i--;
-    while (num > 0) {
-        str[i] = num % 10 + '0';
-        num /= 10;
-        i--;
     }
 }
 
@@ -178,27 +135,6 @@ void printf(char* format, ...) {
     va_end(args);
 }
 
-uint64_t atoi(char * str) {
-    uint64_t num = 0;
-    int i = 0;
-    while (str[i] && (str[i] >= '0' && str[i] <= '9')) {
-        num = num * 10 + (str[i] - '0');
-        i++;
-    }
-    return num;
-}
-
-int strtoi(char * buffer, int * i) {
-	char str[18];
-	int size = 0;
-	while(buffer[*i] != ' ' && buffer[*i] != '\n' && buffer[*i] != 0) {
-		str[size++] = buffer[*i];
-		(*i)++;
-	}
-	uint64_t out = atoi(str);
-	return out;
-}
-
 void scanf(char * format,...) {
 	char buffer[1024];
 	if(sys_read(STDIN, buffer, 1024) == -1) {
@@ -247,26 +183,6 @@ void scanf(char * format,...) {
 	}
 	va_end(vl);
 }
-
-
-void strcpy(char * dest, char * src) {
-	int i = 0;
-	while (src[i] != 0) {
-		dest[i] = src[i];
-		i++;
-	}
-	dest[i] = 0;
-}
-
-
-int strncmp(char * str1, char * str2, int length) {
-	int i = 0;
-	while (i < length && str1[i] != 0 && str2[i] != 0 && str1[i] == str2[i]) {
-		i++;
-	}
-	return i == length;
-}
-
 
 void fillRegisters() {
 	printColor("\n\nFilling registers...\n", YELLOW);

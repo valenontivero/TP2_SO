@@ -26,6 +26,7 @@ int ballXDirection = 1;
 int ballYDirection = -1;
 
 int ballRadius = 10;
+int ballSpeed = 10;
 
 int goalMade = 0;
 
@@ -117,14 +118,14 @@ void printScore() {
     score[7] = player1.score + '0';
     score[11] = player2.score + '0';
     sys_draw_rectangle(455, 15, 13*8, 20, BLACK);
-    sys_write_place(1, score, 13, 455, 15);
+    sys_write_place(STDOUT, score, 13, 455, 15);
 }
 
 void handleGoal(int playerNumber, Player * player) {
     char text[] = {"Player 0 scored!!"};
     text[7] = playerNumber + '0';
-    sys_draw_rectangle(440, 35, 13*8, 20, BLACK);
-    sys_write_place(1, text, 17, 440, 35);
+    sys_draw_rectangle(440, 35, 18*8, 20, BLACK);
+    sys_write_place(STDOUT, text, 17, 440, 35);
 
     goalSound();
     if (playerNumber == 1 ) {
@@ -146,8 +147,8 @@ void moveBall(int * ballX, int * ballY, int ballRadius) {
     drawBall(*ballX, *ballY, ballRadius, BLACK);
 
     // Move ball
-    *ballX += ballXDirection * 10;
-    *ballY += ballYDirection * 10;
+    *ballX += ballXDirection * ballSpeed;
+    *ballY += ballYDirection * ballSpeed;
 
     // Check if ball is out of bounds
     if (*ballX < 0) {
@@ -175,8 +176,14 @@ void win(int color, int player) {
     if (player == 2) {
         winner = "Player 2 wins!";
     }
-    sys_write_color(1, winner, 14, color);
-    sys_write_color(1, "\n\nPress R to play again or any key to continue...", 49, color);
+
+    while (getChar() != 0) {
+        ; // Cleans buffer
+    }
+
+    sys_write_color(STDOUT, winner, 14, color);
+    sys_write_color(STDOUT, "\n\nPress R to play again or any key to continue...", 49, color);
+    
     char c;
     while ((c = getChar()) == 0) {
         ;
@@ -243,8 +250,10 @@ void pong() {
         sys_draw_rectangle(i, LINE_TOP, 1, LINE_WIDTH, WHITE);
     }
 
-    sys_write_color(1, "Player 1: W and S\nPlayer 2: Up and Down\n", 41, WHITE);
-    sys_write_place(1, "Press any key to start...", 26, 50, 50);
+    sys_write_color(STDOUT, "Player 1: W and S\nPlayer 2: Up and Down\n", 41, WHITE);
+    sys_write_color(STDOUT, "Press any key to start...", 25, WHITE);
+    sys_write_place(STDOUT, "Press P to pause/unpause the game", 33, 740, 15);
+    sys_write_place(STDOUT, "Press ESC to exit", 33, 740, 35);
     while (getChar() == 0) {
         ;
     }
@@ -300,9 +309,12 @@ void pong() {
             }
             // If P pressed, pause
             if (c == 'p') {
+                sys_draw_rectangle(440, 35, 18*8, 20, BLACK);
+                sys_write_place(STDOUT, "PAUSED", 6, 485, 35);
                 while (getChar() != 'p') {
                     ;
                 }
+                sys_draw_rectangle(440, 35, 18*8, 20, BLACK);
             }
         }
         moves[0] = 0; moves[1] = 0;
