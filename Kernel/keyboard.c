@@ -3,6 +3,7 @@
 #include <videodriver.h>
 
 #define BUFFER_SIZE 512
+#define MAX_KEY_PRESSED 127
 
 static char buffer[BUFFER_SIZE] = {0};
 static int elemCount = 0;
@@ -61,6 +62,10 @@ void keyboard_handler() {
         buffer[writeIndex] = !isLetter(key) ? (shiftPressed ? charCapsHexMap[key] : charHexMap[key]): ((shiftPressed && !capsLocked) || (!shiftPressed && capsLocked)) ? charCapsHexMap[key] : charHexMap[key];
 
         // update iterators
+        elemCount++;
+        writeIndex++;
+    } else {
+        buffer[writeIndex] = key;
         elemCount++;
         writeIndex++;
     }

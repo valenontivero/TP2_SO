@@ -1,13 +1,19 @@
 #ifndef PONG_H
 #define PONG_H
 
-#define PLAYER1_UP 'w'
-#define PLAYER1_UP2 'W'
-#define PLAYER1_DOWN 's'
-#define PLAYER1_DOWN2 'S'
+#define PLAYER1_UP_PRESSED 'w'
+#define PLAYER1_UP2_PRESSED 'W'
+#define PLAYER1_DOWN_PRESSED 's'
+#define PLAYER1_DOWN2_PRESSED 'S'
 
-#define PLAYER2_UP 17
-#define PLAYER2_DOWN 20
+#define PLAYER2_UP_PRESSED 17
+#define PLAYER2_DOWN_PRESSED 20
+
+#define PLAYER1_UP_RELEASED 17 + 0x80
+#define PLAYER1_DOWN_RELEASED 31 + 0x80 
+
+#define PLAYER2_UP_RELEASED 72 + 0x80 
+#define PLAYER2_DOWN_RELEASED 80 + 0x80 
 
 #define PLAYER_WIDTH 15
 #define PLAYER_HEIGHT 150
@@ -26,11 +32,10 @@ void drawPaddle(int x, int y, int width, int height, int color);
 void drawScore(int score, int color);
 void win(int color, int player);
 void pong();
-int isValidKey(char c);
-void moveBall(int * ballX, int * ballY, int ballRadius, Player * player1, Player * player2);
+void moveBall(int * ballX, int * ballY, int ballRadius);
 short tick() ;
-void handleKey(char key, char moves[]) ;
+void handleKey(unsigned char key, char moves[]) ;
 
-void handleMovement(Player * player1, Player * player2, char moves[2]) ;
+void handleMovement(char moves[2]) ;
 
 #endif

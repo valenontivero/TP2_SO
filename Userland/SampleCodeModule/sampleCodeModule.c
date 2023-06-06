@@ -37,7 +37,7 @@ int main() {
 	do {
 		c = getChar();
 	} while (c != 't' && c != 'p');
-
+	getChar();
 	if (c == 'p') {
 		pong();
 	}
@@ -99,7 +99,7 @@ int main() {
 				count--;
 			}
 			flag = 1;
-		} else if (c > 20) {
+		} else if (c > 20 && c < 127) {
 			printChar(c);
 			buffer[count++] = c;
 			buffer[count] = 0;
