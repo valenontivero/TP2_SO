@@ -44,4 +44,6 @@ void toggleCursor();
 
 void drawImage(const unsigned long int * image, int width, int height);
 
+void printDec(uint64_t value);
+
 #endif

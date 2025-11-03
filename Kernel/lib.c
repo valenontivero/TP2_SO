@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <lib.h>
 
 void * memset(void * destination, int32_t c, uint64_t length)
 {
@@ -47,4 +48,61 @@ void * memcpy(void * destination, const void * source, uint64_t length)
 	}
 
 	return destination;
+}
+
+size_t strlen(const char* str) {
+	size_t len = 0;
+	while (str[len] != '\0') {
+		len++;
+	}
+	return len;
+}
+
+int strcmp(const char *s1, const char *s2) {
+	while (*s1 && (*s1 == *s2)) {
+		s1++;
+		s2++;
+	}
+	return *(unsigned char *)s1 - *(unsigned char *)s2;
+}
+
+int safe_strncpy(char* dest, const char* src, size_t n) {
+	size_t i;
+	for (i = 0; i < n - 1 && src[i] != '\0'; i++) {
+		dest[i] = src[i];
+	}
+	dest[i] = '\0'; // Asegura la terminación nula
+	return 0; // Indica éxito
+}
+
+void itoa(int value, char *str) {
+    char buffer[12]; // suficiente para int de 32 bits (-2147483648 a 2147483647)
+    int i = 0;
+    int isNegative = 0;
+
+    if (value == 0) {
+        str[0] = '0';
+        str[1] = '\0';
+        return;
+    }
+
+    if (value < 0) {
+        isNegative = 1;
+        value = -value;
+    }
+
+    while (value > 0) {
+        buffer[i++] = (value % 10) + '0';
+        value /= 10;
+    }
+
+    if (isNegative)
+        buffer[i++] = '-';
+
+    // Revertir el buffer en str
+    int j = 0;
+    while (i > 0)
+        str[j++] = buffer[--i];
+    
+    str[j] = '\0';
 }

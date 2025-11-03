@@ -8,6 +8,9 @@
 #include <sound.h>
 #include <colors.h>
 #include <homero.h>
+#include <scheduler.h>
+#include <processManager.h>
+#include <mem_manager.h>
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -55,13 +58,19 @@ int main()
 {	
 	load_idt(); //Setup idt before terminal runs
 	
-	drawImage(homero, 100, 100);
-	printStringColor("Press any key to start. If not found, press CTRRRRL \n\n", YELLOW);
-	playSimpsons();
+	//drawImage(homero, 100, 100);
+	/* printStringColor("Press any key to start. If not found, press CTRRRRL \n\n", YELLOW); */
+	//playSimpsons();
 
 	save_original_regs();
 
-	((EntryPoint)sampleCodeModuleAddress)(); //Calling sampleCodeModule's main address
-	beep();
+	startMemoryManager((void*)&endOfKernel, 0x2000000); //32MB for the heap
+	initializeProcesses();
+	initScheduler(getStackBase());
+	char* argv[]= {0};
+	createFirstProcess((void*)sampleCodeModuleAddress,0,argv);
+	/* ((EntryPoint)sampleCodeModuleAddress)(); */ //Calling sampleCodeModule's main address
+	while (1){}
+	
 	return 0;
 }

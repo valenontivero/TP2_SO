@@ -17,4 +17,5 @@ else
 fi
 docker exec -it so_tp2 chmod -R g+wx /root/
 # docker stop so_tp2
+docker exec -it so_tp2 chmod -R 777 /root/Image
 bash run.sh

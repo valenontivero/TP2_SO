@@ -4,6 +4,8 @@
 #include <videodriver.h>
 #include <lib.h>
 
+static uint32_t uintToBase(uint64_t value, char *buffer, uint32_t base);
+
 struct vbe_mode_info_structure {
 	uint16_t attributes;		// deprecated, only bit 7 should be of interest to you, and it indicates the mode supports a linear frame buffer.
 	uint8_t window_a;			// deprecated
@@ -74,6 +76,13 @@ void drawRect(int x, int y, int width, int height, int color) {
 	}
 }
 
+void printBase(uint64_t value, uint32_t base)
+{
+	char buffer[20];
+	uintToBase(value, buffer, base);
+	printString(buffer);
+}
+
 int line = 1, column = 0;
 int showCursor = 1;
 
@@ -128,6 +137,10 @@ void printChar(char c, int x, int y, Color color) {
 			column = 0;
 		}
 		return;
+	} else if (c == '\n') {
+		line++;
+		column = 0;
+		return;
 	}
 
 	if (c < FIRST_CHAR || c > LAST_CHAR )
@@ -158,13 +171,6 @@ void printChar(char c, int x, int y, Color color) {
 	}
 } */
 
-unsigned int strlen(char * str) {
-    unsigned int i = 0;
-    while (str[i] != 0) {
-        i++;
-    }
-    return i;
-}
 
 void printStringPlace(char * string, int x, int y, Color color) {
 	int i = 0;
@@ -283,4 +289,41 @@ void drawImage(const unsigned long int * image, int width, int height) {
 			drawRect(k, o, 5, 5, image[i * width + j]);
 		}
 	}
+}
+
+void printDec(uint64_t value)
+{
+	printBase(value, 10);
+}
+
+static uint32_t uintToBase(uint64_t value, char *buffer, uint32_t base)
+{
+	char *p = buffer;
+	char *p1, *p2;
+	uint32_t digits = 0;
+
+	// Calculate characters for each digit
+	do
+	{
+		uint32_t remainder = value % base;
+		*p++ = (remainder < 10) ? remainder + '0' : remainder + 'A' - 10;
+		digits++;
+	} while (value /= base);
+
+	// Terminate string in buffer.
+	*p = 0;
+
+	// Reverse string in buffer.
+	p1 = buffer;
+	p2 = p - 1;
+	while (p1 < p2)
+	{
+		char tmp = *p1;
+		*p1 = *p2;
+		*p2 = tmp;
+		p1++;
+		p2--;
+	}
+
+	return digits;
 }

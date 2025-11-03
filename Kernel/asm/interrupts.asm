@@ -21,10 +21,12 @@ GLOBAL registers
 GLOBAL excepRegs
 
 GLOBAL save_original_regs
+GLOBAL forceTimerInterruption
 
 EXTERN irqDispatcher
 EXTERN exceptionDispatcher
 EXTERN syscallHandler
+EXTERN schedule
 
 SECTION .text
 
@@ -207,9 +209,28 @@ save_original_regs:
 	ret
 
 
+forceTimerInterruption:
+    int 0x20
+    ret
+
+
 ;8254 Timer (Timer Tick)
 _irq00Handler:
-	irqHandlerMaster 0
+	pushState
+
+	mov rdi, 0
+	call irqDispatcher
+
+	mov rdi, rsp
+	call schedule
+	mov rsp, rax
+
+	;signal pic EOI (End of Interrupt)
+	mov al, 20h
+	out 20h, al
+
+	popState
+	iretq
 
 ;Keyboard
 _irq01Handler:

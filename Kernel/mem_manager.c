@@ -59,9 +59,9 @@ void *malloc(uint64_t req_size) {
         current = current->next;
     }
 
-    if (!current)
+    if (!current){
         return NULL; // sin espacio
-
+    }
     // Si sobra espacio, dividir bloque
     if (current->size > req_size + sizeof(mem_block)) {
         mem_block *newblk = (mem_block *)node_region;
