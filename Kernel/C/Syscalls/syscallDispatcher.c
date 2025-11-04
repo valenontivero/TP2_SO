@@ -38,10 +38,9 @@ static sys_call_t syscallsArray[] = {
         [SYSCALL_DRAW_IMAGE] (sys_call_t) sys_draw_image
     };
 
-void syscallDispatcher(uint64_t id, uint64_t arg0, uint64_t arg1, uint64_t arg2, uint64_t arg3, uint64_t arg4, uint64_t arg5) {
-    
-
+uint64_t syscallDispatcher(uint64_t id, uint64_t arg0, uint64_t arg1, uint64_t arg2, uint64_t arg3, uint64_t arg4, uint64_t arg5) {
     if (id < sizeof(syscallsArray) / sizeof(sys_call_t)) {
-        syscallsArray[id](arg0, arg1, arg2, arg3, arg4, arg5);
+        return syscallsArray[id](arg0, arg1, arg2, arg3, arg4, arg5);
     }
+    return -1;  // ID inválido
 }
