@@ -25,7 +25,7 @@ GLOBAL forceTimerInterruption
 
 EXTERN irqDispatcher
 EXTERN exceptionDispatcher
-EXTERN syscallHandler
+EXTERN syscallDispatcher
 EXTERN schedule
 
 SECTION .text
@@ -269,7 +269,7 @@ _irq05Handler:
 ;Syscalls
 _int80Handler:
 	pushState
-	call syscallHandler
+	call syscallDispatcher
 	popState
 	iretq
 
