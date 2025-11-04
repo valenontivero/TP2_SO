@@ -16,7 +16,11 @@ enum syscallsEnum {
     SYSCALL_TOGGLE_CURSOR,
     SYSCALL_GET_TICKS,
     SYSCALL_WRITE_PLACE,
-    SYSCALL_DRAW_IMAGE
+    SYSCALL_DRAW_IMAGE,
+    SYSCALL_SEM_OPEN,
+    SYSCALL_SEM_WAIT,
+    SYSCALL_SEM_POST,
+    SYSCALL_SEM_CLOSE
 };
 
 typedef uint64_t (*sys_call_t)(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9);
@@ -35,7 +39,11 @@ static sys_call_t syscallsArray[] = {
         [SYSCALL_GET_SCREENSIZE] (sys_call_t) sys_get_screensize,
         [SYSCALL_TOGGLE_CURSOR] (sys_call_t) sys_toggle_cursor,
         [SYSCALL_GET_TICKS] (sys_call_t) sys_get_ticks,
-        [SYSCALL_DRAW_IMAGE] (sys_call_t) sys_draw_image
+        [SYSCALL_DRAW_IMAGE] (sys_call_t) sys_draw_image,
+        [SYSCALL_SEM_OPEN] (sys_call_t) sys_sem_open,
+        [SYSCALL_SEM_WAIT] (sys_call_t) sys_sem_wait,
+        [SYSCALL_SEM_POST] (sys_call_t) sys_sem_post,
+        [SYSCALL_SEM_CLOSE] (sys_call_t) sys_sem_close
     };
 
 uint64_t syscallDispatcher(uint64_t id, uint64_t arg0, uint64_t arg1, uint64_t arg2, uint64_t arg3, uint64_t arg4, uint64_t arg5) {

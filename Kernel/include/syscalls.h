@@ -32,4 +32,9 @@ uint64_t sys_get_ticks(uint64_t ticks,uint64_t unused1, uint64_t unused2, uint64
 
 uint64_t sys_draw_image(uint64_t image, uint64_t width, uint64_t height, uint64_t unused3, uint64_t unused4, uint64_t unused5);
 
+uint64_t sys_sem_open(uint64_t name, uint64_t initial_value, uint64_t unused2, uint64_t unused3, uint64_t unused4, uint64_t unused5);
+uint64_t sys_sem_wait(uint64_t id, uint64_t unused1, uint64_t unused2, uint64_t unused3, uint64_t unused4, uint64_t unused5);
+uint64_t sys_sem_post(uint64_t id, uint64_t unused1, uint64_t unused2, uint64_t unused3, uint64_t unused4, uint64_t unused5);
+uint64_t sys_sem_close(uint64_t id, uint64_t unused1, uint64_t unused2, uint64_t unused3, uint64_t unused4, uint64_t unused5);
+
 #endif
