@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <syscalls.h>
 
+// Si quieron agregar un syscall, agregarlo en el enum y en el array, codear la función en syscalls.c y el prototipo en syscalls.h.
 enum syscallsEnum {
     SYSCALL_READ = 0,
     SYSCALL_WRITE,
