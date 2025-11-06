@@ -62,3 +62,7 @@ uint64_t sys_write_place(unsigned int fd, const char* buffer, unsigned int size,
 uint64_t sys_draw_image(const unsigned long * image, int width, int height) {
     return sys_call((uint64_t) 13, (uint64_t) image, (uint64_t) width, (uint64_t) height, (uint64_t) 0, (uint64_t) 0);
 }
+
+uint64_t sys_launch_process(void* entryPoint, uint8_t prio, uint8_t argc, char** argv) {
+    return sys_call((uint64_t) 18, (uint64_t) entryPoint, (uint64_t) prio, (uint64_t) argc, (uint64_t) argv, (uint64_t) 0);
+}

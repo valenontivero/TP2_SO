@@ -6,6 +6,7 @@
 #include <boca.h>
 #include <pong.h>
 #include <shell.h>
+#include <types.h>
 
 #define COMMANDS_QUANTITY 9
 
@@ -22,6 +23,13 @@ static char *commands[] = {
 	"\tpong: go to play the \"pong\" game.\n",
 	"\tclear: clears the OS screen.\n"
 };
+
+void shell();
+
+pid_t launchShell(){
+	char* argv[] = {"shell"};
+	return  sys_launch_process((void*) shell, 1, 0, argv);
+}
 
 void shell() {
     printColor("Welcome to HomerOS. Type \"help\" for command list\n", ORANGE);

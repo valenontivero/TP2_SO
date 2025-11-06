@@ -142,3 +142,13 @@ uint64_t sys_sem_close(uint64_t id, uint64_t unused1, uint64_t unused2, uint64_t
     sem_destroy((uint8_t) id);
     return (uint64_t) 0;
 }
+
+uint64_t sys_create_process(uint64_t entryPoint, uint64_t prio, uint64_t argc, uint64_t argv, uint64_t unused4, uint64_t unused5) {
+    void (*fn)(uint8_t, char **) = (void (*)(uint8_t, char **)) entryPoint;
+    char ** args = (char **) argv;
+    pid_t pid = createProcess(fn, (int) prio, (int) argc, args, args[0]);
+    if (pid < 0) {
+        return (uint64_t)-1;
+    }
+    return pid;
+}

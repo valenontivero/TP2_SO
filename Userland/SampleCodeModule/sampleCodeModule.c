@@ -7,9 +7,9 @@
 
 int main() {
 	// Choose between terminal or pong
-	printColor("Welcome to HomerOS. Choose between terminal or pong (t/p): \n\n", GREEN);
+	printColor("Welcome to HomerOS. \n\n", GREEN);
 
-	unsigned char c;
+	/* unsigned char c;
 	do {
 		c = getChar();
 	} while (c != 't' && c != 'p');
@@ -17,11 +17,11 @@ int main() {
 	getChar();
 
 	if (c == 'p')
-		pong();
+		pong(); */
 
-	sys_clear_screen();
+	/* sys_clear_screen(); */
 
-	shell();
+	launchShell();
 
 	return 0;
 }

@@ -37,4 +37,6 @@ uint64_t sys_sem_wait(uint64_t id, uint64_t unused1, uint64_t unused2, uint64_t 
 uint64_t sys_sem_post(uint64_t id, uint64_t unused1, uint64_t unused2, uint64_t unused3, uint64_t unused4, uint64_t unused5);
 uint64_t sys_sem_close(uint64_t id, uint64_t unused1, uint64_t unused2, uint64_t unused3, uint64_t unused4, uint64_t unused5);
 
+
+uint64_t sys_create_process(uint64_t entryPoint, uint64_t prio, uint64_t argc, uint64_t argv, uint64_t unused4, uint64_t unused5);
 #endif
