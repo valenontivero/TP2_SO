@@ -31,6 +31,14 @@ uint64_t sys_write_place(unsigned int fd, const char* buffer, unsigned int size,
 
 uint64_t sys_draw_image(const unsigned long * image, int width, int height);
 
+uint64_t sys_sem_open(const char *name, uint8_t initial_value);
+
+uint64_t sys_sem_wait(uint8_t id);
+
+uint64_t sys_sem_post(uint8_t id);
+
+uint64_t sys_sem_close(uint8_t id);
+
 uint64_t sys_launch_process(void* entryPoint, uint8_t prio, uint8_t argc, char** argv);
 
 #endif

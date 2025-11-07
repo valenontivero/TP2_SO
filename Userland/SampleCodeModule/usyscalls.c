@@ -63,6 +63,22 @@ uint64_t sys_draw_image(const unsigned long * image, int width, int height) {
     return sys_call((uint64_t) 13, (uint64_t) image, (uint64_t) width, (uint64_t) height, (uint64_t) 0, (uint64_t) 0);
 }
 
+uint64_t sys_sem_open(const char *name, uint8_t initial_value) {
+    return sys_call((uint64_t) 14, (uint64_t) name, (uint64_t) initial_value, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0);
+}
+
+uint64_t sys_sem_wait(uint8_t id) {
+    return sys_call((uint64_t) 15, (uint64_t) id, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0);
+}
+
+uint64_t sys_sem_post(uint8_t id) {
+    return sys_call((uint64_t) 16, (uint64_t) id, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0);
+}
+
+uint64_t sys_sem_close(uint8_t id) {
+    return sys_call((uint64_t) 17, (uint64_t) id, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0);
+}
+
 uint64_t sys_launch_process(void* entryPoint, uint8_t prio, uint8_t argc, char** argv) {
     return sys_call((uint64_t) 18, (uint64_t) entryPoint, (uint64_t) prio, (uint64_t) argc, (uint64_t) argv, (uint64_t) 0);
 }
