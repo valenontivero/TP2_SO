@@ -7,10 +7,13 @@
 #include <pong.h>
 #include <shell.h>
 #include <types.h>
+#include <test_print.h>
+#include <test_sem.h>
+#include <test_pipe.h>
 
-#define COMMANDS_QUANTITY 9
+#define COMMANDS_QUANTITY 12
 
-static char * commandsNames[] = {"help", "time", "date", "registers", "fillregs", "div0", "invalidop", "pong", "clear"};
+static char * commandsNames[] = {"help", "time", "date", "registers", "fillregs", "div0", "invalidop", "pong", "clear", "testprint", "testsem", "testpipe"};
 
 static char *commands[] = {
 	"\thelp: gives you a list of all existent commands.\n",
@@ -21,10 +24,23 @@ static char *commands[] = {
 	"\tdiv0: divide by zero to trigger exception\n",
 	"\tinvalidop: trigger invalid operation code exception\n",
 	"\tpong: go to play the \"pong\" game.\n",
-	"\tclear: clears the OS screen.\n"
+	"\tclear: clears the OS screen.\n",
+	"\ttestprint: tests that you can create a process and it can print on screen.\n"
+	"\ttestsem: tests that a process can block itself with a semaphore and another process can unblock it\n"
+	"\ttestpipe: tests that 2 processes can comunicate between pipes\n"
+	"\ttestpriority: tests the priorities of 3 processes\n"
 };
 
 void shell();
+void testPrint();
+void testSemPoster();
+void testSemWaiter();
+void testPipeReader();
+void testPipeWriter();
+void testPriorityHigh();
+void testPriorityMedium();
+void testPriorityLow();
+
 
 pid_t launchShell(){
 	char* argv[] = {"shell"};
@@ -133,6 +149,26 @@ void analizeBuffer(char * buffer, int count) {
 		sys_draw_image(diego, 100, 100);
 		playBSong();
 		sys_clear_screen();
+	} else if (commandMatch(buffer, "testprint", count)) {
+		char* argv[] = {"testPrint"};
+		sys_launch_process((void*) testPrint, 1, 1, argv);
+	} else if (commandMatch(buffer, "testsem", count)) {
+		char* argv1[] = {"testSemPoster"};
+		char* argv2[] = {"testSemWaiter"};
+		sys_launch_process((void*) testSemPoster, 1, 1, argv1);
+		sys_launch_process((void*) testSemWaiter, 1, 1, argv2);
+	} else if (commandMatch(buffer, "testpipe", count)) {
+		char* argv1[] = {"testPipeReader"};
+		char* argv2[] = {"testPipeWriter"};
+		sys_launch_process((void*) testPipeReader, 1, 1, argv1);
+		sys_launch_process((void*) testPipeWriter, 1, 1, argv2);
+	} else if (commandMatch(buffer, "testpriority", count)) {
+		char* argv1[] = {"testPriorityHigh"};
+		char* argv2[] = {"testPriorityMedium"};
+		char* argv3[] = {"testPriorityLow"};
+		sys_launch_process((void*) testPriorityHigh, 3, 1, argv1);
+		sys_launch_process((void*) testPriorityMedium, 2, 1, argv2);
+		sys_launch_process((void*) testPriorityLow, 1, 1, argv3);
 	} else if (count > 0) {
 		printColor("\nCommand not found. Type \"help\" for command list\n", RED);
 	}
