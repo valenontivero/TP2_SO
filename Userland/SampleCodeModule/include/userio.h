@@ -39,4 +39,6 @@ char * getTime();
 
 char * getDate();
 
+void unsigned_num_to_str(uint32_t num, uint32_t start, char *buff);
+
 #endif

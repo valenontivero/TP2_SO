@@ -152,9 +152,9 @@ void analizeBuffer(char * buffer, int count) {
 	
 	
 	if (parsed.hasPipe) { //TODO: descomentar cuando esten las pipes (y probarlo(Si falla y no tienen ganas de arreglarlo, diganle al chile))
-		/* char* name;
+		char* name;
 		unsigned_num_to_str(pipeCounter,0,name);
-		uint8_t anonPipe=pipe_open(name);
+		uint8_t anonPipe=sys_pipe_open(name);
 		pipeCounter++;
 		
 		
@@ -166,11 +166,11 @@ void analizeBuffer(char * buffer, int count) {
 			return;
 		}
 
-		pid_t p1 = createProcess(fn1, DEFAULT_PRIO ,countArgs(parsed.args1), parsed.args1);
-		changeProcessFd(p1,anonPipe,1);
+		pid_t p1 = sys_launch_process(fn1, DEFAULT_PRIO ,countArgs(parsed.args1), parsed.args1);
+		sys_change_process_fd(p1,anonPipe,1);
 
-		pid_t p2 = createProcess(fn2, DEFAULT_PRIO ,countArgs(parsed.args2), parsed.args2);
-		changeProcessFd(p2,anonPipe,0);
+		pid_t p2 = sys_launch_process(fn2, DEFAULT_PRIO ,countArgs(parsed.args2), parsed.args2);
+		sys_change_process_fd(p2,anonPipe,0);
 
 		if (!parsed.isBackground) {
 			fgProccess = p2;
@@ -179,7 +179,7 @@ void analizeBuffer(char * buffer, int count) {
 			fgProccess = 0;
 		}
 
-		return; */
+		return;
 	}
 
 	void (*fn)(uint8_t, char **) = getFn(parsed.cmd1);
