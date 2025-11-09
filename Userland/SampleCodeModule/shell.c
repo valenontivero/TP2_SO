@@ -201,7 +201,6 @@ void analizeBuffer(char * buffer, int count) {
 	if (hasToWait && fgProccess != 0)
 	{
 		wait(fgProccess);
-		printColor("\n ENTRE CTM", GREEN);
 	}
 }
 

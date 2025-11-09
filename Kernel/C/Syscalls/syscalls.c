@@ -10,6 +10,7 @@
 #include <ourTime.h>
 #include <mySem.h>
 #include <pipe.h>
+#include <processManager.h>
 
 extern const uint64_t registers[17];
 
@@ -171,6 +172,8 @@ uint64_t sys_pipe_write(uint64_t fd, uint64_t buffer, uint64_t length, uint64_t 
 
 uint64_t sys_pipe_close(uint64_t fd, uint64_t unused1, uint64_t unused2, uint64_t unused3, uint64_t unused4, uint64_t unused5) {
     pipe_close((int)fd);
+    return 0;
+}
 uint64_t sys_wait(uint64_t pid, uint64_t unused1, uint64_t unused2, uint64_t unused3, uint64_t unused4, uint64_t unused5) {
     wait((pid_t) pid);
     return 0;
