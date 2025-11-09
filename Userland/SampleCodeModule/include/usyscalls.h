@@ -41,4 +41,12 @@ uint64_t sys_sem_close(uint8_t id);
 
 uint64_t sys_launch_process(void* entryPoint, uint8_t prio, uint8_t argc, char** argv);
 
+uint64_t sys_pipe_open(const char *name);
+
+uint64_t sys_pipe_read(unsigned int fd, char *buffer, uint64_t size);
+
+uint64_t sys_pipe_write(unsigned int fd, const char *buffer, uint64_t size);
+
+uint64_t sys_pipe_close(unsigned int fd);
+
 #endif

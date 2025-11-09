@@ -39,4 +39,9 @@ uint64_t sys_sem_close(uint64_t id, uint64_t unused1, uint64_t unused2, uint64_t
 
 
 uint64_t sys_create_process(uint64_t entryPoint, uint64_t prio, uint64_t argc, uint64_t argv, uint64_t unused4, uint64_t unused5);
+
+uint64_t sys_pipe_open(uint64_t name, uint64_t unused1, uint64_t unused2, uint64_t unused3, uint64_t unused4, uint64_t unused5);
+uint64_t sys_pipe_read(uint64_t fd, uint64_t buffer, uint64_t length, uint64_t unused3, uint64_t unused4, uint64_t unused5);
+uint64_t sys_pipe_write(uint64_t fd, uint64_t buffer, uint64_t length, uint64_t unused3, uint64_t unused4, uint64_t unused5);
+uint64_t sys_pipe_close(uint64_t fd, uint64_t unused1, uint64_t unused2, uint64_t unused3, uint64_t unused4, uint64_t unused5);
 #endif

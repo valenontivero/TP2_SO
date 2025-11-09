@@ -84,3 +84,19 @@ uint64_t sys_sem_close(uint8_t id) {
 uint64_t sys_launch_process(void* entryPoint, uint8_t prio, uint8_t argc, char** argv) {
     return sys_call((uint64_t) 18, (uint64_t) entryPoint, (uint64_t) prio, (uint64_t) argc, (uint64_t) argv, (uint64_t) 0);
 }
+
+uint64_t sys_pipe_open(const char *name) {
+    return sys_call((uint64_t) 19, (uint64_t) name, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0);
+}
+
+uint64_t sys_pipe_read(unsigned int fd, char *buffer, uint64_t size) {
+    return sys_call((uint64_t) 20, (uint64_t) fd, (uint64_t) buffer, (uint64_t) size, (uint64_t) 0, (uint64_t) 0);
+}
+
+uint64_t sys_pipe_write(unsigned int fd, const char *buffer, uint64_t size) {
+    return sys_call((uint64_t) 21, (uint64_t) fd, (uint64_t) buffer, (uint64_t) size, (uint64_t) 0, (uint64_t) 0);
+}
+
+uint64_t sys_pipe_close(unsigned int fd) {
+    return sys_call((uint64_t) 22, (uint64_t) fd, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0);
+}

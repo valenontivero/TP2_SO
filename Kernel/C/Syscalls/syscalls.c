@@ -9,6 +9,7 @@
 #include <sound.h>
 #include <time.h>
 #include <mySem.h>
+#include <pipe.h>
 
 extern const uint64_t registers[17];
 
@@ -153,4 +154,22 @@ uint64_t sys_create_process(uint64_t entryPoint, uint64_t prio, uint64_t argc, u
         return (uint64_t)-1;
     }
     return pid;
+}
+
+uint64_t sys_pipe_open(uint64_t name, uint64_t unused1, uint64_t unused2, uint64_t unused3, uint64_t unused4, uint64_t unused5) {
+    const char *pipeName = (const char *)name;
+    return (uint64_t)pipe_open(pipeName);
+}
+
+uint64_t sys_pipe_read(uint64_t fd, uint64_t buffer, uint64_t length, uint64_t unused3, uint64_t unused4, uint64_t unused5) {
+    return pipe_read((int)fd, (char *)buffer, length);
+}
+
+uint64_t sys_pipe_write(uint64_t fd, uint64_t buffer, uint64_t length, uint64_t unused3, uint64_t unused4, uint64_t unused5) {
+    return pipe_write((int)fd, (const char *)buffer, length);
+}
+
+uint64_t sys_pipe_close(uint64_t fd, uint64_t unused1, uint64_t unused2, uint64_t unused3, uint64_t unused4, uint64_t unused5) {
+    pipe_close((int)fd);
+    return 0;
 }

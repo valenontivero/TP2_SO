@@ -23,7 +23,11 @@ enum syscallsEnum {
     SYSCALL_SEM_WAIT,
     SYSCALL_SEM_POST,
     SYSCALL_SEM_CLOSE,
-    SYSCALL_CREATE_PROCESS
+    SYSCALL_CREATE_PROCESS,
+    SYSCALL_PIPE_OPEN,
+    SYSCALL_PIPE_READ,
+    SYSCALL_PIPE_WRITE,
+    SYSCALL_PIPE_CLOSE
 };
 
 typedef uint64_t (*sys_call_t)(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9);
@@ -47,7 +51,11 @@ static sys_call_t syscallsArray[] = {   // id
         [SYSCALL_SEM_WAIT] (sys_call_t) sys_sem_wait, // 15
         [SYSCALL_SEM_POST] (sys_call_t) sys_sem_post, // 16
         [SYSCALL_SEM_CLOSE] (sys_call_t) sys_sem_close, // 17
-        [SYSCALL_CREATE_PROCESS] (sys_call_t) sys_create_process // 18
+        [SYSCALL_CREATE_PROCESS] (sys_call_t) sys_create_process, // 18
+        [SYSCALL_PIPE_OPEN] (sys_call_t) sys_pipe_open, // 19
+        [SYSCALL_PIPE_READ] (sys_call_t) sys_pipe_read, // 20
+        [SYSCALL_PIPE_WRITE] (sys_call_t) sys_pipe_write, // 21
+        [SYSCALL_PIPE_CLOSE] (sys_call_t) sys_pipe_close // 22
     };
 
 uint64_t syscallDispatcher(uint64_t id, uint64_t arg0, uint64_t arg1, uint64_t arg2, uint64_t arg3, uint64_t arg4, uint64_t arg5) {
