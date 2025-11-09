@@ -30,7 +30,8 @@ enum syscallsEnum {
     SYSCALL_PIPE_CLOSE,
     SYSCALL_WAIT,
     SYSCALL_PUT_IN_FG,
-    SYSCALL_TIMER_WAIT
+    SYSCALL_TIMER_WAIT,
+	SYSCALL_CHANGE_PROCESS_FD
 };
 
 typedef uint64_t (*sys_call_t)(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9);
@@ -61,7 +62,8 @@ static sys_call_t syscallsArray[] = {   // id
         [SYSCALL_PIPE_CLOSE] (sys_call_t) sys_pipe_close, // 22
         [SYSCALL_WAIT] (sys_call_t) sys_wait, // 23
         [SYSCALL_PUT_IN_FG] (sys_call_t) sys_put_in_fg, // 24
-        [SYSCALL_TIMER_WAIT] (sys_call_t) sys_timer_wait // 25
+        [SYSCALL_TIMER_WAIT] (sys_call_t) sys_timer_wait, // 25
+		[SYSCALL_CHANGE_PROCESS_FD] (sys_call_t) sys_change_process_fd // 26
     };
 
 uint64_t syscallDispatcher(uint64_t id, uint64_t arg0, uint64_t arg1, uint64_t arg2, uint64_t arg3, uint64_t arg4, uint64_t arg5) {

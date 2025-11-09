@@ -188,3 +188,7 @@ uint64_t sys_timer_wait(uint64_t seconds, uint64_t unused1, uint64_t unused2, ui
     timer_wait((int)(seconds * TICKS_FREQUENCY));
     return 0;
 }
+
+uint64_t sys_change_process_fd(uint64_t pid, uint64_t fd, uint64_t end, uint64_t unused3, uint64_t unused4, uint64_t unused5) {
+	return changeProcessFd(pid, fd, end);
+}

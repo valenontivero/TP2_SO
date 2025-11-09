@@ -13,6 +13,9 @@
 #include <uStrings.h>
 #include <shellFunc.h>
 #include <uSync.h>
+#include <test_print.h>
+#include <test_sem.h>
+#include <test_pipe.h>
 
 //
 // Necesarry functions declarations
@@ -39,9 +42,13 @@ static void  (*instructionFunctions[])(uint8_t, char **) = {
 	pong, 
 	clear,
 	hello,
+	testprint,
+	testsem,
+	testpipe,
+	testpriority,
 	NULL};
 
-static char *commandsNames[] = {"help", "time", "date", "registers", "fillregs", "div0", "invalidop", "pong","clear","hello",0};
+static char *commandsNames[] = {"help", "time", "date", "registers", "fillregs", "div0", "invalidop", "pong", "clear", "hello", "testprint", "testsem", "testpipe", "testpriority", 0};
 
 
 //
@@ -55,16 +62,6 @@ static int pipeCounter=0;
 //
 // Shell implementation
 //
-
-
-void testPrint();
-void testSemPoster();
-void testSemWaiter();
-void testPipeReader();
-void testPipeWriter();
-void testPriorityHigh();
-void testPriorityMedium();
-void testPriorityLow();
 
 
 pid_t launchShell(){

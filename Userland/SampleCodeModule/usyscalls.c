@@ -101,6 +101,7 @@ uint64_t sys_pipe_write(unsigned int fd, const char *buffer, uint64_t size) {
 uint64_t sys_pipe_close(unsigned int fd) {
     return sys_call((uint64_t) 22, (uint64_t) fd, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0);
 }
+
 uint64_t sys_wait(pid_t pid) {
     return sys_call((uint64_t) 23, (uint64_t) pid, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0);
 }
@@ -111,4 +112,8 @@ uint64_t sys_put_in_fg(pid_t pid) {
 
 uint64_t sys_timer_wait(int seconds) {
     return sys_call((uint64_t) 25, (uint64_t) seconds, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0);
+}
+
+uint64_t sys_change_process_fd(uint64_t pid, uint64_t fd, uint64_t end) {
+	return sys_call(pid, fd, end, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0);
 }
