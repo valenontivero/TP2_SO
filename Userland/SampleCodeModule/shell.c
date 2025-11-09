@@ -5,35 +5,58 @@
 #include <usyscalls.h>
 #include <colors.h>
 #include <sounds.h>
-#include <boca.h>
 #include <pong.h>
 #include <shell.h>
 #include <types.h>
-#include <test_print.h>
-#include <test_sem.h>
-#include <test_pipe.h>
+#include <stddef.h>
+#include <processLib.h>
+#include <uStrings.h>
+#include <shellFunc.h>
+#include <uSync.h>
 
-#define COMMANDS_QUANTITY 12
+//
+// Necesarry functions declarations
+//
 
-static char * commandsNames[] = {"help", "time", "date", "registers", "fillregs", "div0", "invalidop", "pong", "clear", "testprint", "testsem", "testpipe"};
-
-static char *commands[] = {
-	"\thelp: gives you a list of all existent commands.\n",
-	"\ttime: prints the time of the OS.\n",
-	"\tdate: prints the date of the OS.\n",
-	"\tregisters: print the state of the registers at the time you screenshot them with CTRL key.\n",
-	"\tfillregs: fill the registers with stepped values for testing.\n",
-	"\tdiv0: divide by zero to trigger exception\n",
-	"\tinvalidop: trigger invalid operation code exception\n",
-	"\tpong: go to play the \"pong\" game.\n",
-	"\tclear: clears the OS screen.\n",
-	"\ttestprint: tests that you can create a process and it can print on screen.\n"
-	"\ttestsem: tests that a process can block itself with a semaphore and another process can unblock it\n"
-	"\ttestpipe: tests that 2 processes can comunicate between pipes\n"
-	"\ttestpriority: tests the priorities of 3 processes\n"
-};
-
+static void parseInput(char *input, ParsedCommand *out);
+static void (*getFn(const char *cmd))(uint8_t, char **);
+static int countArgs(char **argv);
 void shell();
+
+
+//
+// Structures to map commands to functions
+//
+
+static void  (*instructionFunctions[])(uint8_t, char **) = {
+	help,
+	time,
+	date,
+	registers, 
+	fillregs, 
+	div0, 
+	invalidop, 
+	pong, 
+	clear,
+	hello,
+	NULL};
+
+static char *commandsNames[] = {"help", "time", "date", "registers", "fillregs", "div0", "invalidop", "pong","clear","hello",0};
+
+
+//
+// Shell implentation variables
+//
+
+static pid_t fgProccess=0;
+static int hasToWait = 1;
+static int pipeCounter=0;
+
+//
+// Shell implementation
+//
+
+
 void testPrint();
 void testSemPoster();
 void testSemWaiter();
@@ -46,7 +69,7 @@ void testPriorityLow();
 
 pid_t launchShell(){
 	char* argv[] = {"shell"};
-	return  sys_launch_process((void*) shell, 1, 0, argv);
+	return  createProcess((void*) shell, 1, 0, argv);
 }
 
 void shell() {
@@ -123,55 +146,117 @@ int commandMatch(char * str1, char * command, int count) {
 void analizeBuffer(char * buffer, int count) {
 	if (count <= 0)
 		return;
-	if (commandMatch(buffer, "help", count) || commandMatch(buffer, "HELP", count)) {
-		printColor("\n\nComandos disponibles:\n\n", YELLOW);
-		for (int i = 0; i < COMMANDS_QUANTITY; i++) {
-			printColor(commands[i], CYAN);
+	ParsedCommand parsed= {0};
+	parseInput(buffer, &parsed);
+
+	     
+	hasToWait= !parsed.isBackground;
+
+	
+	
+	if (parsed.hasPipe) { //TODO: descomentar cuando esten las pipes (y probarlo(Si falla y no tienen ganas de arreglarlo, diganle al chile))
+		/* char* name;
+		unsigned_num_to_str(pipeCounter,0,name);
+		uint8_t anonPipe=pipe_open(name);
+		pipeCounter++;
+		
+		
+		void (*fn1)(uint8_t, char **) = getFn(parsed.cmd1);
+		void (*fn2)(uint8_t, char **) = getFn(parsed.cmd2);
+
+		if (!fn1 || !fn2) {
+			printf("Unknown command in pipe: %s | %s\n", parsed.cmd1, parsed.cmd2);
+			return;
 		}
-	} else if (commandMatch(buffer, "time", count)) {
-		printfColor("\n\nTime of OS: ", YELLOW);
-		printfColor("%s\n", CYAN, getTime());
-	} else if (commandMatch(buffer, "date", count)) {
-		printfColor("\n\nDate of OS: ", YELLOW);
-		printfColor("%s\n", CYAN, getDate());
-	} else if (commandMatch(buffer, "registers", count)) {
-		printRegs();
-	} else if (commandMatch(buffer, "fillregs", count)) {
-		fillRegisters();
-	} else if (commandMatch(buffer, "clear", count)) {
-		sys_clear_screen();
-	} else if (commandMatch(buffer, "pong", count)) {
-		pong();
-	} else if (commandMatch(buffer, "div0", count)) {
-		divideByZero();
-	} else if (commandMatch(buffer, "invalidop", count)) {
-		invalidOpcode();
-	} else if (commandMatch(buffer, "boca", count)) {
-		sys_clear_screen();
-		sys_draw_image(diego, 100, 100);
-		playBSong();
-		sys_clear_screen();
-	} else if (commandMatch(buffer, "testprint", count)) {
-		char* argv[] = {"testPrint"};
-		sys_launch_process((void*) testPrint, 1, 1, argv);
-	} else if (commandMatch(buffer, "testsem", count)) {
-		char* argv1[] = {"testSemPoster"};
-		char* argv2[] = {"testSemWaiter"};
-		sys_launch_process((void*) testSemPoster, 1, 1, argv1);
-		sys_launch_process((void*) testSemWaiter, 1, 1, argv2);
-	} else if (commandMatch(buffer, "testpipe", count)) {
-		char* argv1[] = {"testPipeReader"};
-		char* argv2[] = {"testPipeWriter"};
-		sys_launch_process((void*) testPipeReader, 1, 1, argv1);
-		sys_launch_process((void*) testPipeWriter, 1, 1, argv2);
-	} else if (commandMatch(buffer, "testpriority", count)) {
-		char* argv1[] = {"testPriorityHigh"};
-		char* argv2[] = {"testPriorityMedium"};
-		char* argv3[] = {"testPriorityLow"};
-		sys_launch_process((void*) testPriorityHigh, 3, 1, argv1);
-		sys_launch_process((void*) testPriorityMedium, 2, 1, argv2);
-		sys_launch_process((void*) testPriorityLow, 1, 1, argv3);
-	} else if (count > 0) {
-		printColor("\nCommand not found. Type \"help\" for command list\n", RED);
+
+		pid_t p1 = createProcess(fn1, DEFAULT_PRIO ,countArgs(parsed.args1), parsed.args1);
+		changeProcessFd(p1,anonPipe,1);
+
+		pid_t p2 = createProcess(fn2, DEFAULT_PRIO ,countArgs(parsed.args2), parsed.args2);
+		changeProcessFd(p2,anonPipe,0);
+
+		if (!parsed.isBackground) {
+			fgProccess = p2;
+			putInFg(p2);
+		} else {
+			fgProccess = 0;
+		}
+
+		return; */
 	}
+
+	void (*fn)(uint8_t, char **) = getFn(parsed.cmd1);
+
+	if ( fn == NULL) {
+		printf("Command not found: '%s'\n", parsed.cmd1);
+		fgProccess = 0;
+		return;
+	}
+
+	pid_t pid = createProcess(fn, DEFAULT_PRIO, countArgs(parsed.args1), parsed.args1);
+	if (!parsed.isBackground){
+		fgProccess = pid;
+		putInFg(pid);
+	}
+	if (hasToWait && fgProccess != 0)
+	{
+		wait(fgProccess);
+		printColor("\n ENTRE CTM", GREEN);
+	}
+}
+
+
+static int countArgs(char **argv) {
+	int count = 0;
+	while (argv[count]) {
+		count++;
+	}
+	return count;
+}
+
+static void parseInput(char *input, ParsedCommand *out) {
+    out->hasPipe = 0;
+    out->isBackground = 0;
+    memset(out->args1, 0, sizeof(out->args1));
+    memset(out->args2, 0, sizeof(out->args2)); 
+
+    int len = strlen(input);
+    if (len > 0 && input[len - 1] == '&') {
+        out->isBackground = 1;
+        input[len - 1] = 0;
+    }
+
+    char *pipePos = strchr(input, '|');
+    if (pipePos) {
+        out->hasPipe = 1;
+        *pipePos = 0;
+        pipePos++;
+    }
+
+    int i = 0;
+    char *tok = strtok(input, " \t");
+    while (tok && i < MAX_ARGS - 1) {
+        out->args1[i++] = tok;
+        tok = strtok(NULL, " \t");
+    }
+    out->cmd1 = out->args1[0];
+
+    if (out->hasPipe) {
+        i = 0;
+        tok = strtok(pipePos, " \t");
+        while (tok && i < MAX_ARGS - 1) {
+            out->args2[i++] = tok;
+            tok = strtok(NULL, " \t");
+        }
+        out->cmd2 = out->args2[0];
+    }
+}
+
+static void (*getFn(const char *cmd))(uint8_t, char **) {
+    for (int i = 0; commandsNames[i] != NULL; i++) {
+        if (strcmp(commandsNames[i], cmd) == 0) {
+            return instructionFunctions[i];
+        }
+    }
+    return NULL;
 }

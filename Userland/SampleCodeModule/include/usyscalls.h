@@ -2,6 +2,7 @@
 #define USYSCALLS_H
 
 #include <stdint.h>
+#include <types.h>
 
 uint64_t sys_read(unsigned int fd, char* buffer, unsigned int size);
 
@@ -48,5 +49,10 @@ uint64_t sys_pipe_read(unsigned int fd, char *buffer, uint64_t size);
 uint64_t sys_pipe_write(unsigned int fd, const char *buffer, uint64_t size);
 
 uint64_t sys_pipe_close(unsigned int fd);
+uint64_t sys_wait(pid_t pid);
+
+uint64_t sys_put_in_fg(pid_t pid);
+
+uint64_t sys_timer_wait(int seconds);
 
 #endif

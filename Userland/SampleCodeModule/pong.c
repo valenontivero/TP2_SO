@@ -194,7 +194,7 @@ void win(int color, int player) {
     sys_toggle_cursor();
 
     if (c == 'r' || c == 'R') {
-        pong();
+        playPong();
         return;
     }
     goalMade = 1;
@@ -231,7 +231,7 @@ void handleKey(unsigned char key, char moves[]) {
     }
 }
 
-void pong() {
+void playPong() {
     sys_clear_screen();
     sys_toggle_cursor();
 

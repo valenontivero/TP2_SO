@@ -7,7 +7,7 @@
 #include <keyboard.h>
 #include <clock.h>
 #include <sound.h>
-#include <time.h>
+#include <ourTime.h>
 #include <mySem.h>
 #include <pipe.h>
 
@@ -171,5 +171,17 @@ uint64_t sys_pipe_write(uint64_t fd, uint64_t buffer, uint64_t length, uint64_t 
 
 uint64_t sys_pipe_close(uint64_t fd, uint64_t unused1, uint64_t unused2, uint64_t unused3, uint64_t unused4, uint64_t unused5) {
     pipe_close((int)fd);
+uint64_t sys_wait(uint64_t pid, uint64_t unused1, uint64_t unused2, uint64_t unused3, uint64_t unused4, uint64_t unused5) {
+    wait((pid_t) pid);
+    return 0;
+}
+
+uint64_t sys_put_in_fg(uint64_t pid, uint64_t unused1, uint64_t unused2, uint64_t unused3, uint64_t unused4, uint64_t unused5) {
+    putInFG((pid_t) pid);
+    return 0;
+}
+
+uint64_t sys_timer_wait(uint64_t seconds, uint64_t unused1, uint64_t unused2, uint64_t unused3, uint64_t unused4, uint64_t unused5) {
+    timer_wait((int)(seconds * TICKS_FREQUENCY));
     return 0;
 }

@@ -5,6 +5,8 @@
 
 void strcpy(char * dest, char * src);
 
+int strcmp(const char * str1, const char * str2);
+
 int strncmp(char * str1, char * str2, int length);
 
 uint64_t atoi(char * str);
@@ -16,5 +18,11 @@ void intToStr(int num, char* str);
 void intToHex(uint64_t num, char* hex);
 
 unsigned int strlen(char* str);
+
+char* strchr(const char* str, int c);
+
+char* strtok(char* str, const char* delim);
+
+void* memset(void* destiation, int32_t c, uint64_t length);
 
 #endif // U_STRINGS_H

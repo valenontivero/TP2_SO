@@ -29,6 +29,8 @@ uint64_t sys_get_screensize(uint64_t width, uint64_t height, uint64_t unused2, u
 uint64_t sys_toggle_cursor(uint64_t unused1, uint64_t unused2, uint64_t unused3, uint64_t unused4, uint64_t unused5, uint64_t unused6);
 
 uint64_t sys_get_ticks(uint64_t ticks,uint64_t unused1, uint64_t unused2, uint64_t unused3, uint64_t unused4, uint64_t unused5);
+uint64_t sys_timer_wait(uint64_t seconds, uint64_t unused1, uint64_t unused2, uint64_t unused3, uint64_t unused4, uint64_t unused5);
+
 
 uint64_t sys_draw_image(uint64_t image, uint64_t width, uint64_t height, uint64_t unused3, uint64_t unused4, uint64_t unused5);
 
@@ -44,4 +46,9 @@ uint64_t sys_pipe_open(uint64_t name, uint64_t unused1, uint64_t unused2, uint64
 uint64_t sys_pipe_read(uint64_t fd, uint64_t buffer, uint64_t length, uint64_t unused3, uint64_t unused4, uint64_t unused5);
 uint64_t sys_pipe_write(uint64_t fd, uint64_t buffer, uint64_t length, uint64_t unused3, uint64_t unused4, uint64_t unused5);
 uint64_t sys_pipe_close(uint64_t fd, uint64_t unused1, uint64_t unused2, uint64_t unused3, uint64_t unused4, uint64_t unused5);
+uint64_t sys_put_in_fg(uint64_t pid, uint64_t unused1, uint64_t unused2, uint64_t unused3, uint64_t unused4, uint64_t unused5);
+
+uint64_t sys_wait(uint64_t pid, uint64_t unused1, uint64_t unused2, uint64_t unused3, uint64_t unused4, uint64_t unused5);
+
+
 #endif
