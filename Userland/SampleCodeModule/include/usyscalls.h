@@ -55,4 +55,6 @@ uint64_t sys_put_in_fg(pid_t pid);
 
 uint64_t sys_timer_wait(int seconds);
 
+uint64_t sys_change_process_fd(uint64_t pid, uint64_t fd, uint64_t end);
+
 #endif

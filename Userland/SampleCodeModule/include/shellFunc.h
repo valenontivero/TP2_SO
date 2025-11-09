@@ -1,4 +1,4 @@
-#define COMMANDS_QUANTITY 10  // ACORDARSE DE ESTO (y agregar la descripcion en commandsHelp en shellFunc.c)
+#define COMMANDS_QUANTITY 14  // ACORDARSE DE ESTO (y agregar la descripcion en commandsHelp en shellFunc.c)
 
 void help (uint8_t argc, char **argv);
 
@@ -19,3 +19,11 @@ void pong (uint8_t argc, char **argv);
 void clear (uint8_t argc, char **argv);
 
 void hello (uint8_t argc, char **argv);
+
+void testprint (uint8_t argc, char **argv);
+
+void testsem (uint8_t argc, char **argv);
+
+void testpipe (uint8_t argc, char **argv);
+
+void testpriority (uint8_t argc, char **argv);
