@@ -18,5 +18,6 @@ int safe_strncpy(char* dest, const char* src, size_t n);
 size_t strlen(const char* str);
 int strcmp(const char *s1, const char *s2);
 void itoa(int value, char *str);
+char *my_strcat(char *dest, const char *src);
 
 #endif

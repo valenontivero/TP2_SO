@@ -77,6 +77,27 @@ int safe_strncpy(char* dest, const char* src, size_t n) {
 	return 0; // Indica éxito
 }
 
+char *my_strcat(char *dest, const char *src) {
+    char *ptr = dest;
+
+    // Avanzar hasta el final de dest
+    while (*ptr != '\0') {
+        ptr++;
+    }
+
+    // Copiar src al final de dest
+    while (*src != '\0') {
+        *ptr = *src;
+        ptr++;
+        src++;
+    }
+
+    // Agregar el null terminator final
+    *ptr = '\0';
+
+    return dest;
+}
+
 void itoa(int value, char *str) {
     char buffer[12]; // suficiente para int de 32 bits (-2147483648 a 2147483647)
     int i = 0;
