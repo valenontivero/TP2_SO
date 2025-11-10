@@ -288,3 +288,8 @@ uint64_t sys_process_block(uint64_t pid, uint64_t unused1, uint64_t unused2, uin
 uint64_t sys_process_unblock(uint64_t pid, uint64_t unused1, uint64_t unused2, uint64_t unused3, uint64_t unused4, uint64_t unused5) {
     return (uint64_t)unblockProcess((uint16_t)pid);
 }
+
+uint64_t sys_process_set_foreground(uint64_t pid, uint64_t value, uint64_t unused2, uint64_t unused3, uint64_t unused4, uint64_t unused5) {
+    setProcessForeground((pid_t)pid, (uint8_t)value);
+    return 0;
+}

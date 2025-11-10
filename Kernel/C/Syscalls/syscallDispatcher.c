@@ -39,7 +39,8 @@ enum syscallsEnum {
     SYSCALL_PROCESS_KILL,
     SYSCALL_PROCESS_NICE,
     SYSCALL_PROCESS_BLOCK,
-    SYSCALL_PROCESS_UNBLOCK
+    SYSCALL_PROCESS_UNBLOCK,
+    SYSCALL_PROCESS_SET_FOREGROUND
 };
 
 typedef uint64_t (*sys_call_t)(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9);
@@ -79,7 +80,8 @@ static sys_call_t syscallsArray[] = {   // id
         [SYSCALL_PROCESS_KILL] (sys_call_t) sys_process_kill, // 31
         [SYSCALL_PROCESS_NICE] (sys_call_t) sys_process_nice, // 32
         [SYSCALL_PROCESS_BLOCK] (sys_call_t) sys_process_block, // 33
-        [SYSCALL_PROCESS_UNBLOCK] (sys_call_t) sys_process_unblock // 34
+        [SYSCALL_PROCESS_UNBLOCK] (sys_call_t) sys_process_unblock, // 34
+        [SYSCALL_PROCESS_SET_FOREGROUND] (sys_call_t) sys_process_set_foreground // 35
     };
 
 uint64_t syscallDispatcher(uint64_t id, uint64_t arg0, uint64_t arg1, uint64_t arg2, uint64_t arg3, uint64_t arg4, uint64_t arg5) {

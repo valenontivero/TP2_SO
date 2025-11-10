@@ -116,4 +116,6 @@ int unblockProcess(uint16_t pid);
 uint16_t ps(processInfo* toReturn, uint16_t maxCount);
 
 int getProcessInfo(pid_t pid, processInfo* out);
+
+void setProcessForeground(pid_t pid, uint8_t isForeground);
 #endif

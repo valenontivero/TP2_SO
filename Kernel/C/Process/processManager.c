@@ -91,6 +91,7 @@ void createFirstProcess(void (*fn)(uint8_t, char **), int argc, char** argv){
     new->pid=0;
     new->state=READY;
     new->priority=1;
+    new->foreground = 1;
     new->fd[0] = STDIN; 
     new->fd[1] = STDOUT; 
     new->stackBase = stackStart;
@@ -331,4 +332,11 @@ int getProcessInfo(pid_t pid, processInfo* out) {
     out->stackBase = aux->stackBase;
     out->stackPointer = aux->stackPointer;
     return 0;
+}
+
+void setProcessForeground(pid_t pid, uint8_t isForeground) {
+    if (pid >= MAX_PROCESSES) {
+        return;
+    }
+    processes[pid].foreground = isForeground ? 1 : 0;
 }

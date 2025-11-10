@@ -89,6 +89,7 @@ void shell() {
 	while(1) {
 		unsigned char c = getChar();
 		if (c == '\n') {
+			printChar('\n');
 			buffer[count] = 0;
 			analizeBuffer(buffer, count);
 			printColor("\nHomerOS: $> ", GREEN);
@@ -175,15 +176,22 @@ void analizeBuffer(char * buffer, int count) {
 			return;
 		}
 
+		pid_t shellPid = sys_get_pid();
+
 		pid_t p1 = sys_launch_process(fn1, DEFAULT_PRIO ,countArgs(parsed.args1), parsed.args1);
+		sys_process_set_foreground(p1, 0);
 		sys_change_process_fd(p1,anonPipe,1);
 
 		pid_t p2 = sys_launch_process(fn2, DEFAULT_PRIO ,countArgs(parsed.args2), parsed.args2);
+		sys_process_set_foreground(p2, parsed.isBackground ? 0 : 1);
 		sys_change_process_fd(p2,anonPipe,0);
 
 		if (!parsed.isBackground) {
+			sys_process_set_foreground(shellPid, 0);
 			fgProccess = p2;
 			putInFg(p2);
+			wait(p2);
+			sys_process_set_foreground(shellPid, 1);
 		} else {
 			fgProccess = 0;
 		}
@@ -199,14 +207,19 @@ void analizeBuffer(char * buffer, int count) {
 		return;
 	}
 
+	pid_t shellPid = sys_get_pid();
+
 	pid_t pid = createProcess(fn, DEFAULT_PRIO, countArgs(parsed.args1), parsed.args1);
+	sys_process_set_foreground(pid, parsed.isBackground ? 0 : 1);
 	if (!parsed.isBackground){
+		sys_process_set_foreground(shellPid, 0);
 		fgProccess = pid;
 		putInFg(pid);
 	}
 	if (hasToWait && fgProccess != 0)
 	{
 		wait(fgProccess);
+		sys_process_set_foreground(shellPid, 1);
 	}
 }
 

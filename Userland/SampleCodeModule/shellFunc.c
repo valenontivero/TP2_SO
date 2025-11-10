@@ -87,7 +87,12 @@ static void printPaddedColor(const char *str, int width, uint64_t color) {
 
 static void printPaddedDec(int value, int width, uint64_t color) {
     char buffer[12] = {0};
-    intToStr(value, buffer);
+    if (value == 0) {
+        buffer[0] = '0';
+        buffer[1] = '\0';
+    } else {
+        intToStr(value, buffer);
+    }
     printPaddedColor(buffer, width, color);
 }
 
@@ -309,6 +314,15 @@ void kill(uint8_t argc, char **argv) {
         return;
     }
     pid_t pid = (pid_t)atoi(argv[1]);
+    processInfo info;
+    if (sys_get_process_info(pid, &info) != 0) {
+        printColor("kill: process not found or terminated.\n", RED);
+        return;
+    }
+    if (pid == 0 || strcmp(info.name, "shell") == 0) {
+        printColor("kill: cannot terminate shell or init process.\n", RED);
+        return;
+    }
     if (sys_process_kill(pid) != 0) {
         printColor("kill: could not terminate process.\n", RED);
     }
@@ -361,8 +375,9 @@ void block(uint8_t argc, char **argv) {
 }
 
 void wc(uint8_t argc, char **argv) {
-	uint64_t lines = 0; 
+	printChar('\n');
 	char buffer[2] = {0};
+	int lines = 1;
 	while (1) {
 		uint64_t read = sys_read(STDIN, buffer, 1);
 		if (read == (uint64_t)-1) {
@@ -372,14 +387,21 @@ void wc(uint8_t argc, char **argv) {
 		if (read == 0) {
 			continue;
 		}
-		if (buffer[0] == 4) { // CTRL+D
+		char c = buffer[0];
+		if (c == 4) { // CTRL + D
 			break;
 		}
-		if (buffer[0] == '\n') {
+		if (c == '\n') {
+			printChar('\n');
 			lines++;
+		} else if (c > 20 && c < 127) {
+			sys_write(STDOUT, &c, 1);
 		}
 	}
-	printf("Lines: %d\n", (int)lines);
+	if (lines < 0) {
+		lines = 0;
+	}
+	printf("\nTotal lines: %d\n", lines);
 }
 
 void filter(uint8_t argc, char **argv) {
