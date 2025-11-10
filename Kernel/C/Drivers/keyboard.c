@@ -14,6 +14,7 @@ static int writeIndex = 0;
 
 static char shiftPressed = 0;
 static char capsLocked = 0;
+static char ctrlPressed = 0;
 
 static const char charHexMap[256] = {       
         0,  1/*esc*/,  '1',  '2',  '3',  '4',  '5',  '6',   '7',  '8',  '9',   '0',   '\'',  '<', '\b',
@@ -48,6 +49,14 @@ void keyboard_handler() {
         if (writeIndex >= BUFFER_SIZE)
             writeIndex = 0;
 
+        if (key == 0x1D) { // Left Control pressed
+            ctrlPressed = 1;
+            return;
+        }
+        if (key == 0x9D) { // Left Control released
+            ctrlPressed = 0;
+            return;
+        }
         if (charHexMap[key] == 5 && !shiftPressed) { // Shift key
             shiftPressed = 1;
             return;
@@ -60,13 +69,22 @@ void keyboard_handler() {
             capsLocked = !capsLocked;
             return;
         }
+        char outputChar = !isLetter(key) ? (shiftPressed ? charCapsHexMap[key] : charHexMap[key]): ((shiftPressed && !capsLocked) || (!shiftPressed && capsLocked)) ? charCapsHexMap[key] : charHexMap[key];
+        if (ctrlPressed && outputChar >= 'A' && outputChar <= 'Z') {
+            outputChar = outputChar - 'A' + 1;
+        } else if (ctrlPressed && outputChar >= 'a' && outputChar <= 'z') {
+            outputChar = outputChar - 'a' + 1;
+        }
 
-        buffer[writeIndex] = !isLetter(key) ? (shiftPressed ? charCapsHexMap[key] : charHexMap[key]): ((shiftPressed && !capsLocked) || (!shiftPressed && capsLocked)) ? charCapsHexMap[key] : charHexMap[key];
+        buffer[writeIndex] = outputChar;
 
         // update iterators
         elemCount++;
         writeIndex++;
     } else {
+        if (key == 0x9D) { // Left Control released (make sure release is handled even when key >= 83)
+            ctrlPressed = 0;
+        }
         buffer[writeIndex] = key;
         elemCount++;
         writeIndex++;

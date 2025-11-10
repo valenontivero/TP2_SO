@@ -115,5 +115,37 @@ uint64_t sys_timer_wait(int seconds) {
 }
 
 uint64_t sys_change_process_fd(uint64_t pid, uint64_t fd, uint64_t end) {
-	return sys_call(pid, fd, end, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0);
+	return sys_call((uint64_t)26, pid, fd, end, (uint64_t) 0, (uint64_t) 0);
+}
+
+uint64_t sys_get_mem_info(memoryData *info) {
+    return sys_call((uint64_t)27, (uint64_t)info, (uint64_t)0, (uint64_t)0, (uint64_t)0, (uint64_t)0);
+}
+
+uint64_t sys_get_process_list(processInfo *buffer, uint16_t maxCount, uint16_t *written) {
+    return sys_call((uint64_t)28, (uint64_t)buffer, (uint64_t)maxCount, (uint64_t)written, (uint64_t)0, (uint64_t)0);
+}
+
+uint64_t sys_get_process_info(pid_t pid, processInfo *info) {
+    return sys_call((uint64_t)29, (uint64_t)pid, (uint64_t)info, (uint64_t)0, (uint64_t)0, (uint64_t)0);
+}
+
+uint64_t sys_get_pid() {
+    return sys_call((uint64_t)30, (uint64_t)0, (uint64_t)0, (uint64_t)0, (uint64_t)0, (uint64_t)0);
+}
+
+uint64_t sys_process_kill(pid_t pid) {
+    return sys_call((uint64_t)31, (uint64_t)pid, (uint64_t)0, (uint64_t)0, (uint64_t)0, (uint64_t)0);
+}
+
+uint64_t sys_process_nice(pid_t pid, uint8_t newPriority) {
+    return sys_call((uint64_t)32, (uint64_t)pid, (uint64_t)newPriority, (uint64_t)0, (uint64_t)0, (uint64_t)0);
+}
+
+uint64_t sys_process_block(pid_t pid) {
+    return sys_call((uint64_t)33, (uint64_t)pid, (uint64_t)0, (uint64_t)0, (uint64_t)0, (uint64_t)0);
+}
+
+uint64_t sys_process_unblock(pid_t pid) {
+    return sys_call((uint64_t)34, (uint64_t)pid, (uint64_t)0, (uint64_t)0, (uint64_t)0, (uint64_t)0);
 }

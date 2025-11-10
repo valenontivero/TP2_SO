@@ -53,5 +53,20 @@ uint64_t sys_wait(uint64_t pid, uint64_t unused1, uint64_t unused2, uint64_t unu
 
 uint64_t sys_change_process_fd(uint64_t pid, uint64_t fd, uint64_t end, uint64_t unused3, uint64_t unused4, uint64_t unused5);
 
+uint64_t sys_get_mem_info(uint64_t buffer, uint64_t unused1, uint64_t unused2, uint64_t unused3, uint64_t unused4, uint64_t unused5);
+
+uint64_t sys_get_process_list(uint64_t buffer, uint64_t maxCount, uint64_t countPtr, uint64_t unused3, uint64_t unused4, uint64_t unused5);
+
+uint64_t sys_get_process_info(uint64_t pid, uint64_t outPtr, uint64_t unused2, uint64_t unused3, uint64_t unused4, uint64_t unused5);
+
+uint64_t sys_get_pid(uint64_t unused1, uint64_t unused2, uint64_t unused3, uint64_t unused4, uint64_t unused5, uint64_t unused6);
+
+uint64_t sys_process_kill(uint64_t pid, uint64_t unused1, uint64_t unused2, uint64_t unused3, uint64_t unused4, uint64_t unused5);
+
+uint64_t sys_process_nice(uint64_t pid, uint64_t newPriority, uint64_t unused2, uint64_t unused3, uint64_t unused4, uint64_t unused5);
+
+uint64_t sys_process_block(uint64_t pid, uint64_t unused1, uint64_t unused2, uint64_t unused3, uint64_t unused4, uint64_t unused5);
+
+uint64_t sys_process_unblock(uint64_t pid, uint64_t unused1, uint64_t unused2, uint64_t unused3, uint64_t unused4, uint64_t unused5);
 
 #endif

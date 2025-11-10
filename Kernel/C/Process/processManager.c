@@ -286,9 +286,12 @@ void wait(pid_t pid) {
     parent->waitingChildren = 0;
 }
 
-uint8_t ps(processInfo *toReturn){
-    uint8_t count=0;
-    for (uint16_t i = 0; i < MAX_PROCESSES; i++)
+uint16_t ps(processInfo *toReturn, uint16_t maxCount){
+    uint16_t count=0;
+    if (toReturn == NULL || maxCount == 0) {
+        return 0;
+    }
+    for (uint16_t i = 0; i < MAX_PROCESSES && count < maxCount; i++)
     {
         if (processes[i].state==RUNNING || processes[i].state==READY || processes[i].state== BLOCKED)
         {
@@ -299,6 +302,7 @@ uint8_t ps(processInfo *toReturn){
             toReturn[count].pid=i;
             toReturn[count].priority=aux->priority;
             toReturn[count].state= aux->state;
+            toReturn[count].foreground = aux->foreground;
             toReturn[count].stackBase=  aux->stackBase;
             toReturn[count].stackPointer= aux->stackPointer;
             count++;
@@ -306,4 +310,25 @@ uint8_t ps(processInfo *toReturn){
     }
     
     return count;
+}
+
+int getProcessInfo(pid_t pid, processInfo* out) {
+    if (out == NULL || pid >= MAX_PROCESSES) {
+        return -1;
+    }
+
+    PCB* aux = &processes[pid];
+    if (aux->state == TERMINATED) {
+        return -1;
+    }
+
+    safe_strncpy(out->name, aux->name, PROCESS_MAX_NAME_LEN);
+    out->name[PROCESS_MAX_NAME_LEN-1] = '\0';
+    out->pid = pid;
+    out->priority = aux->priority;
+    out->state = aux->state;
+    out->foreground = aux->foreground;
+    out->stackBase = aux->stackBase;
+    out->stackPointer = aux->stackPointer;
+    return 0;
 }
