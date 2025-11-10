@@ -6,7 +6,7 @@
 #include <PCBQueueADT.h>
 #include <processManager.h>
 #include <mem_manager.h>
-#include <time.h>
+#include <ourTime.h>
 #include <videodriver.h>
 
 static PCB* idlePCB;

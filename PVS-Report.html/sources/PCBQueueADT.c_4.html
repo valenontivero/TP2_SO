@@ -1,0 +1,115 @@
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII" />
+  <title>PCBQueueADT.c</title>
+  <link rel="stylesheet" href="../style.css"/>
+  <script src="../jquery-3.5.1.min.js"></script>
+</head>
+<body>
+<pre><code class = "cpp">
+<a name="ln1">// This is a personal academic project. Dear PVS-Studio, please check it.</a>
+<a name="ln2">// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: https://pvs-studio.com</a>
+<a name="ln3">#include &lt;stdint.h&gt;</a>
+<a name="ln4">#include &lt;mem_manager.h&gt;</a>
+<a name="ln5">#include &lt;PCBQueueADT.h&gt;</a>
+<a name="ln6">#include &lt;stddef.h&gt;</a>
+<a name="ln7">#include &lt;processManager.h&gt;</a>
+<a name="ln8"> </a>
+<a name="ln9">typedef struct PCBQueueCDT{</a>
+<a name="ln10">    PCB* queue[MAX_PROCESSES];</a>
+<a name="ln11">    uint8_t head;</a>
+<a name="ln12">    uint8_t tail;</a>
+<a name="ln13">    uint8_t size;</a>
+<a name="ln14">}PCBQueueCDT;</a>
+<a name="ln15"> </a>
+<a name="ln16">PCBQueueADT CreatePCBQueueADT(){</a>
+<a name="ln17">    PCBQueueADT toReturn = (PCBQueueADT) malloc(sizeof(*toReturn));</a>
+<a name="ln18">    if (toReturn != NULL)</a>
+<a name="ln19">    {  </a>
+<a name="ln20">        toReturn-&gt;head=0;</a>
+<a name="ln21">        toReturn-&gt;tail=0;</a>
+<a name="ln22">        toReturn-&gt;size=0;</a>
+<a name="ln23">    }</a>
+<a name="ln24">    return toReturn;</a>
+<a name="ln25">}</a>
+<a name="ln26"> </a>
+<a name="ln27">int queueProcess(PCBQueueADT adt, void* process){</a>
+<a name="ln28">    if (adt-&gt;size == MAX_PROCESSES) return -1;</a>
+<a name="ln29">    </a>
+<a name="ln30">    adt-&gt;size++;</a>
+<a name="ln31">    adt-&gt;queue[adt-&gt;tail]=process;</a>
+<a name="ln32">    adt-&gt;tail= (adt-&gt;tail + 1) % MAX_PROCESSES;</a>
+<a name="ln33">    return 0; </a>
+<a name="ln34">}</a>
+<a name="ln35"> </a>
+<a name="ln36">void* dequeueProcess(PCBQueueADT adt){</a>
+<a name="ln37">    if (adt-&gt;size == 0) return NULL;</a>
+<a name="ln38"> </a>
+<a name="ln39">    void* toReturn =adt-&gt;queue[adt-&gt;head];</a>
+<a name="ln40">    adt-&gt;size--;</a>
+<a name="ln41">    adt-&gt;head= (adt-&gt;head+1) % MAX_PROCESSES;</a>
+<a name="ln42">    return toReturn;</a>
+<a name="ln43">}</a>
+<a name="ln44"> </a>
+<a name="ln45">int removeProcess(PCBQueueADT adt, PCB* PCB){</a>
+<a name="ln46">    if (adt-&gt;size == 0) return -1;</a>
+<a name="ln47"> </a>
+<a name="ln48">    uint8_t pos;</a>
+<a name="ln49">    uint8_t index = -1;</a>
+<a name="ln50">    for (uint8_t i = 0; i &lt; adt-&gt;size; i++)</a>
+<a name="ln51">    {</a>
+<a name="ln52">        pos = (adt-&gt;head + i) % MAX_PROCESSES;</a>
+<a name="ln53">        if (adt-&gt;queue[pos]-&gt;pid == PCB-&gt;pid)</a>
+<a name="ln54">        {</a>
+<a name="ln55">            index= i;</a>
+<a name="ln56">            break;</a>
+<a name="ln57">        }</a>
+<a name="ln58">    }</a>
+<a name="ln59"> </a>
+<a name="ln60">    if (index == -1) return -1; // PCB not found</a>
+<a name="ln61">    </a>
+<a name="ln62">     for (int i = index; i &lt; adt-&gt;size - 1; i++) {</a>
+<a name="ln63">        int from = (adt-&gt;head + i + 1) % MAX_PROCESSES;</a>
+<a name="ln64">        int to   = (adt-&gt;head + i) % MAX_PROCESSES;</a>
+<a name="ln65">        adt-&gt;queue[to] = adt-&gt;queue[from];</a>
+<a name="ln66">    }</a>
+<a name="ln67">    adt-&gt;tail = (adt-&gt;tail - 1 + MAX_PROCESSES) % MAX_PROCESSES;</a>
+<a name="ln68">    adt-&gt;size--;</a>
+<a name="ln69">    return 0; // PCB not found</a>
+<a name="ln70">}</a>
+<a name="ln71"> </a>
+<a name="ln72">uint8_t getPCBQueueSize(PCBQueueADT adt){return adt-&gt;size; }</a>
+<a name="ln73"> </a>
+<a name="ln74">uint8_t isEmpty(PCBQueueADT adt) { return adt-&gt;size &lt;= 0; }</a>
+</code></pre>
+<div class="balloon" rel="28"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v547/" target="_blank">V547</a> Expression 'adt-&gt;size == 256' is always false. The value range of unsigned char type: [0, 255].</p></div>
+<div class="balloon" rel="60"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v547/" target="_blank">V547</a> Expression 'index == - 1' is always false.</p></div>
+<link rel="stylesheet" href="highlight.css">
+<script src="highlight.pack.js"></script>
+<script src="highlightjs-line-numbers.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<script>hljs.initLineNumbersOnLoad();</script>
+<script>
+  $(document).ready(function() {
+      $('.balloon').each(function () {
+          var bl = $(this);
+          var line = bl.attr('rel');
+          var text = $('a[name="ln'+line+'"]').text();
+
+          var space_count = 0;
+          for(var i = 0; i<text.length; i++){
+              var char = text[i];
+              if((char !== ' ')&&(char !== '\t'))break;
+              if(char === '\t')space_count++;
+              space_count++;
+          }
+
+          bl.css('margin-left', space_count*8);
+          $('a[name="ln'+line+'"]').after(bl);
+      });
+
+      window.location = window.location;
+  });
+</script>
+</body>
+</html>
