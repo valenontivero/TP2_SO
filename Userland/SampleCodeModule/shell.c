@@ -80,6 +80,9 @@ pid_t launchShell(){
 
 void shell() {
     printColor("Welcome to HomerOS. Type \"help\" for command list\n", ORANGE);
+	pid_t shellPid = sys_get_pid();
+	sys_put_in_fg(shellPid);
+	sys_process_set_foreground(shellPid, 1);
 	printColor("\nHomerOS: $> ", GREEN);
 
 	int count = 0;	
@@ -88,7 +91,22 @@ void shell() {
 	char flag = 0; // Used for up arrow
 	while(1) {
 		unsigned char c = getChar();
-		if (c == '\n') {
+		if (c == 3) { // Ctrl + C
+			printColor("^C\n", ORANGE);
+			if (fgProccess != 0) {
+				sys_process_kill(fgProccess);
+				sys_process_set_foreground(shellPid, 1);
+				sys_put_in_fg(shellPid);
+				fgProccess = 0;
+			}
+			count = 0;
+			buffer[0] = 0;
+			printColor("HomerOS: $> ", GREEN);
+		} else if (c == 4) { // Ctrl + D at prompt
+			count = 0;
+			buffer[0] = 0;
+			printColor("\nHomerOS: $> ", GREEN);
+		} else if (c == '\n') {
 			printChar('\n');
 			buffer[count] = 0;
 			analizeBuffer(buffer, count);
@@ -220,6 +238,8 @@ void analizeBuffer(char * buffer, int count) {
 	{
 		wait(fgProccess);
 		sys_process_set_foreground(shellPid, 1);
+		sys_put_in_fg(shellPid);
+		fgProccess = 0;
 	}
 }
 

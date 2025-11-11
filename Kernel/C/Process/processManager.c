@@ -340,3 +340,10 @@ void setProcessForeground(pid_t pid, uint8_t isForeground) {
     }
     processes[pid].foreground = isForeground ? 1 : 0;
 }
+
+PCB* getForegroundProcess() {
+    if (fgPid < 0 || fgPid >= MAX_PROCESSES) {
+        return NULL;
+    }
+    return &processes[fgPid];
+}
