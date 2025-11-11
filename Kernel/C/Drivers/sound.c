@@ -3,7 +3,7 @@
 // codigo de osdev
 #include <sound.h>
 #include <lib.h>
-#include <time.h>
+#include <ourTime.h>
 #include <keyboard.h>
 
 //Play sound using built in speaker

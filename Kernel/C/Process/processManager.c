@@ -20,14 +20,14 @@ static pid_t nextPID= 1;
 static pid_t fgPid=-1;
 
 int getPriority(pid_t pid){
-	if(pid < 0 || pid > MAX_PROCESSES){
+	if(pid < 0 || pid >= MAX_PROCESSES){
 		return -1;
 	}
 	return processes[pid].priority;
 }
 
 void setPriority(pid_t pid, int newPriority){
-	if(pid < 0 || pid > MAX_PROCESSES){
+	if(pid < 0 || pid >= MAX_PROCESSES){
 		return ;
 	}
 	processes[pid].priority = (newPriority >= PRIORITY_LEVELS) ? PRIORITY_LEVELS - 1 : newPriority;

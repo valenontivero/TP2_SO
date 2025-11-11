@@ -1,0 +1,294 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>PVS-Studio HTML Report</title>
+<style type="text/css">
+   TABLE {
+    width: 100%;
+   }
+   #col_group, #col_level, #col_code, #col_cwe, #col_sast {
+    text-align: center;
+    white-space: nowrap;
+    width: 0;
+   }
+   #col_file, #col_info, #col_projects {
+    white-space: nowrap;
+    text-align: left;
+    width: 0;
+   }
+   #col_info {
+    width: 120px;
+   }
+   #col_message {
+    text-align: left;
+   }
+  </style>
+<link rel="stylesheet" href="style.css" />
+<script type="text/javascript" src="script.js"></script>
+<script type="text/javascript" src="toggle-cell.js"></script>
+</head>
+<body>
+  <div class="header">
+    <img src="images/logo.png" alt=""/>
+    <h1>PVS-Studio Analysis Results</h1>
+    <br class="clear">
+  </div>
+  <table cellpadding="0" cellspacing="0" border="0" class="infotopic">
+     <tr><th id="col_info">Date:</th><td>Mon Nov 10 18:05:39 2025</td></tr>
+     <tr><th id="col_info">PVS-Studio Version:</th><td>7.39.99307.684</td></tr>
+     <tr><th id="col_info">Command Line:</th><td>plog-converter -a GA\:1,2 -t fullhtml -o PVS-Report.html PVS-Studio.log </td></tr>
+     <tr><th id="col_info">Total Warnings (GA):</th><td>33</td></tr>
+  </table>
+  <div class="toggle-box">
+    <label>
+      Show full paths
+    <input class="path-toggle toggle-button" type="checkbox" name="toggle-path" onclick="togglePathView()" />
+    </label>
+  </div>
+  <table cellpadding="0" cellspacing="0" border="0" class="sortable" id="sorter">
+    <tr>
+      <th class="gsort">Group</th>
+      <th class="fsort">Location</th>
+      <th class="lsort">Level</th>
+      <th class="vsort">Code</th>
+      <th>Message</th>
+    </tr>
+    <tr>
+      <td id="col_group">General Analysis</td>
+      <td id="col_file"><a target="_blank" class="file-link" href="sources/bmfs.c_0.html#ln552">bmfs.c:552</a><a target="_blank" class="file-link display-none" href="sources/bmfs.c_0.html#ln552">/home/potatoknishe/Desktop/SO/present/TP_SO2/Bootloader/BMFS/bmfs.c:552</a></td>
+      <td id="col_level" style="color:#FF0000"><b>High</b></td>
+      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v595/">V595</td>
+      <td id="col_message">The 'disk' pointer was utilized before it was verified against nullptr. Check lines: 552, 575.</td>
+    </tr>
+    <tr>
+      <td id="col_group">General Analysis</td>
+      <td id="col_file"><a target="_blank" class="file-link" href="sources/bmfs.c_0.html#ln638">bmfs.c:638</a><a target="_blank" class="file-link display-none" href="sources/bmfs.c_0.html#ln638">/home/potatoknishe/Desktop/SO/present/TP_SO2/Bootloader/BMFS/bmfs.c:638</a></td>
+      <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
+      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v1032/">V1032</td>
+      <td id="col_message">The pointer 'dir_copy' is cast to a more strictly aligned pointer type.</td>
+    </tr>
+    <tr>
+      <td id="col_group">General Analysis</td>
+      <td id="col_file"><a target="_blank" class="file-link" href="sources/bmfs.c_0.html#ln694">bmfs.c:694</a><a target="_blank" class="file-link display-none" href="sources/bmfs.c_0.html#ln694">/home/potatoknishe/Desktop/SO/present/TP_SO2/Bootloader/BMFS/bmfs.c:694</a></td>
+      <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
+      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v1032/">V1032</td>
+      <td id="col_message">The pointer 'Directory' is cast to a more strictly aligned pointer type.</td>
+    </tr>
+    <tr>
+      <td id="col_group">General Analysis</td>
+      <td id="col_file"><a target="_blank" class="file-link" href="sources/keyboard.c_1.html#ln44">keyboard.c:44</a><a target="_blank" class="file-link display-none" href="sources/keyboard.c_1.html#ln44">/home/potatoknishe/Desktop/SO/present/TP_SO2/Kernel/C/Drivers/keyboard.c:44</a></td>
+      <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
+      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v560/">V560</td>
+      <td id="col_message">A part of conditional expression is always false: key == 0x3A.</td>
+    </tr>
+    <tr>
+      <td id="col_group">General Analysis</td>
+      <td id="col_file"><a target="_blank" class="file-link" href="sources/keyboard.c_1.html#ln64">keyboard.c:64</a><a target="_blank" class="file-link display-none" href="sources/keyboard.c_1.html#ln64">/home/potatoknishe/Desktop/SO/present/TP_SO2/Kernel/C/Drivers/keyboard.c:64</a></td>
+      <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
+      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v728/">V728</td>
+      <td id="col_message">An excessive check can be simplified. The '(A &amp;&amp; !B) || (!A &amp;&amp; B)' expression is equivalent to the 'bool(A) != bool(B)' expression.</td>
+    </tr>
+    <tr>
+      <td id="col_group">General Analysis</td>
+      <td id="col_file"><a target="_blank" class="file-link" href="sources/sound.c_2.html#ln35">sound.c:35</a><a target="_blank" class="file-link display-none" href="sources/sound.c_2.html#ln35">/home/potatoknishe/Desktop/SO/present/TP_SO2/Kernel/C/Drivers/sound.c:35</a></td>
+      <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
+      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v1031/">V1031</td>
+      <td id="col_message">The 'timer_wait' function is not declared. Passing data to or from this function can be affected.</td>
+    </tr>
+    <tr>
+      <td id="col_group">General Analysis</td>
+      <td id="col_file"><a target="_blank" class="file-link" href="sources/sound.c_2.html#ln37">sound.c:37</a><a target="_blank" class="file-link display-none" href="sources/sound.c_2.html#ln37">/home/potatoknishe/Desktop/SO/present/TP_SO2/Kernel/C/Drivers/sound.c:37</a></td>
+      <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
+      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v1031/">V1031</td>
+      <td id="col_message">The 'timer_wait' function is not declared. Passing data to or from this function can be affected.</td>
+    </tr>
+    <tr>
+      <td id="col_group">General Analysis</td>
+      <td id="col_file"><a target="_blank" class="file-link" href="sources/sound.c_2.html#ln44">sound.c:44</a><a target="_blank" class="file-link display-none" href="sources/sound.c_2.html#ln44">/home/potatoknishe/Desktop/SO/present/TP_SO2/Kernel/C/Drivers/sound.c:44</a></td>
+      <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
+      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v1031/">V1031</td>
+      <td id="col_message">The 'timer_wait' function is not declared. Passing data to or from this function can be affected.</td>
+    </tr>
+    <tr>
+      <td id="col_group">General Analysis</td>
+      <td id="col_file"><a target="_blank" class="file-link" href="sources/pipe.c_3.html#ln71">pipe.c:71</a><a target="_blank" class="file-link display-none" href="sources/pipe.c_3.html#ln71">/home/potatoknishe/Desktop/SO/present/TP_SO2/Kernel/C/Pipe/pipe.c:71</a></td>
+      <td id="col_level" style="color:#FF0000"><b>High</b></td>
+      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v569/">V569</td>
+      <td id="col_message">Value '1023' of type 'int' is narrowed to type 'unsigned char' with range [0..255]. The most significant bits will be lost.</td>
+    </tr>
+    <tr>
+      <td id="col_group">General Analysis</td>
+      <td id="col_file"><a target="_blank" class="file-link" href="sources/pipe.c_3.html#ln88">pipe.c:88</a><a target="_blank" class="file-link display-none" href="sources/pipe.c_3.html#ln88">/home/potatoknishe/Desktop/SO/present/TP_SO2/Kernel/C/Pipe/pipe.c:88</a></td>
+      <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
+      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v557/">V557</td>
+      <td id="col_message">Array overrun is possible. The value of 'fd' index could reach 63.</td>
+    </tr>
+    <tr>
+      <td id="col_group">General Analysis</td>
+      <td id="col_file"><a target="_blank" class="file-link" href="sources/pipe.c_3.html#ln109">pipe.c:109</a><a target="_blank" class="file-link display-none" href="sources/pipe.c_3.html#ln109">/home/potatoknishe/Desktop/SO/present/TP_SO2/Kernel/C/Pipe/pipe.c:109</a></td>
+      <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
+      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v557/">V557</td>
+      <td id="col_message">Array overrun is possible. The value of 'fd' index could reach 63.</td>
+    </tr>
+    <tr>
+      <td id="col_group">General Analysis</td>
+      <td id="col_file"><a target="_blank" class="file-link" href="sources/pipe.c_3.html#ln128">pipe.c:128</a><a target="_blank" class="file-link display-none" href="sources/pipe.c_3.html#ln128">/home/potatoknishe/Desktop/SO/present/TP_SO2/Kernel/C/Pipe/pipe.c:128</a></td>
+      <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
+      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v557/">V557</td>
+      <td id="col_message">Array overrun is possible. The value of 'fd' index could reach 63.</td>
+    </tr>
+    <tr>
+      <td id="col_group">General Analysis</td>
+      <td id="col_file"><a target="_blank" class="file-link" href="sources/PCBQueueADT.c_4.html#ln28">PCBQueueADT.c:28</a><a target="_blank" class="file-link display-none" href="sources/PCBQueueADT.c_4.html#ln28">/home/potatoknishe/Desktop/SO/present/TP_SO2/Kernel/C/Process/PCBQueueADT.c:28</a></td>
+      <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
+      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v547/">V547</td>
+      <td id="col_message">Expression 'adt-&gt;size == 256' is always false. The value range of unsigned char type: [0, 255].</td>
+    </tr>
+    <tr>
+      <td id="col_group">General Analysis</td>
+      <td id="col_file"><a target="_blank" class="file-link" href="sources/PCBQueueADT.c_4.html#ln60">PCBQueueADT.c:60</a><a target="_blank" class="file-link display-none" href="sources/PCBQueueADT.c_4.html#ln60">/home/potatoknishe/Desktop/SO/present/TP_SO2/Kernel/C/Process/PCBQueueADT.c:60</a></td>
+      <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
+      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v547/">V547</td>
+      <td id="col_message">Expression 'index == - 1' is always false.</td>
+    </tr>
+    <tr>
+      <td id="col_group">General Analysis</td>
+      <td id="col_file"><a target="_blank" class="file-link" href="sources/processManager.c_5.html#ln99">processManager.c:99</a><a target="_blank" class="file-link display-none" href="sources/processManager.c_5.html#ln99">/home/potatoknishe/Desktop/SO/present/TP_SO2/Kernel/C/Process/processManager.c:99</a></td>
+      <td id="col_level" style="color:#FF0000"><b>High</b></td>
+      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v575/">V575</td>
+      <td id="col_message">The 'memcpy' function doesn't copy the whole string. Use 'strcpy / strcpy_s' function to preserve terminal null.</td>
+    </tr>
+    <tr>
+      <td id="col_group">General Analysis</td>
+      <td id="col_file"><a target="_blank" class="file-link" href="sources/processManager.c_5.html#ln143">processManager.c:143</a><a target="_blank" class="file-link display-none" href="sources/processManager.c_5.html#ln143">/home/potatoknishe/Desktop/SO/present/TP_SO2/Kernel/C/Process/processManager.c:143</a></td>
+      <td id="col_level" style="color:#FF0000"><b>High</b></td>
+      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v575/">V575</td>
+      <td id="col_message">The 'memcpy' function doesn't copy the whole string. Use 'strcpy / strcpy_s' function to preserve terminal null.</td>
+    </tr>
+    <tr>
+      <td id="col_group">General Analysis</td>
+      <td id="col_file"><a target="_blank" class="file-link" href="sources/processManager.c_5.html#ln138">processManager.c:138</a><a target="_blank" class="file-link display-none" href="sources/processManager.c_5.html#ln138">/home/potatoknishe/Desktop/SO/present/TP_SO2/Kernel/C/Process/processManager.c:138</a></td>
+      <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
+      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v522/">V522</td>
+      <td id="col_message">There might be dereferencing of a potential null pointer 'args'. Check lines: 138, 134.</td>
+    </tr>
+    <tr>
+      <td id="col_group">General Analysis</td>
+      <td id="col_file"><a target="_blank" class="file-link" href="sources/processManager.c_5.html#ln51">processManager.c:51</a><a target="_blank" class="file-link display-none" href="sources/processManager.c_5.html#ln51">/home/potatoknishe/Desktop/SO/present/TP_SO2/Kernel/C/Process/processManager.c:51</a></td>
+      <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
+      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v547/">V547</td>
+      <td id="col_message">Expression 'fgPid == - 1' is always false.</td>
+    </tr>
+    <tr>
+      <td id="col_group">General Analysis</td>
+      <td id="col_file"><a target="_blank" class="file-link" href="sources/processManager.c_5.html#ln117">processManager.c:117</a><a target="_blank" class="file-link display-none" href="sources/processManager.c_5.html#ln117">/home/potatoknishe/Desktop/SO/present/TP_SO2/Kernel/C/Process/processManager.c:117</a></td>
+      <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
+      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v547/">V547</td>
+      <td id="col_message">Expression 'processCount &gt;= 256' is always false. The value range of unsigned char type: [0, 255].</td>
+    </tr>
+    <tr>
+      <td id="col_group">General Analysis</td>
+      <td id="col_file"><a target="_blank" class="file-link" href="sources/processManager.c_5.html#ln26">processManager.c:26</a><a target="_blank" class="file-link display-none" href="sources/processManager.c_5.html#ln26">/home/potatoknishe/Desktop/SO/present/TP_SO2/Kernel/C/Process/processManager.c:26</a></td>
+      <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
+      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v557/">V557</td>
+      <td id="col_message">Array overrun is possible. The value of 'pid' index could reach 256.</td>
+    </tr>
+    <tr>
+      <td id="col_group">General Analysis</td>
+      <td id="col_file"><a target="_blank" class="file-link" href="sources/processManager.c_5.html#ln33">processManager.c:33</a><a target="_blank" class="file-link display-none" href="sources/processManager.c_5.html#ln33">/home/potatoknishe/Desktop/SO/present/TP_SO2/Kernel/C/Process/processManager.c:33</a></td>
+      <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
+      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v557/">V557</td>
+      <td id="col_message">Array overrun is possible. The value of 'pid' index could reach 256.</td>
+    </tr>
+    <tr>
+      <td id="col_group">General Analysis</td>
+      <td id="col_file"><a target="_blank" class="file-link" href="sources/processManager.c_5.html#ln139">processManager.c:139</a><a target="_blank" class="file-link display-none" href="sources/processManager.c_5.html#ln139">/home/potatoknishe/Desktop/SO/present/TP_SO2/Kernel/C/Process/processManager.c:139</a></td>
+      <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
+      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v575/">V575</td>
+      <td id="col_message">The potential null pointer is passed into 'memcpy' function. Inspect the first argument. Check lines: 139, 138.</td>
+    </tr>
+    <tr>
+      <td id="col_group">General Analysis</td>
+      <td id="col_file"><a target="_blank" class="file-link" href="sources/scheduler.c_6.html#ln29">scheduler.c:29</a><a target="_blank" class="file-link display-none" href="sources/scheduler.c_6.html#ln29">/home/potatoknishe/Desktop/SO/present/TP_SO2/Kernel/C/Process/scheduler.c:29</a></td>
+      <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
+      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v522/">V522</td>
+      <td id="col_message">There might be dereferencing of a potential null pointer 'scheduler-&gt;currentRunningPCB'. Check lines: 29, 28.</td>
+    </tr>
+    <tr>
+      <td id="col_group">General Analysis</td>
+      <td id="col_file"><a target="_blank" class="file-link" href="sources/scheduler.c_6.html#ln21">scheduler.c:21</a><a target="_blank" class="file-link display-none" href="sources/scheduler.c_6.html#ln21">/home/potatoknishe/Desktop/SO/present/TP_SO2/Kernel/C/Process/scheduler.c:21</a></td>
+      <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
+      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v1031/">V1031</td>
+      <td id="col_message">The 'timer_wait' function is not declared. Passing data to or from this function can be affected.</td>
+    </tr>
+    <tr>
+      <td id="col_group">General Analysis</td>
+      <td id="col_file"><a target="_blank" class="file-link" href="sources/syscalls.c_7.html#ln154">syscalls.c:154</a><a target="_blank" class="file-link display-none" href="sources/syscalls.c_7.html#ln154">/home/potatoknishe/Desktop/SO/present/TP_SO2/Kernel/C/Syscalls/syscalls.c:154</a></td>
+      <td id="col_level" style="color:#FF0000"><b>High</b></td>
+      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v547/">V547</td>
+      <td id="col_message">Expression 'pid &lt; 0' is always false. Unsigned type value is never &lt; 0.</td>
+    </tr>
+    <tr>
+      <td id="col_group">General Analysis</td>
+      <td id="col_file"><a target="_blank" class="file-link" href="sources/syscalls.c_7.html#ln178">syscalls.c:178</a><a target="_blank" class="file-link display-none" href="sources/syscalls.c_7.html#ln178">/home/potatoknishe/Desktop/SO/present/TP_SO2/Kernel/C/Syscalls/syscalls.c:178</a></td>
+      <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
+      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v1031/">V1031</td>
+      <td id="col_message">The 'wait' function is not declared. Passing data to or from this function can be affected.</td>
+    </tr>
+    <tr>
+      <td id="col_group">General Analysis</td>
+      <td id="col_file"><a target="_blank" class="file-link" href="sources/irqDispatcher.c_8.html#ln25">irqDispatcher.c:25</a><a target="_blank" class="file-link display-none" href="sources/irqDispatcher.c_8.html#ln25">/home/potatoknishe/Desktop/SO/present/TP_SO2/Kernel/C/irqDispatcher.c:25</a></td>
+      <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
+      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v1031/">V1031</td>
+      <td id="col_message">The 'timer_handler' function is not declared. Passing data to or from this function can be affected.</td>
+    </tr>
+    <tr>
+      <td id="col_group">General Analysis</td>
+      <td id="col_file"><a target="_blank" class="file-link" href="sources/naiveConsole.c_9.html#ln7">naiveConsole.c:7</a><a target="_blank" class="file-link display-none" href="sources/naiveConsole.c_9.html#ln7">/home/potatoknishe/Desktop/SO/present/TP_SO2/Kernel/C/naiveConsole.c:7</a></td>
+      <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
+      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v1009/">V1009</td>
+      <td id="col_message">Check the array initialization. Only the first element is initialized explicitly. The rest elements are initialized with zeros.</td>
+    </tr>
+    <tr>
+      <td id="col_group">General Analysis</td>
+      <td id="col_file"><a target="_blank" class="file-link" href="sources/shell.c_10.html#ln156">shell.c:156</a><a target="_blank" class="file-link display-none" href="sources/shell.c_10.html#ln156">/home/potatoknishe/Desktop/SO/present/TP_SO2/Userland/SampleCodeModule/shell.c:156</a></td>
+      <td id="col_level" style="color:#FF0000"><b>High</b></td>
+      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v614/">V614</td>
+      <td id="col_message">Uninitialized pointer 'name' used. Consider checking the third actual argument of the 'unsigned_num_to_str' function.</td>
+    </tr>
+    <tr>
+      <td id="col_group">General Analysis</td>
+      <td id="col_file"><a target="_blank" class="file-link" href="sources/shell.c_10.html#ln137">shell.c:137</a><a target="_blank" class="file-link display-none" href="sources/shell.c_10.html#ln137">/home/potatoknishe/Desktop/SO/present/TP_SO2/Userland/SampleCodeModule/shell.c:137</a></td>
+      <td id="col_level" style="color:#FF0000"><b>High</b></td>
+      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v781/">V781</td>
+      <td id="col_message">The value of the 'i' index is checked after it was used. Perhaps there is a mistake in program logic.</td>
+    </tr>
+    <tr>
+      <td id="col_group">General Analysis</td>
+      <td id="col_file"><a target="_blank" class="file-link" href="sources/userio.c_11.html#ln100">userio.c:100</a><a target="_blank" class="file-link display-none" href="sources/userio.c_11.html#ln100">/home/potatoknishe/Desktop/SO/present/TP_SO2/Userland/SampleCodeModule/userio.c:100</a></td>
+      <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
+      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v601/">V601</td>
+      <td id="col_message">Pointer is implicitly cast to an integer type. Inspect the second argument.</td>
+    </tr>
+    <tr>
+      <td id="col_group">General Analysis</td>
+      <td id="col_file"><a target="_blank" class="file-link" href="sources/userio.c_11.html#ln154">userio.c:154</a><a target="_blank" class="file-link display-none" href="sources/userio.c_11.html#ln154">/home/potatoknishe/Desktop/SO/present/TP_SO2/Userland/SampleCodeModule/userio.c:154</a></td>
+      <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
+      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v601/">V601</td>
+      <td id="col_message">Pointer is implicitly cast to an integer type. Inspect the second argument.</td>
+    </tr>
+    <tr>
+      <td id="col_group">General Analysis</td>
+      <td id="col_file"><a target="_blank" class="file-link" href="sources/userio.c_11.html#ln167">userio.c:167</a><a target="_blank" class="file-link display-none" href="sources/userio.c_11.html#ln167">/home/potatoknishe/Desktop/SO/present/TP_SO2/Userland/SampleCodeModule/userio.c:167</a></td>
+      <td id="col_level" style="color:#FFA500"><b>Medium</b></td>
+      <td id="col_code"><a target="_blank" href="https://pvs-studio.com/en/docs/warnings/v785/">V785</td>
+      <td id="col_message">Constant expression in switch statement.</td>
+    </tr>
+  </table>
+<script type="text/javascript">
+var sorter=new table.sorter("sorter");
+sorter.init("sorter",0);
+</script>
+</body>
+</html>

@@ -1,0 +1,189 @@
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <title>pipe.c</title>
+  <link rel="stylesheet" href="../style.css"/>
+  <script src="../jquery-3.5.1.min.js"></script>
+</head>
+<body>
+<pre><code class = "cpp">
+<a name="ln1">// This is a personal academic project. Dear PVS-Studio, please check it.</a>
+<a name="ln2">// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: https://pvs-studio.com</a>
+<a name="ln3"> </a>
+<a name="ln4">#include &lt;pipe.h&gt;</a>
+<a name="ln5">#include &lt;lib.h&gt;</a>
+<a name="ln6">#include &lt;mem_manager.h&gt;</a>
+<a name="ln7">#include &lt;processManager.h&gt;</a>
+<a name="ln8">#include &lt;scheduler.h&gt;</a>
+<a name="ln9">#include &lt;PCBQueueADT.h&gt;</a>
+<a name="ln10">#include &lt;mySem.h&gt;</a>
+<a name="ln11">//#include &lt;time_and_rtc.h&gt;</a>
+<a name="ln12">#include &lt;interrupts.h&gt;</a>
+<a name="ln13"> </a>
+<a name="ln14">static Pipe pipes[MAX_PIPES];</a>
+<a name="ln15">static PipeFD pipeFDs[MAX_PIPES * 2];  // cada pipe puede tener hasta 2 descriptores</a>
+<a name="ln16"> </a>
+<a name="ln17">static int started = 0;</a>
+<a name="ln18"> </a>
+<a name="ln19">void initPipes() {</a>
+<a name="ln20">    for (int i = 0; i &lt; MAX_PIPES; i++) {</a>
+<a name="ln21">        pipes[i].inUse = 0;</a>
+<a name="ln22">    }</a>
+<a name="ln23">    for (int i = 0; i &lt; MAX_PIPES * 2; i++) {</a>
+<a name="ln24">        pipeFDs[i].inUse = 0;</a>
+<a name="ln25">    }</a>
+<a name="ln26">}</a>
+<a name="ln27"> </a>
+<a name="ln28">static int allocateFD(Pipe* pipe, PipeEnd end) {</a>
+<a name="ln29">    for (int i = 0; i &lt; MAX_PIPES * 2; i++) {</a>
+<a name="ln30">        if (!pipeFDs[i].inUse) {</a>
+<a name="ln31">            pipeFDs[i].inUse = 1;</a>
+<a name="ln32">            pipeFDs[i].pipe = pipe;</a>
+<a name="ln33">            pipeFDs[i].end = end;</a>
+<a name="ln34">            return i;</a>
+<a name="ln35">        }</a>
+<a name="ln36">    }</a>
+<a name="ln37">    return -1;</a>
+<a name="ln38">}</a>
+<a name="ln39"> </a>
+<a name="ln40">uint8_t pipe_open(const char* name) {</a>
+<a name="ln41">	if (!started) {</a>
+<a name="ln42">		initPipes();</a>
+<a name="ln43">		started = 1;</a>
+<a name="ln44">	}</a>
+<a name="ln45"> </a>
+<a name="ln46">	Pipe* pipe = NULL;</a>
+<a name="ln47">	int i;</a>
+<a name="ln48"> </a>
+<a name="ln49">	// Ver si ya existe</a>
+<a name="ln50">	for (i = 0; i &lt; MAX_PIPES; i++) {</a>
+<a name="ln51">		if (pipes[i].inUse &amp;&amp; strcmp(pipes[i].name, name) == 0) {</a>
+<a name="ln52">			pipe = &amp;pipes[i];</a>
+<a name="ln53">			break;</a>
+<a name="ln54">		}</a>
+<a name="ln55">	}</a>
+<a name="ln56">    </a>
+<a name="ln57">	// Si no existe, crearlo</a>
+<a name="ln58">	if (!pipe) {</a>
+<a name="ln59">        for (i = 0; i &lt; MAX_PIPES; i++) {</a>
+<a name="ln60">            if (!pipes[i].inUse) {</a>
+<a name="ln61">                pipe = &amp;pipes[i];</a>
+<a name="ln62">				pipe-&gt;inUse = 1;</a>
+<a name="ln63">				safe_strncpy(pipe-&gt;name, name, MAX_PIPE_NAME);</a>
+<a name="ln64">				pipe-&gt;name[MAX_PIPE_NAME - 1] = '\0';  // Asegurar nul-terminación</a>
+<a name="ln65">				pipe-&gt;readIdx = 0;</a>
+<a name="ln66">				pipe-&gt;writeIdx = 0;</a>
+<a name="ln67">				pipe-&gt;size = 0;</a>
+<a name="ln68">                char sem_write_name[MAX_PIPE_NAME + 5];</a>
+<a name="ln69">                safe_strncpy(sem_write_name, name, MAX_PIPE_NAME);</a>
+<a name="ln70">                my_strcat(sem_write_name, &quot;read&quot;);</a>
+<a name="ln71">               	pipe-&gt;write_sem=sem_open(sem_write_name, PIPE_BUFFER_SIZE-1);</a>
+<a name="ln72">                pipe-&gt;read_sem=sem_open(name, 0);</a>
+<a name="ln73">				break;</a>
+<a name="ln74">			}</a>
+<a name="ln75">		}</a>
+<a name="ln76">	}</a>
+<a name="ln77"> </a>
+<a name="ln78">	if (!pipe) return -1;  // No hay espacio</a>
+<a name="ln79"> </a>
+<a name="ln80">	return i + 2; // le sumo mas 2 porque el 0 y 1 son stdin y stdout para consola</a>
+<a name="ln81">}</a>
+<a name="ln82"> </a>
+<a name="ln83">uint64_t pipe_write(int fd, const char* buf, uint64_t count) {</a>
+<a name="ln84">    fd -= 2; // Ajustar fd para que coincida con el índice de pipeFDs</a>
+<a name="ln85">    if (fd &lt; 0 || fd &gt;= MAX_PIPES * 2)</a>
+<a name="ln86">        return -1;</a>
+<a name="ln87">    </a>
+<a name="ln88">    Pipe* pipe = &amp;pipes[fd];</a>
+<a name="ln89">    int written = 0;</a>
+<a name="ln90"> </a>
+<a name="ln91">    while (written &lt; count) {</a>
+<a name="ln92">        sem_wait(pipe-&gt;write_sem);</a>
+<a name="ln93"> </a>
+<a name="ln94">        pipe-&gt;buffer[pipe-&gt;writeIdx] = buf[written];</a>
+<a name="ln95">        pipe-&gt;writeIdx = (pipe-&gt;writeIdx + 1) % PIPE_BUFFER_SIZE;</a>
+<a name="ln96">        pipe-&gt;size++;</a>
+<a name="ln97">        written++;</a>
+<a name="ln98">        sem_post(pipe-&gt;read_sem);</a>
+<a name="ln99">    }</a>
+<a name="ln100"> </a>
+<a name="ln101">    return written;</a>
+<a name="ln102">}</a>
+<a name="ln103"> </a>
+<a name="ln104">uint64_t pipe_read(int fd, char* buf, uint64_t count) {</a>
+<a name="ln105">    fd -= 2; // Ajustar fd para que coincida con el índice de pipeFDs</a>
+<a name="ln106">    if (fd &lt; 0 || fd &gt;= MAX_PIPES * 2 )</a>
+<a name="ln107">        return -1;</a>
+<a name="ln108">    </a>
+<a name="ln109">    Pipe* pipe = &amp;pipes[fd];</a>
+<a name="ln110">    int read = 0;</a>
+<a name="ln111">    while (read &lt; count) {</a>
+<a name="ln112">        sem_wait(pipe-&gt;read_sem);</a>
+<a name="ln113">        buf[read] = pipe-&gt;buffer[pipe-&gt;readIdx];</a>
+<a name="ln114">        pipe-&gt;readIdx = (pipe-&gt;readIdx + 1) % PIPE_BUFFER_SIZE;</a>
+<a name="ln115">        pipe-&gt;size--;</a>
+<a name="ln116">        read++;</a>
+<a name="ln117">        sem_post(pipe-&gt;write_sem);</a>
+<a name="ln118">    }</a>
+<a name="ln119"> </a>
+<a name="ln120">    return read;</a>
+<a name="ln121">}</a>
+<a name="ln122"> </a>
+<a name="ln123">void pipe_close(int fd) {</a>
+<a name="ln124">    fd -= 2; // Ajustar fd para que coincida con el índice de pipeFDs</a>
+<a name="ln125">    if (fd &lt; 0 || fd &gt;= MAX_PIPES * 2 || !pipeFDs[fd].inUse)</a>
+<a name="ln126">        return;</a>
+<a name="ln127"> </a>
+<a name="ln128">    pipes[fd].inUse = 0;</a>
+<a name="ln129">}</a>
+<a name="ln130"> </a>
+<a name="ln131">void resetBuffer(uint16_t fd){</a>
+<a name="ln132">    fd-= 2; // Ajustar fd para que coincida con el índice de pipes</a>
+<a name="ln133">    for (size_t i = 0; i &lt; PIPE_BUFFER_SIZE; i++)</a>
+<a name="ln134">    {</a>
+<a name="ln135">        pipes[fd].buffer[i] = 0;</a>
+<a name="ln136">    }</a>
+<a name="ln137">}</a>
+<a name="ln138">//funciona bien</a>
+<a name="ln139">int8_t changeProcessFd(uint16_t pid, uint8_t fd, uint8_t end){</a>
+<a name="ln140">    if(pid &gt;= MAX_PROCESSES || fd &gt;= MAX_PIPES || end &gt;= 2) {</a>
+<a name="ln141">        return -1; // Invalid PID, fd, or end</a>
+<a name="ln142">    }</a>
+<a name="ln143">    PCB* process= getPCBByPID(pid);</a>
+<a name="ln144">    process-&gt;fd[end]=fd;</a>
+<a name="ln145">    return 0;</a>
+<a name="ln146">}</a>
+</code></pre>
+<div class="balloon" rel="71"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v569/" target="_blank">V569</a> Value '1023' of type 'int' is narrowed to type 'unsigned char' with range [0..255]. The most significant bits will be lost.</p></div>
+<div class="balloon" rel="88"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v557/" target="_blank">V557</a> Array overrun is possible. The value of 'fd' index could reach 63.</p></div>
+<div class="balloon" rel="109"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v557/" target="_blank">V557</a> Array overrun is possible. The value of 'fd' index could reach 63.</p></div>
+<div class="balloon" rel="128"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v557/" target="_blank">V557</a> Array overrun is possible. The value of 'fd' index could reach 63.</p></div>
+<link rel="stylesheet" href="highlight.css">
+<script src="highlight.pack.js"></script>
+<script src="highlightjs-line-numbers.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<script>hljs.initLineNumbersOnLoad();</script>
+<script>
+  $(document).ready(function() {
+      $('.balloon').each(function () {
+          var bl = $(this);
+          var line = bl.attr('rel');
+          var text = $('a[name="ln'+line+'"]').text();
+
+          var space_count = 0;
+          for(var i = 0; i<text.length; i++){
+              var char = text[i];
+              if((char !== ' ')&&(char !== '\t'))break;
+              if(char === '\t')space_count++;
+              space_count++;
+          }
+
+          bl.css('margin-left', space_count*8);
+          $('a[name="ln'+line+'"]').after(bl);
+      });
+
+      window.location = window.location;
+  });
+</script>
+</body>
+</html>

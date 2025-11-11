@@ -130,6 +130,7 @@ void shell() {
 }
 
 
+/* Deprecated
 int commandMatch(char * str1, char * command, int count) {
 	int i = 0;
 	if (count != strlen(command))
@@ -139,6 +140,7 @@ int commandMatch(char * str1, char * command, int count) {
 	}
 	return str1[i] == command[i];
 }
+*/
 
 void analizeBuffer(char * buffer, int count) {
 	if (count <= 0)
