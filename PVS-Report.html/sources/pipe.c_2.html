@@ -91,7 +91,7 @@
 <a name="ln82"> </a>
 <a name="ln83">uint64_t pipe_write(int fd, const char* buf, uint64_t count) {</a>
 <a name="ln84">    fd -= 2; // Ajustar fd para que coincida con el índice de pipeFDs</a>
-<a name="ln85">    if (fd &lt; 0 || fd &gt;= MAX_PIPES * 2)</a>
+<a name="ln85">    if (fd &lt; 0 || fd &gt;= MAX_PIPES)</a>
 <a name="ln86">        return -1;</a>
 <a name="ln87">    </a>
 <a name="ln88">    Pipe* pipe = &amp;pipes[fd];</a>
@@ -112,7 +112,7 @@
 <a name="ln103"> </a>
 <a name="ln104">uint64_t pipe_read(int fd, char* buf, uint64_t count) {</a>
 <a name="ln105">    fd -= 2; // Ajustar fd para que coincida con el índice de pipeFDs</a>
-<a name="ln106">    if (fd &lt; 0 || fd &gt;= MAX_PIPES * 2 )</a>
+<a name="ln106">    if (fd &lt; 0 || fd &gt;= MAX_PIPES)</a>
 <a name="ln107">        return -1;</a>
 <a name="ln108">    </a>
 <a name="ln109">    Pipe* pipe = &amp;pipes[fd];</a>
@@ -131,7 +131,7 @@
 <a name="ln122"> </a>
 <a name="ln123">void pipe_close(int fd) {</a>
 <a name="ln124">    fd -= 2; // Ajustar fd para que coincida con el índice de pipeFDs</a>
-<a name="ln125">    if (fd &lt; 0 || fd &gt;= MAX_PIPES * 2 || !pipeFDs[fd].inUse)</a>
+<a name="ln125">    if (fd &lt; 0 || fd &gt;= MAX_PIPES || !pipeFDs[fd].inUse)</a>
 <a name="ln126">        return;</a>
 <a name="ln127"> </a>
 <a name="ln128">    pipes[fd].inUse = 0;</a>
@@ -155,9 +155,6 @@
 <a name="ln146">}</a>
 </code></pre>
 <div class="balloon" rel="71"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v569/" target="_blank">V569</a> Value '1023' of type 'int' is narrowed to type 'unsigned char' with range [0..255]. The most significant bits will be lost.</p></div>
-<div class="balloon" rel="88"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v557/" target="_blank">V557</a> Array overrun is possible. The value of 'fd' index could reach 63.</p></div>
-<div class="balloon" rel="109"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v557/" target="_blank">V557</a> Array overrun is possible. The value of 'fd' index could reach 63.</p></div>
-<div class="balloon" rel="128"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v557/" target="_blank">V557</a> Array overrun is possible. The value of 'fd' index could reach 63.</p></div>
 <link rel="stylesheet" href="highlight.css">
 <script src="highlight.pack.js"></script>
 <script src="highlightjs-line-numbers.js"></script>

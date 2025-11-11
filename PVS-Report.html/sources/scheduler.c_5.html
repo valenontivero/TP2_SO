@@ -15,7 +15,7 @@
 <a name="ln6">#include &lt;PCBQueueADT.h&gt;</a>
 <a name="ln7">#include &lt;processManager.h&gt;</a>
 <a name="ln8">#include &lt;mem_manager.h&gt;</a>
-<a name="ln9">#include &lt;time.h&gt;</a>
+<a name="ln9">#include &lt;ourTime.h&gt;</a>
 <a name="ln10">#include &lt;videodriver.h&gt;</a>
 <a name="ln11"> </a>
 <a name="ln12">static PCB* idlePCB;</a>
@@ -106,7 +106,6 @@
 <a name="ln97">PCB* getCurrentProcess(){return scheduler-&gt;currentRunningPCB;}</a>
 </code></pre>
 <div class="balloon" rel="29"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v522/" target="_blank">V522</a> There might be dereferencing of a potential null pointer 'scheduler-&gt;currentRunningPCB'. Check lines: 29, 28.</p></div>
-<div class="balloon" rel="21"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v1031/" target="_blank">V1031</a> The 'timer_wait' function is not declared. Passing data to or from this function can be affected.</p></div>
 <link rel="stylesheet" href="highlight.css">
 <script src="highlight.pack.js"></script>
 <script src="highlightjs-line-numbers.js"></script>
