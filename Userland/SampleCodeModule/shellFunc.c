@@ -40,8 +40,69 @@ static char *commandsHelp[] = {
 	"block <pid>: toggles the blocked state of the process.",
 	"wc: counts the number of input lines.",
 	"filter: removes vowels from the input stream.",
-	"cat: prints the stdin exactly as received."
+	"cat: prints the stdin exactly as received.",
+    "mvar <writers> <readers>: launches writers/readers synchronized through an mvar."
 };
+
+#define MVAR_MAX_PARTICIPANTS 10
+
+typedef struct {
+    int instanceId;
+    int writerCount;
+    int readerCount;
+    char emptyName[32];
+    char fullName[32];
+    char mutexName[32];
+    volatile char value;
+    char writerArgs[MVAR_MAX_PARTICIPANTS][8];
+    char readerArgs[MVAR_MAX_PARTICIPANTS][8];
+} MVarContext;
+
+static MVarContext currentMVar = {0};
+static int mvarInstanceCounter = 0;
+
+static const uint64_t mvarColors[] = {RED, GREEN, BLUE, YELLOW, CYAN, ORANGE, WHITE};
+static const int mvarColorCount = sizeof(mvarColors) / sizeof(mvarColors[0]);
+
+static void copyString(char *dest, const char *src) {
+    while (*src) {
+        *dest++ = *src++;
+    }
+    *dest = 0;
+}
+
+static void appendString(char *dest, const char *src) {
+    while (*dest) {
+        dest++;
+    }
+    while (*src) {
+        *dest++ = *src++;
+    }
+    *dest = 0;
+}
+
+static void buildMVarName(char *dest, const char *prefix, int instance) {
+    char suffix[16] = {0};
+    copyString(dest, prefix);
+    intToStr(instance, suffix);
+    appendString(dest, suffix);
+}
+
+static void mvar_busy_wait(uint64_t loops) {
+    while (loops--) {
+        __asm__ volatile("nop");
+    }
+}
+
+static void mvar_random_delay(int seed) {
+    uint32_t ticks = 0;
+    sys_get_ticks(&ticks);
+    uint64_t loops = 40000 + ((ticks + seed * 37u) % 60000);
+    mvar_busy_wait(loops);
+}
+
+static void mvar_writer(uint8_t argc, char **argv);
+static void mvar_reader(uint8_t argc, char **argv);
 
 static const char *stateToString(State state) {
     switch (state) {
@@ -440,4 +501,141 @@ void cat(uint8_t argc, char **argv) {
 		}
 		sys_write(STDOUT, buffer, 1);
 	}
+}
+
+static void mvar_writer(uint8_t argc, char **argv) {
+    int index = 0;
+    if (argc > 0 && argv[0] != NULL) {
+        index = (int)atoi(argv[0]);
+    }
+
+    int localInstance = -1;
+    int mutexId = -1;
+    int emptyId = -1;
+    int fullId = -1;
+
+    char letter = (char)('A' + (index % 26));
+
+    while (1) {
+        if (localInstance != currentMVar.instanceId) {
+            if (localInstance != -1 && localInstance != currentMVar.instanceId) {
+                return;
+            }
+            mutexId = (int)sys_sem_open(currentMVar.mutexName, 0);
+            emptyId = (int)sys_sem_open(currentMVar.emptyName, 0);
+            fullId = (int)sys_sem_open(currentMVar.fullName, 0);
+            if (mutexId < 0 || emptyId < 0 || fullId < 0) {
+                printColor("mvar writer: semaphore error\n", RED);
+                return;
+            }
+            localInstance = currentMVar.instanceId;
+        }
+
+        mvar_random_delay(index + 1);
+        sys_sem_wait(emptyId);
+        sys_sem_wait(mutexId);
+        currentMVar.value = letter;
+        sys_sem_post(mutexId);
+        sys_sem_post(fullId);
+    }
+}
+
+static void mvar_reader(uint8_t argc, char **argv) {
+    int index = 0;
+    if (argc > 0 && argv[0] != NULL) {
+        index = (int)atoi(argv[0]);
+    }
+
+    int localInstance = -1;
+    int mutexId = -1;
+    int emptyId = -1;
+    int fullId = -1;
+
+    while (1) {
+        if (localInstance != currentMVar.instanceId) {
+            if (localInstance != -1 && localInstance != currentMVar.instanceId) {
+                return;
+            }
+            mutexId = (int)sys_sem_open(currentMVar.mutexName, 0);
+            emptyId = (int)sys_sem_open(currentMVar.emptyName, 0);
+            fullId = (int)sys_sem_open(currentMVar.fullName, 0);
+            if (mutexId < 0 || emptyId < 0 || fullId < 0) {
+                printColor("mvar reader: semaphore error\n", RED);
+                return;
+            }
+            localInstance = currentMVar.instanceId;
+        }
+
+        mvar_random_delay(currentMVar.writerCount + index + 1);
+        sys_sem_wait(fullId);
+        sys_sem_wait(mutexId);
+        char value = currentMVar.value;
+        sys_sem_post(mutexId);
+        sys_sem_post(emptyId);
+
+        uint64_t color = mvarColors[index % mvarColorCount];
+        printColorChar(value, color);
+    }
+}
+
+void mvar(uint8_t argc, char **argv) {
+    if (argc < 3) {
+        printColor("Usage: mvar <writers> <readers>\n", RED);
+        return;
+    }
+    if (!isNumber(argv[1]) || !isNumber(argv[2])) {
+        printColor("mvar: writers and readers must be numeric.\n", RED);
+        return;
+    }
+
+    int writers = (int)atoi(argv[1]);
+    int readers = (int)atoi(argv[2]);
+
+    if (writers <= 0 || readers <= 0) {
+        printColor("mvar: writers and readers must be positive.\n", RED);
+        return;
+    }
+    if (writers > MVAR_MAX_PARTICIPANTS) {
+        printColor("mvar: writers out of range (max 10).\n", RED);
+        return;
+    }
+    if (readers > MVAR_MAX_PARTICIPANTS) {
+        printColor("mvar: readers out of range (max 10).\n", RED);
+        return;
+    }
+
+    mvarInstanceCounter++;
+    currentMVar.instanceId = mvarInstanceCounter;
+    currentMVar.writerCount = writers;
+    currentMVar.readerCount = readers;
+    currentMVar.value = 0;
+
+    buildMVarName(currentMVar.emptyName, "mvar_empty_", currentMVar.instanceId);
+    buildMVarName(currentMVar.fullName, "mvar_full_", currentMVar.instanceId);
+    buildMVarName(currentMVar.mutexName, "mvar_mutex_", currentMVar.instanceId);
+
+    int mutexId = (int)sys_sem_open(currentMVar.mutexName, 1);
+    int emptyId = (int)sys_sem_open(currentMVar.emptyName, 1);
+    int fullId = (int)sys_sem_open(currentMVar.fullName, 0);
+
+    if (mutexId < 0 || emptyId < 0 || fullId < 0) {
+        printColor("mvar: could not create semaphores.\n", RED);
+        return;
+    }
+
+    for (int i = 0; i < writers; i++) {
+        intToStr(i, currentMVar.writerArgs[i]);
+        char *argvWriter[2];
+        argvWriter[0] = currentMVar.writerArgs[i];
+        argvWriter[1] = NULL;
+        sys_launch_process((void *)mvar_writer, DEFAULT_PRIO, 1, argvWriter);
+    }
+
+    for (int i = 0; i < readers; i++) {
+        intToStr(i, currentMVar.readerArgs[i]);
+        char *argvReader[2];
+        argvReader[0] = currentMVar.readerArgs[i];
+        argvReader[1] = NULL;
+        sys_launch_process((void *)mvar_reader, DEFAULT_PRIO, 1, argvReader);
+    }
 }

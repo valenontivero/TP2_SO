@@ -8,7 +8,6 @@
 #include <processManager.h>
 #include <lib.h>
 
-
 static char buffer[BUFFER_SIZE] = {0};
 static int elemCount = 0;
 static int readIndex = 0;
@@ -181,10 +180,12 @@ char getCharNoBlock() {
 }
 
 void initKeyboard() {
-    uint8_t id = sem_open("keyboard", 0);
-    if (id == (uint8_t)-1) {
-        semaphoreId = -1;
-    } else {
-        semaphoreId = id;
+    if (semaphoreId < 0) {
+        uint8_t id = sem_open("keyboard", 0);
+        if (id == (uint8_t)-1) {
+            semaphoreId = -1;
+        } else {
+            semaphoreId = id;
+        }
     }
 }

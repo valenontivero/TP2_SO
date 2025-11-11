@@ -55,9 +55,10 @@ static void  (*instructionFunctions[])(uint8_t, char **) = {
     wc,
     filter,
     cat,
+    mvar,
 	NULL};
 
-static char *commandsNames[] = {"help", "time", "date", "registers", "fillregs", "div0", "invalidop", "pong", "clear", "hello", "testprint", "testsem", "testpipe", "testpriority", "mem", "ps", "loop", "kill", "nice", "block", "wc", "filter", "cat", 0};
+static char *commandsNames[] = {"help", "time", "date", "registers", "fillregs", "div0", "invalidop", "pong", "clear", "hello", "testprint", "testsem", "testpipe", "testpriority", "mem", "ps", "loop", "kill", "nice", "block", "wc", "filter", "cat", "mvar", 0};
 
 
 //
@@ -180,7 +181,8 @@ void analizeBuffer(char * buffer, int count) {
 	
 	
 	if (parsed.hasPipe) { //TODO: descomentar cuando esten las pipes (y probarlo(Si falla y no tienen ganas de arreglarlo, diganle al chile))
-		char* name;
+		char nameBuffer[16] = {0};
+		char *name = nameBuffer;
 		unsigned_num_to_str(pipeCounter,0,name);
 		uint8_t anonPipe=sys_pipe_open(name);
 		pipeCounter++;
