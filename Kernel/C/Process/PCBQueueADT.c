@@ -46,7 +46,7 @@ int removeProcess(PCBQueueADT adt, PCB* PCB){
     if (adt->size == 0) return -1;
 
     uint8_t pos;
-    uint8_t index = -1;
+    int8_t index = -1;
     for (uint8_t i = 0; i < adt->size; i++)
     {
         pos = (adt->head + i) % MAX_PROCESSES;

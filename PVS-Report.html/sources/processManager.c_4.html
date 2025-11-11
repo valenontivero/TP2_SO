@@ -29,14 +29,14 @@
 <a name="ln20">static pid_t fgPid=-1;</a>
 <a name="ln21"> </a>
 <a name="ln22">int getPriority(pid_t pid){</a>
-<a name="ln23">	if(pid &lt; 0 || pid &gt; MAX_PROCESSES){</a>
+<a name="ln23">	if(pid &lt; 0 || pid &gt;= MAX_PROCESSES){</a>
 <a name="ln24">		return -1;</a>
 <a name="ln25">	}</a>
 <a name="ln26">	return processes[pid].priority;</a>
 <a name="ln27">}</a>
 <a name="ln28"> </a>
 <a name="ln29">void setPriority(pid_t pid, int newPriority){</a>
-<a name="ln30">	if(pid &lt; 0 || pid &gt; MAX_PROCESSES){</a>
+<a name="ln30">	if(pid &lt; 0 || pid &gt;= MAX_PROCESSES){</a>
 <a name="ln31">		return ;</a>
 <a name="ln32">	}</a>
 <a name="ln33">	processes[pid].priority = (newPriority &gt;= PRIORITY_LEVELS) ? PRIORITY_LEVELS - 1 : newPriority;</a>
@@ -322,8 +322,6 @@
 <div class="balloon" rel="138"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v522/" target="_blank">V522</a> There might be dereferencing of a potential null pointer 'args'. Check lines: 138, 134.</p></div>
 <div class="balloon" rel="51"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v547/" target="_blank">V547</a> Expression 'fgPid == - 1' is always false.</p></div>
 <div class="balloon" rel="117"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v547/" target="_blank">V547</a> Expression 'processCount &gt;= 256' is always false. The value range of unsigned char type: [0, 255].</p></div>
-<div class="balloon" rel="26"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v557/" target="_blank">V557</a> Array overrun is possible. The value of 'pid' index could reach 256.</p></div>
-<div class="balloon" rel="33"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v557/" target="_blank">V557</a> Array overrun is possible. The value of 'pid' index could reach 256.</p></div>
 <div class="balloon" rel="139"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v575/" target="_blank">V575</a> The potential null pointer is passed into 'memcpy' function. Inspect the first argument. Check lines: 139, 138.</p></div>
 <link rel="stylesheet" href="highlight.css">
 <script src="highlight.pack.js"></script>

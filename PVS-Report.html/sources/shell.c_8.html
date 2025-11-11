@@ -139,135 +139,136 @@
 <a name="ln130">}</a>
 <a name="ln131"> </a>
 <a name="ln132"> </a>
-<a name="ln133">int commandMatch(char * str1, char * command, int count) {</a>
-<a name="ln134">	int i = 0;</a>
-<a name="ln135">	if (count != strlen(command))</a>
-<a name="ln136">		return 0;</a>
-<a name="ln137">	while (str1[i] != 0 &amp;&amp; command[i] != 0 &amp;&amp; str1[i] == command[i] &amp;&amp; i &lt; count) {</a>
-<a name="ln138">		i++;</a>
-<a name="ln139">	}</a>
-<a name="ln140">	return str1[i] == command[i];</a>
-<a name="ln141">}</a>
-<a name="ln142"> </a>
-<a name="ln143">void analizeBuffer(char * buffer, int count) {</a>
-<a name="ln144">	if (count &lt;= 0)</a>
-<a name="ln145">		return;</a>
-<a name="ln146">	ParsedCommand parsed= {0};</a>
-<a name="ln147">	parseInput(buffer, &amp;parsed);</a>
-<a name="ln148"> </a>
-<a name="ln149">	     </a>
-<a name="ln150">	hasToWait= !parsed.isBackground;</a>
-<a name="ln151"> </a>
-<a name="ln152">	</a>
-<a name="ln153">	</a>
-<a name="ln154">	if (parsed.hasPipe) { //TODO: descomentar cuando esten las pipes (y probarlo(Si falla y no tienen ganas de arreglarlo, diganle al chile))</a>
-<a name="ln155">		char* name;</a>
-<a name="ln156">		unsigned_num_to_str(pipeCounter,0,name);</a>
-<a name="ln157">		uint8_t anonPipe=sys_pipe_open(name);</a>
-<a name="ln158">		pipeCounter++;</a>
-<a name="ln159">		</a>
-<a name="ln160">		</a>
-<a name="ln161">		void (*fn1)(uint8_t, char **) = getFn(parsed.cmd1);</a>
-<a name="ln162">		void (*fn2)(uint8_t, char **) = getFn(parsed.cmd2);</a>
-<a name="ln163"> </a>
-<a name="ln164">		if (!fn1 || !fn2) {</a>
-<a name="ln165">			printf(&quot;Unknown command in pipe: %s | %s\n&quot;, parsed.cmd1, parsed.cmd2);</a>
-<a name="ln166">			return;</a>
-<a name="ln167">		}</a>
-<a name="ln168"> </a>
-<a name="ln169">		pid_t p1 = sys_launch_process(fn1, DEFAULT_PRIO ,countArgs(parsed.args1), parsed.args1);</a>
-<a name="ln170">		sys_change_process_fd(p1,anonPipe,1);</a>
-<a name="ln171"> </a>
-<a name="ln172">		pid_t p2 = sys_launch_process(fn2, DEFAULT_PRIO ,countArgs(parsed.args2), parsed.args2);</a>
-<a name="ln173">		sys_change_process_fd(p2,anonPipe,0);</a>
-<a name="ln174"> </a>
-<a name="ln175">		if (!parsed.isBackground) {</a>
-<a name="ln176">			fgProccess = p2;</a>
-<a name="ln177">			putInFg(p2);</a>
-<a name="ln178">		} else {</a>
-<a name="ln179">			fgProccess = 0;</a>
-<a name="ln180">		}</a>
-<a name="ln181"> </a>
-<a name="ln182">		return;</a>
-<a name="ln183">	}</a>
-<a name="ln184"> </a>
-<a name="ln185">	void (*fn)(uint8_t, char **) = getFn(parsed.cmd1);</a>
+<a name="ln133">/* Deprecated</a>
+<a name="ln134">int commandMatch(char * str1, char * command, int count) {</a>
+<a name="ln135">	int i = 0;</a>
+<a name="ln136">	if (count != strlen(command))</a>
+<a name="ln137">		return 0;</a>
+<a name="ln138">	while (str1[i] != 0 &amp;&amp; command[i] != 0 &amp;&amp; str1[i] == command[i] &amp;&amp; i &lt; count) {</a>
+<a name="ln139">		i++;</a>
+<a name="ln140">	}</a>
+<a name="ln141">	return str1[i] == command[i];</a>
+<a name="ln142">}</a>
+<a name="ln143">*/</a>
+<a name="ln144"> </a>
+<a name="ln145">void analizeBuffer(char * buffer, int count) {</a>
+<a name="ln146">	if (count &lt;= 0)</a>
+<a name="ln147">		return;</a>
+<a name="ln148">	ParsedCommand parsed= {0};</a>
+<a name="ln149">	parseInput(buffer, &amp;parsed);</a>
+<a name="ln150"> </a>
+<a name="ln151">	     </a>
+<a name="ln152">	hasToWait= !parsed.isBackground;</a>
+<a name="ln153"> </a>
+<a name="ln154">	</a>
+<a name="ln155">	</a>
+<a name="ln156">	if (parsed.hasPipe) { //TODO: descomentar cuando esten las pipes (y probarlo(Si falla y no tienen ganas de arreglarlo, diganle al chile))</a>
+<a name="ln157">		char* name;</a>
+<a name="ln158">		unsigned_num_to_str(pipeCounter,0,name);</a>
+<a name="ln159">		uint8_t anonPipe=sys_pipe_open(name);</a>
+<a name="ln160">		pipeCounter++;</a>
+<a name="ln161">		</a>
+<a name="ln162">		</a>
+<a name="ln163">		void (*fn1)(uint8_t, char **) = getFn(parsed.cmd1);</a>
+<a name="ln164">		void (*fn2)(uint8_t, char **) = getFn(parsed.cmd2);</a>
+<a name="ln165"> </a>
+<a name="ln166">		if (!fn1 || !fn2) {</a>
+<a name="ln167">			printf(&quot;Unknown command in pipe: %s | %s\n&quot;, parsed.cmd1, parsed.cmd2);</a>
+<a name="ln168">			return;</a>
+<a name="ln169">		}</a>
+<a name="ln170"> </a>
+<a name="ln171">		pid_t p1 = sys_launch_process(fn1, DEFAULT_PRIO ,countArgs(parsed.args1), parsed.args1);</a>
+<a name="ln172">		sys_change_process_fd(p1,anonPipe,1);</a>
+<a name="ln173"> </a>
+<a name="ln174">		pid_t p2 = sys_launch_process(fn2, DEFAULT_PRIO ,countArgs(parsed.args2), parsed.args2);</a>
+<a name="ln175">		sys_change_process_fd(p2,anonPipe,0);</a>
+<a name="ln176"> </a>
+<a name="ln177">		if (!parsed.isBackground) {</a>
+<a name="ln178">			fgProccess = p2;</a>
+<a name="ln179">			putInFg(p2);</a>
+<a name="ln180">		} else {</a>
+<a name="ln181">			fgProccess = 0;</a>
+<a name="ln182">		}</a>
+<a name="ln183"> </a>
+<a name="ln184">		return;</a>
+<a name="ln185">	}</a>
 <a name="ln186"> </a>
-<a name="ln187">	if ( fn == NULL) {</a>
-<a name="ln188">		printf(&quot;Command not found: '%s'\n&quot;, parsed.cmd1);</a>
-<a name="ln189">		fgProccess = 0;</a>
-<a name="ln190">		return;</a>
-<a name="ln191">	}</a>
-<a name="ln192"> </a>
-<a name="ln193">	pid_t pid = createProcess(fn, DEFAULT_PRIO, countArgs(parsed.args1), parsed.args1);</a>
-<a name="ln194">	if (!parsed.isBackground){</a>
-<a name="ln195">		fgProccess = pid;</a>
-<a name="ln196">		putInFg(pid);</a>
-<a name="ln197">	}</a>
-<a name="ln198">	if (hasToWait &amp;&amp; fgProccess != 0)</a>
-<a name="ln199">	{</a>
-<a name="ln200">		wait(fgProccess);</a>
-<a name="ln201">	}</a>
-<a name="ln202">}</a>
-<a name="ln203"> </a>
-<a name="ln204"> </a>
-<a name="ln205">static int countArgs(char **argv) {</a>
-<a name="ln206">	int count = 0;</a>
-<a name="ln207">	while (argv[count]) {</a>
-<a name="ln208">		count++;</a>
-<a name="ln209">	}</a>
-<a name="ln210">	return count;</a>
-<a name="ln211">}</a>
-<a name="ln212"> </a>
-<a name="ln213">static void parseInput(char *input, ParsedCommand *out) {</a>
-<a name="ln214">    out-&gt;hasPipe = 0;</a>
-<a name="ln215">    out-&gt;isBackground = 0;</a>
-<a name="ln216">    memset(out-&gt;args1, 0, sizeof(out-&gt;args1));</a>
-<a name="ln217">    memset(out-&gt;args2, 0, sizeof(out-&gt;args2)); </a>
-<a name="ln218"> </a>
-<a name="ln219">    int len = strlen(input);</a>
-<a name="ln220">    if (len &gt; 0 &amp;&amp; input[len - 1] == '&amp;') {</a>
-<a name="ln221">        out-&gt;isBackground = 1;</a>
-<a name="ln222">        input[len - 1] = 0;</a>
-<a name="ln223">    }</a>
-<a name="ln224"> </a>
-<a name="ln225">    char *pipePos = strchr(input, '|');</a>
-<a name="ln226">    if (pipePos) {</a>
-<a name="ln227">        out-&gt;hasPipe = 1;</a>
-<a name="ln228">        *pipePos = 0;</a>
-<a name="ln229">        pipePos++;</a>
-<a name="ln230">    }</a>
-<a name="ln231"> </a>
-<a name="ln232">    int i = 0;</a>
-<a name="ln233">    char *tok = strtok(input, &quot; \t&quot;);</a>
-<a name="ln234">    while (tok &amp;&amp; i &lt; MAX_ARGS - 1) {</a>
-<a name="ln235">        out-&gt;args1[i++] = tok;</a>
-<a name="ln236">        tok = strtok(NULL, &quot; \t&quot;);</a>
-<a name="ln237">    }</a>
-<a name="ln238">    out-&gt;cmd1 = out-&gt;args1[0];</a>
-<a name="ln239"> </a>
-<a name="ln240">    if (out-&gt;hasPipe) {</a>
-<a name="ln241">        i = 0;</a>
-<a name="ln242">        tok = strtok(pipePos, &quot; \t&quot;);</a>
-<a name="ln243">        while (tok &amp;&amp; i &lt; MAX_ARGS - 1) {</a>
-<a name="ln244">            out-&gt;args2[i++] = tok;</a>
-<a name="ln245">            tok = strtok(NULL, &quot; \t&quot;);</a>
-<a name="ln246">        }</a>
-<a name="ln247">        out-&gt;cmd2 = out-&gt;args2[0];</a>
-<a name="ln248">    }</a>
-<a name="ln249">}</a>
-<a name="ln250"> </a>
-<a name="ln251">static void (*getFn(const char *cmd))(uint8_t, char **) {</a>
-<a name="ln252">    for (int i = 0; commandsNames[i] != NULL; i++) {</a>
-<a name="ln253">        if (strcmp(commandsNames[i], cmd) == 0) {</a>
-<a name="ln254">            return instructionFunctions[i];</a>
-<a name="ln255">        }</a>
-<a name="ln256">    }</a>
-<a name="ln257">    return NULL;</a>
-<a name="ln258">}</a>
+<a name="ln187">	void (*fn)(uint8_t, char **) = getFn(parsed.cmd1);</a>
+<a name="ln188"> </a>
+<a name="ln189">	if ( fn == NULL) {</a>
+<a name="ln190">		printf(&quot;Command not found: '%s'\n&quot;, parsed.cmd1);</a>
+<a name="ln191">		fgProccess = 0;</a>
+<a name="ln192">		return;</a>
+<a name="ln193">	}</a>
+<a name="ln194"> </a>
+<a name="ln195">	pid_t pid = createProcess(fn, DEFAULT_PRIO, countArgs(parsed.args1), parsed.args1);</a>
+<a name="ln196">	if (!parsed.isBackground){</a>
+<a name="ln197">		fgProccess = pid;</a>
+<a name="ln198">		putInFg(pid);</a>
+<a name="ln199">	}</a>
+<a name="ln200">	if (hasToWait &amp;&amp; fgProccess != 0)</a>
+<a name="ln201">	{</a>
+<a name="ln202">		wait(fgProccess);</a>
+<a name="ln203">	}</a>
+<a name="ln204">}</a>
+<a name="ln205"> </a>
+<a name="ln206"> </a>
+<a name="ln207">static int countArgs(char **argv) {</a>
+<a name="ln208">	int count = 0;</a>
+<a name="ln209">	while (argv[count]) {</a>
+<a name="ln210">		count++;</a>
+<a name="ln211">	}</a>
+<a name="ln212">	return count;</a>
+<a name="ln213">}</a>
+<a name="ln214"> </a>
+<a name="ln215">static void parseInput(char *input, ParsedCommand *out) {</a>
+<a name="ln216">    out-&gt;hasPipe = 0;</a>
+<a name="ln217">    out-&gt;isBackground = 0;</a>
+<a name="ln218">    memset(out-&gt;args1, 0, sizeof(out-&gt;args1));</a>
+<a name="ln219">    memset(out-&gt;args2, 0, sizeof(out-&gt;args2)); </a>
+<a name="ln220"> </a>
+<a name="ln221">    int len = strlen(input);</a>
+<a name="ln222">    if (len &gt; 0 &amp;&amp; input[len - 1] == '&amp;') {</a>
+<a name="ln223">        out-&gt;isBackground = 1;</a>
+<a name="ln224">        input[len - 1] = 0;</a>
+<a name="ln225">    }</a>
+<a name="ln226"> </a>
+<a name="ln227">    char *pipePos = strchr(input, '|');</a>
+<a name="ln228">    if (pipePos) {</a>
+<a name="ln229">        out-&gt;hasPipe = 1;</a>
+<a name="ln230">        *pipePos = 0;</a>
+<a name="ln231">        pipePos++;</a>
+<a name="ln232">    }</a>
+<a name="ln233"> </a>
+<a name="ln234">    int i = 0;</a>
+<a name="ln235">    char *tok = strtok(input, &quot; \t&quot;);</a>
+<a name="ln236">    while (tok &amp;&amp; i &lt; MAX_ARGS - 1) {</a>
+<a name="ln237">        out-&gt;args1[i++] = tok;</a>
+<a name="ln238">        tok = strtok(NULL, &quot; \t&quot;);</a>
+<a name="ln239">    }</a>
+<a name="ln240">    out-&gt;cmd1 = out-&gt;args1[0];</a>
+<a name="ln241"> </a>
+<a name="ln242">    if (out-&gt;hasPipe) {</a>
+<a name="ln243">        i = 0;</a>
+<a name="ln244">        tok = strtok(pipePos, &quot; \t&quot;);</a>
+<a name="ln245">        while (tok &amp;&amp; i &lt; MAX_ARGS - 1) {</a>
+<a name="ln246">            out-&gt;args2[i++] = tok;</a>
+<a name="ln247">            tok = strtok(NULL, &quot; \t&quot;);</a>
+<a name="ln248">        }</a>
+<a name="ln249">        out-&gt;cmd2 = out-&gt;args2[0];</a>
+<a name="ln250">    }</a>
+<a name="ln251">}</a>
+<a name="ln252"> </a>
+<a name="ln253">static void (*getFn(const char *cmd))(uint8_t, char **) {</a>
+<a name="ln254">    for (int i = 0; commandsNames[i] != NULL; i++) {</a>
+<a name="ln255">        if (strcmp(commandsNames[i], cmd) == 0) {</a>
+<a name="ln256">            return instructionFunctions[i];</a>
+<a name="ln257">        }</a>
+<a name="ln258">    }</a>
+<a name="ln259">    return NULL;</a>
+<a name="ln260">}</a>
 </code></pre>
-<div class="balloon" rel="156"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v614/" target="_blank">V614</a> Uninitialized pointer 'name' used. Consider checking the third actual argument of the 'unsigned_num_to_str' function.</p></div>
-<div class="balloon" rel="137"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v781/" target="_blank">V781</a> The value of the 'i' index is checked after it was used. Perhaps there is a mistake in program logic.</p></div>
+<div class="balloon" rel="158"><p><span style="font-size:18px">&uarr;</span> <a href="https://pvs-studio.com/en/docs/warnings/v614/" target="_blank">V614</a> Uninitialized pointer 'name' used. Consider checking the third actual argument of the 'unsigned_num_to_str' function.</p></div>
 <link rel="stylesheet" href="highlight.css">
 <script src="highlight.pack.js"></script>
 <script src="highlightjs-line-numbers.js"></script>

@@ -48,7 +48,7 @@ void putInFG(pid_t pid){
 }
 
 void killProcessInFG(){
-    if (fgPid==-1)
+    if (fgPid==(pid_t)-1)
     {
         return;
     }
@@ -114,7 +114,7 @@ void createFirstProcess(void (*fn)(uint8_t, char **), int argc, char** argv){
 }
 
 pid_t createProcess(void (*fn)(uint8_t, char **), int priority, int argc, char** argv, const char* name){
-    if (processCount>= MAX_PROCESSES) return -1;
+    if (processCount>= MAX_PROCESSES) return (pid_t)-1;
     PCB* new=NULL;
     int pid= nextPID++;
     
