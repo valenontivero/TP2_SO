@@ -6,6 +6,7 @@
 #define PRIORITY_LEVELS 8
 #define DEFAULT_PRIORITY 7
 #define MAX_PROCESSES 256
+#define MAX_NUMBER_PIPED_PROCESSES 2
 
 #define STDIN 0
 #define STDOUT 1
@@ -87,13 +88,13 @@ pid_t createProcess(void (*fn)(uint8_t, char **), int priority, int argc, char**
 
 void initializeProcesses();
 
-void putInFG(pid_t pid);
+void putInFG(pid_t pid1, pid_t pid2);
 
 void terminateProcess();
 
 int killProcess(uint8_t pid);
 
-void killProcessInFG();
+void killProcessesInFG();
 
 void quantumTick(); //funcion para manejar los quantums
 

@@ -6,6 +6,6 @@
 
 pid_t createProcess(void (*entryPoint)(uint8_t, char **), uint8_t prio ,uint8_t argc, char** argv);
 
-void putInFg(pid_t pid);
+void putInFg(pid_t pid1, pid_t pid2);
 
 #endif

@@ -51,7 +51,7 @@ uint64_t sys_pipe_write(unsigned int fd, const char *buffer, uint64_t size);
 uint64_t sys_pipe_close(unsigned int fd);
 uint64_t sys_wait(pid_t pid);
 
-uint64_t sys_put_in_fg(pid_t pid);
+uint64_t sys_put_in_fg(pid_t pid, pid_t pid2);
 
 uint64_t sys_timer_wait(int seconds);
 

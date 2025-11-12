@@ -18,7 +18,8 @@ static PCBQueueADT terminatedProcessesQueue; //Cola de procesos esperando a que 
 PCB* currentProcess;
 static uint8_t processCount= 1;
 static pid_t nextPID= 1;
-static pid_t fgPid=-1;
+static pid_t fgPid1=-1;
+static pid_t fgPid2=-1;
 
 int getPriority(pid_t pid){
 	if(pid < 0 || pid >= MAX_PROCESSES){
@@ -44,19 +45,27 @@ void launchProcess(void (*fn)(uint8_t, char **), uint8_t argc, char *argv[]) {
   myExit();
 }
 
-void putInFG(pid_t pid){
-    fgPid=pid;
+void putInFG(pid_t pid1,pid_t pid2){
+    fgPid1=pid1;
+    fgPid2=pid2;
 }
 
-void killProcessInFG(){
-    if (fgPid==(pid_t)-1)
+static void killProcessInFG(pid_t pid, pid_t* fgVar){
+    if (pid==(pid_t)-1)
     {
         return;
     }
-    pid_t aux= fgPid;
-    fgPid= -1;
+    pid_t aux= pid;
+    fgVar= -1;
     killProcess(aux);
 }
+
+void killProcessesInFG(){
+    killProcessInFG(fgPid1, &fgPid1);
+    killProcessInFG(fgPid2, &fgPid2);
+}
+
+
 
 void *stackStart= (void*) 0x1000000;
 
@@ -342,10 +351,10 @@ void setProcessForeground(pid_t pid, uint8_t isForeground) {
 }
 
 PCB* getForegroundProcess() {
-    if (fgPid < 0 || fgPid >= MAX_PROCESSES) {
+    if (fgPid1 < 0 || fgPid1 >= MAX_PROCESSES) {
         return NULL;
     }
-    return &processes[fgPid];
+    return &processes[fgPid1];
 }
 
 void idleProcess(uint8_t argc, char** argv) {

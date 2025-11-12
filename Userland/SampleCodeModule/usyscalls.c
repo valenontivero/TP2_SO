@@ -106,8 +106,8 @@ uint64_t sys_wait(pid_t pid) {
     return sys_call((uint64_t) 23, (uint64_t) pid, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0);
 }
 
-uint64_t sys_put_in_fg(pid_t pid) {
-    return sys_call((uint64_t) 24, (uint64_t) pid, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0);
+uint64_t sys_put_in_fg(pid_t pid1, pid_t pid2) {
+    return sys_call((uint64_t) 24, (uint64_t) pid1, (uint64_t) pid2, (uint64_t) 0, (uint64_t) 0, (uint64_t) 0);
 }
 
 uint64_t sys_timer_wait(int seconds) {

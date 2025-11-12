@@ -82,7 +82,7 @@ pid_t launchShell(){
 void shell() {
     printColor("Welcome to HomerOS. Type \"help\" for command list\n", ORANGE);
 	pid_t shellPid = sys_get_pid();
-	sys_put_in_fg(shellPid);
+	sys_put_in_fg(shellPid,0);
 	sys_process_set_foreground(shellPid, 1);
 	printColor("\nHomerOS: $> ", GREEN);
 
@@ -97,7 +97,7 @@ void shell() {
 			if (fgProccess != 0) {
 				sys_process_kill(fgProccess);
 				sys_process_set_foreground(shellPid, 1);
-				sys_put_in_fg(shellPid);
+				sys_put_in_fg(shellPid,0);
 				fgProccess = 0;
 			}
 			count = 0;
@@ -211,7 +211,7 @@ void analizeBuffer(char * buffer, int count) {
 		if (!parsed.isBackground) {
 			sys_process_set_foreground(shellPid, 0);
 			fgProccess = p2;
-			putInFg(p2);
+			putInFg(p2,p1);
 			wait(p2);
 			sys_process_set_foreground(shellPid, 1);
 		} else {
@@ -239,13 +239,13 @@ void analizeBuffer(char * buffer, int count) {
 	if (!parsed.isBackground){
 		sys_process_set_foreground(shellPid, 0);
 		fgProccess = pid;
-		putInFg(pid);
+		putInFg(pid,0);
 	}
 	if (hasToWait && fgProccess != 0)
 	{
 		wait(fgProccess);
 		sys_process_set_foreground(shellPid, 1);
-		sys_put_in_fg(shellPid);
+		sys_put_in_fg(shellPid,0);
 		fgProccess = 0;
 	}
 }

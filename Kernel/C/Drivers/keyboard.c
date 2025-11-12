@@ -59,7 +59,7 @@ static void pushChar(char c) {
 static void handleCtrlC(void) {
     PCB *fg = getForegroundProcess();
     if (fg != NULL && fg->pid != 0 && strcmp(fg->name, "shell") != 0) {
-        killProcessInFG();
+        killProcessesInFG();
         return;
     }
     if (currentProcess != NULL && currentProcess->pid != 0 && strcmp(currentProcess->name, "shell") != 0) {

@@ -25,10 +25,10 @@ uint64_t sys_read(uint64_t fd, uint64_t buffer, uint64_t length, uint64_t unused
     FD= currentPCB->fd[0];
     if (FD>1)
     {
-        printString("en sys read"); 
-        printDec(fd);
+        /* printString("en sys read de ppipe"); 
+        printDec(FD); */
         int chars=0;
-        chars=pipe_read(fd, (char *) buffer, length);
+        chars=pipe_read(FD, (char *) buffer, length);
         /* printDec(chars);  */
         /* printString((char*) buffer); */
         return chars;
@@ -258,8 +258,8 @@ uint64_t sys_wait(uint64_t pid, uint64_t unused1, uint64_t unused2, uint64_t unu
     return 0;
 }
 
-uint64_t sys_put_in_fg(uint64_t pid, uint64_t unused1, uint64_t unused2, uint64_t unused3, uint64_t unused4, uint64_t unused5) {
-    putInFG((pid_t) pid);
+uint64_t sys_put_in_fg(uint64_t pid1, uint64_t pid2, uint64_t unused2, uint64_t unused3, uint64_t unused4, uint64_t unused5) {
+    putInFG((pid_t) pid1,(pid_t) pid2);
     return 0;
 }
 
