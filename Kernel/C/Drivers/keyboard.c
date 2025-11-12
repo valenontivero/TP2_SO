@@ -127,7 +127,6 @@ void keyboard_handler() {
 
         if (outputChar == 3) { // Ctrl+C
             handleCtrlC();
-            pushChar(outputChar);
             return;
         }
 

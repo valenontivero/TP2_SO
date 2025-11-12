@@ -32,7 +32,7 @@ uint8_t sem_open(const char* name, uint8_t initial_value) {
 
     acquireLock(&createLock);
     // First, search for existing
-    for (uint8_t i = 0; i < 5; i++) {
+    for (uint8_t i = 0; i < MAX_SEMAPHORES; i++) {
         if (namedSemaphores[i].inUse && SEM_NAME_MATCH(namedSemaphores[i].name, name)) {
             releaseLock(&createLock);
             return i;
