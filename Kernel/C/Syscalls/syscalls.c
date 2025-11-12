@@ -12,16 +12,36 @@
 #include <pipe.h>
 #include <processManager.h>
 #include <lib.h>
+#include <scheduler.h>
 
 extern const uint64_t registers[17];
 
 
 uint64_t sys_read(uint64_t fd, uint64_t buffer, uint64_t length, uint64_t unused, uint64_t unused2, uint64_t unused3){
-    if (length == 0) {
+    if (length == 0) 
         return 0;
+    PCB* currentPCB= getCurrentProcess();
+    uint32_t FD;
+    FD= currentPCB->fd[0];
+    if (FD>1)
+    {
+        printString("en sys read"); 
+        printDec(fd);
+        int chars=0;
+        chars=pipe_read(fd, (char *) buffer, length);
+        /* printDec(chars);  */
+        /* printString((char*) buffer); */
+        return chars;
     }
-
+    if (fd != STDIN) 
+        return -1;
+    int i = 0;
+    char c;
     char * buff = (char *) buffer;
+    while(i < length && (c = getChar()) != 0) {
+        buff[i] = c;
+        i++;
+    }
 
     if (fd == STDIN) {
         PCB *process = getCurrentProcess();
@@ -30,6 +50,7 @@ uint64_t sys_read(uint64_t fd, uint64_t buffer, uint64_t length, uint64_t unused
         }
         uint8_t source = process->fd[STDIN];
         if (source == STDIN) {
+            
             int i = 0;
             char c;
             while(i < length && (c = getChar()) != 0) {
@@ -49,6 +70,16 @@ uint64_t sys_read(uint64_t fd, uint64_t buffer, uint64_t length, uint64_t unused
 }
 
 uint64_t sys_write(uint64_t fd, uint64_t buffer, uint64_t length, uint64_t unused, uint64_t unused2, uint64_t unused3){
+    PCB* currentPCB= getCurrentProcess();
+    uint32_t FD;
+    FD= currentPCB->fd[1];
+    
+    if (FD>1)
+    {
+        pipe_write(FD, (const char *) buffer, length);
+        return 0;
+    }
+    
     if (fd == STDOUT) {
         PCB *process = getCurrentProcess();
         if (process == NULL) {

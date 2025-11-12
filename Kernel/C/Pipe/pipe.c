@@ -8,7 +8,7 @@
 #include <scheduler.h>
 #include <PCBQueueADT.h>
 #include <mySem.h>
-//#include <time_and_rtc.h>
+#include <videodriver.h>
 #include <interrupts.h>
 
 static Pipe pipes[MAX_PIPES];
@@ -103,14 +103,19 @@ uint64_t pipe_write(int fd, const char* buf, uint64_t count) {
 
 uint64_t pipe_read(int fd, char* buf, uint64_t count) {
     fd -= 2; // Ajustar fd para que coincida con el índice de pipeFDs
-    if (fd < 0 || fd >= MAX_PIPES)
+    printDec(fd);
+    if (fd < 0 || fd >= MAX_PIPES * 2 )
         return -1;
     
     Pipe* pipe = &pipes[fd];
     int read = 0;
+    
+    printDec(count);
+    
     while (read < count) {
         sem_wait(pipe->read_sem);
         buf[read] = pipe->buffer[pipe->readIdx];
+        printString(buf[read]);
         pipe->readIdx = (pipe->readIdx + 1) % PIPE_BUFFER_SIZE;
         pipe->size--;
         read++;

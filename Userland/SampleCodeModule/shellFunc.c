@@ -13,6 +13,7 @@
 #include <test_sem.h>
 #include <test_pipe.h>
 #include <test_priority.h>
+#include <uSync.h>
 
 #define MVAR_MAX_PARTICIPANTS 10
 
@@ -359,8 +360,14 @@ void testsem (uint8_t argc, char **argv){
 void testpipe (uint8_t argc, char **argv){
 	char* argv1[] = {"testPipeReader"};
 	char* argv2[] = {"testPipeWriter"};
-	sys_launch_process((void*) testPipeReader, 1, 1, argv1);
-	sys_launch_process((void*) testPipeWriter, 1, 1, argv2);
+	pid_t pids[2];
+	pids[1]=sys_launch_process((void*) testPipeReader, 1, 1, argv1);
+	pids[2]=sys_launch_process((void*) testPipeWriter, 1, 1, argv2);
+	for (size_t i = 0; i < 2; i++)
+	{
+		wait(pids[i]);
+	}
+	
 }
 
 void testpriority (uint8_t argc, char **argv){

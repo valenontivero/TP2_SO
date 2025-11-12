@@ -90,6 +90,7 @@ int sem_wait(uint8_t id) {
     }
 	else {
         PCB* current = getCurrentProcess();
+        printString("Blocking process "); printDec(current->pid); printString(" on semaphore "); printDec(id); printString("\n");
         queueProcess(sem->waiters, current);
         releaseLock(&sem->lock);
         blockProcess(current->pid);

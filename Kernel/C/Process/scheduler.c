@@ -31,9 +31,9 @@ void initScheduler(void *stackBase) {
   for (uint8_t i = 0; i < MAX_PRIO; i++) {
       scheduler->count[i] = 0;
   }
-  /* char *argv[] = { 0 };
-  idlePID= createProcess((void*)idleProcess,0,0,argv);
-  idlePCB= getPCBByPID(idlePID);  */
+  char *argv[] = { "idle", NULL };
+  idlePID= createProcess((void*)idleProcess,0,0,argv,argv[0]);
+  idlePCB= getPCBByPID(idlePID);
 }
 
 void scheduleProcess(PCB *pcb) {
@@ -90,7 +90,9 @@ void *schedule(void *rsp) {
     }
 
     // No hay procesos listos
-    return rsp;
+    scheduler->currentRunningPCB = idlePCB;
+    idlePCB->state = RUNNING;
+    return idlePCB->stackPointer;
 }
 
 uint16_t getCurrentPID(){return scheduler->currentRunningPCB->pid;}

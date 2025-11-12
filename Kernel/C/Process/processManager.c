@@ -11,6 +11,7 @@
 #include <mySem.h> 
 
 extern void forceTimerInterruption();
+extern void _hlt();
 
 static PCB processes[MAX_PROCESSES];
 static PCBQueueADT terminatedProcessesQueue; //Cola de procesos esperando a que le hagan wait() (Si terminan, su PCB se marca como TERMINATED, por lo que se podria pisar el PCB)
@@ -202,6 +203,7 @@ int unblockProcess(uint16_t pid) {
 
 
 int killProcess(uint8_t pid){
+    printString("Killing process "); printDec(pid); printString("\n");
     for (size_t i = 0; i < MAX_PROCESSES; i++)
     {
         if (processes[i].pid == pid)
@@ -268,7 +270,7 @@ PCB* getPCBByPID(pid_t pid) {
 
 void wait(pid_t pid) { 
     if (pid < 0 || pid >= MAX_PROCESSES) return;
-
+    printString("Waiting for process (inside wait)"); printDec(pid); printString("\n");
     PCB* child = &processes[pid];
     PCB* parent = getCurrentProcess();
 
@@ -283,6 +285,7 @@ void wait(pid_t pid) {
     parent->waitingChildren = 1;
     
     sem_wait(parent->waitSemaphore);
+    printString("Process "); printDec(pid); printString(" has terminated\n");
     sem_destroy(parent->waitSemaphore);
     parent->waitingChildren = 0;
 }
@@ -292,7 +295,7 @@ uint16_t ps(processInfo *toReturn, uint16_t maxCount){
     if (toReturn == NULL || maxCount == 0) {
         return 0;
     }
-    for (uint16_t i = 0; i < MAX_PROCESSES && count < maxCount; i++)
+    for (uint16_t i = 2; i < MAX_PROCESSES && count < maxCount; i++)
     {
         if (processes[i].state==RUNNING || processes[i].state==READY || processes[i].state== BLOCKED)
         {
@@ -346,4 +349,10 @@ PCB* getForegroundProcess() {
         return NULL;
     }
     return &processes[fgPid];
+}
+
+void idleProcess(uint8_t argc, char** argv) {
+    while (1) {
+        _hlt();
+    }
 }

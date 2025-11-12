@@ -120,4 +120,8 @@ uint16_t ps(processInfo* toReturn, uint16_t maxCount);
 int getProcessInfo(pid_t pid, processInfo* out);
 
 void setProcessForeground(pid_t pid, uint8_t isForeground);
+void wait(pid_t pid);
+
+
+void idleProcess(uint8_t argc, char** argv);
 #endif

@@ -182,9 +182,8 @@ void analizeBuffer(char * buffer, int count) {
 
 	
 	
-	if (parsed.hasPipe) { //TODO: descomentar cuando esten las pipes (y probarlo(Si falla y no tienen ganas de arreglarlo, diganle al chile))
-		char nameBuffer[16] = {0};
-		char *name = nameBuffer;
+	if (parsed.hasPipe) { 
+		char name[16];
 		unsigned_num_to_str(pipeCounter,0,name);
 		uint8_t anonPipe=sys_pipe_open(name);
 		pipeCounter++;
@@ -206,6 +205,7 @@ void analizeBuffer(char * buffer, int count) {
 
 		pid_t p2 = sys_launch_process(fn2, DEFAULT_PRIO ,countArgs(parsed.args2), parsed.args2);
 		sys_process_set_foreground(p2, parsed.isBackground ? 0 : 1);
+		sys_change_process_fd(p1,anonPipe,1);
 		sys_change_process_fd(p2,anonPipe,0);
 
 		if (!parsed.isBackground) {
@@ -218,9 +218,12 @@ void analizeBuffer(char * buffer, int count) {
 			fgProccess = 0;
 		}
 
+		if (hasToWait && fgProccess != 0){
+			wait(fgProccess);
+		}
+		
 		return;
 	}
-
 	void (*fn)(uint8_t, char **) = getFn(parsed.cmd1);
 
 	if ( fn == NULL) {
