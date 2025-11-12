@@ -3,10 +3,9 @@
 
 #define PROCESS_MAX_NAME_LEN 40
 #define PROCESS_STACK_SIZE 16384 // 16KiB
-#define PRIORITY_LEVELS 8
-#define DEFAULT_PRIORITY 7
+#define PRIORITY_LEVELS 5
+#define DEFAULT_PRIORITY 1
 #define MAX_PROCESSES 256
-#define MAX_NUMBER_PIPED_PROCESSES 2
 
 #define STDIN 0
 #define STDOUT 1
@@ -29,6 +28,7 @@ typedef struct PCB {
     
     State state;                  	// e.g., READY, RUNNING, BLOCKED, TERMINATED
     uint8_t priority;               // For scheduling
+    uint8_t remainingQuantum;     // Remaining time slice
     
     void* stackBase;                // Base of the allocated stack
     void* stackPointer;             // Current stack pointer (for context switching)

@@ -485,20 +485,7 @@ void block(uint8_t argc, char **argv) {
         return;
     }
     pid_t pid = (pid_t)atoi(argv[1]);
-    processInfo info;
-    if (sys_get_process_info(pid, &info) != 0) {
-        printColor("block: process not found or terminated.\n", RED);
-        return;
-    }
-    uint64_t res;
-    if (info.state == BLOCKED) {
-        res = sys_process_unblock(pid);
-    } else {
-        res = sys_process_block(pid);
-    }
-    if (res != 0) {
-        printColor("block: operation failed.\n", RED);
-    }
+    blockProcess(pid);
 }
 
 void wc(uint8_t argc, char **argv) {

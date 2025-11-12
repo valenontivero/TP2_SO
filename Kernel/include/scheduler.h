@@ -5,7 +5,9 @@
 #include <stddef.h>
 #include <PCBQueueADT.h>
 #include <processManager.h>
-#define MAX_PRIO 8
+#define MAX_PRIO 5
+#define BASE_QUANTUM 2
+
 
 
 typedef struct schedulerStruct {

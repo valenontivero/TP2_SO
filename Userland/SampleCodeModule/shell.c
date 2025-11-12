@@ -76,7 +76,7 @@ static int pipeCounter=0;
 
 pid_t launchShell(){
 	char* argv[] = {"shell"};
-	return  createProcess((void*) shell, 1, 0, argv);
+	return  createProcess((void*) shell, 5, 0, argv);
 }
 
 void shell() {

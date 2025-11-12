@@ -20,6 +20,7 @@ static uint8_t processCount= 1;
 static pid_t nextPID= 1;
 static pid_t fgPid1=-1;
 static pid_t fgPid2=-1;
+static const uint8_t quantumPerPriority[PRIORITY_LEVELS] = {1* BASE_QUANTUM, 2* BASE_QUANTUM, 3* BASE_QUANTUM, 4 * BASE_QUANTUM, 5*BASE_QUANTUM}; // Quantum para cada nivel de prioridad
 
 int getPriority(pid_t pid){
 	if(pid < 0 || pid >= MAX_PROCESSES){
@@ -100,7 +101,8 @@ void createFirstProcess(void (*fn)(uint8_t, char **), int argc, char** argv){
     PCB* new= &processes[0];
     new->pid=0;
     new->state=READY;
-    new->priority=1;
+    new->priority=0;
+    new->remainingQuantum= quantumPerPriority[new->priority];
     new->foreground = 1;
     new->fd[0] = STDIN; 
     new->fd[1] = STDOUT; 
@@ -132,6 +134,7 @@ pid_t createProcess(void (*fn)(uint8_t, char **), int priority, int argc, char**
     new = &processes[pid];
     new->pid = pid;
     new->priority = (priority >= PRIORITY_LEVELS) ? PRIORITY_LEVELS - 1 : priority;
+    new->remainingQuantum= quantumPerPriority[new->priority];
     new->foreground = 1;
     new->waitingChildren = 0;
     new->fd[0] = STDIN; 

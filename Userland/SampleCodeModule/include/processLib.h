@@ -8,4 +8,6 @@ pid_t createProcess(void (*entryPoint)(uint8_t, char **), uint8_t prio ,uint8_t 
 
 void putInFg(pid_t pid1, pid_t pid2);
 
+uint64_t blockProcess(pid_t pid);
+
 #endif

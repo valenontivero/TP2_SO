@@ -9,6 +9,8 @@
 #include <ourTime.h>
 #include <videodriver.h>
 
+
+static const uint8_t quantumPerPriority[PRIORITY_LEVELS] = {1* BASE_QUANTUM, 2* BASE_QUANTUM, 3* BASE_QUANTUM, 4 * BASE_QUANTUM, 5*BASE_QUANTUM};
 static PCB* idlePCB;
 static int idlePID;
 
@@ -53,8 +55,14 @@ void *schedule(void *rsp) {
 
     // Guardar estado del proceso actual
     if (old->state == RUNNING) {
+      if (--old->remainingQuantum == 0)
+      {
         old->state = READY;
+        old->remainingQuantum= quantumPerPriority[old->priority];
         queueProcess(scheduler->schedule[old->priority], old);
+      }else{
+        return rsp; // Sigue ejecutando el mismo proceso
+      }
     }
 
     PCB *next = NULL;
