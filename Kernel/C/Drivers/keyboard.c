@@ -155,13 +155,7 @@ char getChar() {
         elemCount--;
         return toReturn;
     }
-
     sem_wait((uint8_t)semaphoreId);
-
-    if (elemCount == 0) {
-        return 0;
-    }
-
     char toReturn = buffer[readIndex];
     readIndex = (readIndex + 1) % BUFFER_SIZE;
     elemCount--;

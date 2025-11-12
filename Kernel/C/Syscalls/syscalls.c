@@ -35,13 +35,15 @@ uint64_t sys_read(uint64_t fd, uint64_t buffer, uint64_t length, uint64_t unused
     }
     if (fd != STDIN) 
         return -1;
-    int i = 0;
-    char c;
     char * buff = (char *) buffer;
+    /* int i = 0;
+    char c;
+    printString("sys_read called\n");
     while(i < length && (c = getChar()) != 0) {
+        printString("Reading char: ");
         buff[i] = c;
         i++;
-    }
+    } */
 
     if (fd == STDIN) {
         PCB *process = getCurrentProcess();

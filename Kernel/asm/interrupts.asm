@@ -272,10 +272,6 @@ _irq00Handler:
 _irq01Handler:
 	pushState
 
-	in al, 0x60
-	cmp al, 0x1D; Left Control key
-	je saveRegisters
-
 	mov rdi, 1 ; pasaje de parametro
 	call irqDispatcher
 

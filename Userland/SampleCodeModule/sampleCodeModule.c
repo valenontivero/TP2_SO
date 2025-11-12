@@ -6,6 +6,8 @@
 #include <colors.h>
 #include <shell.h>
 #include <pong.h>
+#include <types.h>
+#include <uSync.h>
 
 int main() {
 	// Choose between terminal or pong
@@ -23,7 +25,7 @@ int main() {
 
 	/* sys_clear_screen(); */
 
-	launchShell();
-
+	int shellPid=launchShell();
+	wait(shellPid);
 	return 0;
 }

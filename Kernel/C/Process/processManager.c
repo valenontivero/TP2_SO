@@ -203,7 +203,6 @@ int unblockProcess(uint16_t pid) {
 
 
 int killProcess(uint8_t pid){
-    printString("Killing process "); printDec(pid); printString("\n");
     for (size_t i = 0; i < MAX_PROCESSES; i++)
     {
         if (processes[i].pid == pid)
@@ -270,7 +269,6 @@ PCB* getPCBByPID(pid_t pid) {
 
 void wait(pid_t pid) { 
     if (pid < 0 || pid >= MAX_PROCESSES) return;
-    printString("Waiting for process (inside wait)"); printDec(pid); printString("\n");
     PCB* child = &processes[pid];
     PCB* parent = getCurrentProcess();
 
@@ -285,7 +283,6 @@ void wait(pid_t pid) {
     parent->waitingChildren = 1;
     
     sem_wait(parent->waitSemaphore);
-    printString("Process "); printDec(pid); printString(" has terminated\n");
     sem_destroy(parent->waitSemaphore);
     parent->waitingChildren = 0;
 }

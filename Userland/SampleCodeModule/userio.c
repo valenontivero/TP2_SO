@@ -29,7 +29,7 @@ void printColorChar(char c, uint64_t color) {
 }
 
 char getChar() {
-    char c[1] = {0};
+    char c[] = {0};
     sys_read(0, c, 1);
     return c[0];
 }
