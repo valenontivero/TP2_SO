@@ -31,7 +31,16 @@ enum syscallsEnum {
     SYSCALL_WAIT,
     SYSCALL_PUT_IN_FG,
     SYSCALL_TIMER_WAIT,
-	SYSCALL_CHANGE_PROCESS_FD
+	SYSCALL_CHANGE_PROCESS_FD,
+    SYSCALL_MEM_INFO,
+    SYSCALL_PROCESS_LIST,
+    SYSCALL_PROCESS_INFO,
+    SYSCALL_GET_PID,
+    SYSCALL_PROCESS_KILL,
+    SYSCALL_PROCESS_NICE,
+    SYSCALL_PROCESS_BLOCK,
+    SYSCALL_PROCESS_UNBLOCK,
+    SYSCALL_PROCESS_SET_FOREGROUND
 };
 
 typedef uint64_t (*sys_call_t)(uint64_t rdi, uint64_t rsi, uint64_t rdx, uint64_t r10, uint64_t r8, uint64_t r9);
@@ -63,7 +72,16 @@ static sys_call_t syscallsArray[] = {   // id
         [SYSCALL_WAIT] (sys_call_t) sys_wait, // 23
         [SYSCALL_PUT_IN_FG] (sys_call_t) sys_put_in_fg, // 24
         [SYSCALL_TIMER_WAIT] (sys_call_t) sys_timer_wait, // 25
-		[SYSCALL_CHANGE_PROCESS_FD] (sys_call_t) sys_change_process_fd // 26
+		[SYSCALL_CHANGE_PROCESS_FD] (sys_call_t) sys_change_process_fd, // 26
+        [SYSCALL_MEM_INFO] (sys_call_t) sys_get_mem_info, // 27
+        [SYSCALL_PROCESS_LIST] (sys_call_t) sys_get_process_list, // 28
+        [SYSCALL_PROCESS_INFO] (sys_call_t) sys_get_process_info, // 29
+        [SYSCALL_GET_PID] (sys_call_t) sys_get_pid, // 30
+        [SYSCALL_PROCESS_KILL] (sys_call_t) sys_process_kill, // 31
+        [SYSCALL_PROCESS_NICE] (sys_call_t) sys_process_nice, // 32
+        [SYSCALL_PROCESS_BLOCK] (sys_call_t) sys_process_block, // 33
+        [SYSCALL_PROCESS_UNBLOCK] (sys_call_t) sys_process_unblock, // 34
+        [SYSCALL_PROCESS_SET_FOREGROUND] (sys_call_t) sys_process_set_foreground // 35
     };
 
 uint64_t syscallDispatcher(uint64_t id, uint64_t arg0, uint64_t arg1, uint64_t arg2, uint64_t arg3, uint64_t arg4, uint64_t arg5) {

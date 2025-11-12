@@ -6,7 +6,7 @@
 #include <stdint.h>
 
 
-#define LIST_SPACE (1 << 27)   // 128 mb  - > esto es 2^27 bytes osea mi espacio para asignar la mem dinámica desde 0x60000
+#define LIST_SPACE (1 << 22)   // 128 mb  - > esto es 2^27 bytes osea mi espacio para asignar la mem dinámica desde 0x60000
 
 // Nodo que representa un bloque de memoria
 typedef struct node {

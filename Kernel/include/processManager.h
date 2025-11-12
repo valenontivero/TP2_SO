@@ -76,6 +76,7 @@ typedef struct processInfo {
     pid_t pid;
     State state;
     uint8_t priority;
+    uint8_t foreground;
     void* stackBase;
     void* stackPointer;
 } processInfo;
@@ -112,5 +113,11 @@ int blockProcess(uint16_t pid);
 
 int unblockProcess(uint16_t pid);
 
-uint8_t ps(processInfo* toReturn);
+PCB* getForegroundProcess();
+
+uint16_t ps(processInfo* toReturn, uint16_t maxCount);
+
+int getProcessInfo(pid_t pid, processInfo* out);
+
+void setProcessForeground(pid_t pid, uint8_t isForeground);
 #endif

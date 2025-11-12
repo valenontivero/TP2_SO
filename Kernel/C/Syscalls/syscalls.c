@@ -11,30 +11,62 @@
 #include <mySem.h>
 #include <pipe.h>
 #include <processManager.h>
+#include <lib.h>
 
 extern const uint64_t registers[17];
 
 
 uint64_t sys_read(uint64_t fd, uint64_t buffer, uint64_t length, uint64_t unused, uint64_t unused2, uint64_t unused3){
-    if (fd != STDIN) 
-        return -1;
-    int i = 0;
-    char c;
-    char * buff = (char *) buffer;
-    while(i < length && (c = getChar()) != 0) {
-        buff[i] = c;
-        i++;
+    if (length == 0) {
+        return 0;
     }
-    return i;
+
+    char * buff = (char *) buffer;
+
+    if (fd == STDIN) {
+        PCB *process = getCurrentProcess();
+        if (process == NULL) {
+            return -1;
+        }
+        uint8_t source = process->fd[STDIN];
+        if (source == STDIN) {
+            int i = 0;
+            char c;
+            while(i < length && (c = getChar()) != 0) {
+                buff[i] = c;
+                i++;
+            }
+            return i;
+        }
+        return pipe_read(source, buff, length);
+    }
+
+    if (fd >= 2) {
+        return pipe_read((int)fd, buff, length);
+    }
+
+    return -1;
 }
 
 uint64_t sys_write(uint64_t fd, uint64_t buffer, uint64_t length, uint64_t unused, uint64_t unused2, uint64_t unused3){
     if (fd == STDOUT) {
-        printStringN((char *) buffer, length);
+        PCB *process = getCurrentProcess();
+        if (process == NULL) {
+            return -1;
+        }
+        uint8_t target = process->fd[STDOUT];
+        if (target == STDOUT) {
+            printStringN((char *) buffer, length);
+            return length;
+        }
+        return pipe_write(target, (const char *)buffer, length);
     } else if (fd == STDERR) {
         printStringNColor((char *) buffer, length, RED);
+        return length;
+    } else if (fd >= 2) {
+        return pipe_write((int)fd, (const char *)buffer, length);
     }
-    return 0;
+    return -1;
 }
 
 uint64_t sys_write_place(uint64_t fd, uint64_t buffer, uint64_t length, uint64_t x, uint64_t y, uint64_t unused3) {
@@ -47,12 +79,26 @@ uint64_t sys_write_place(uint64_t fd, uint64_t buffer, uint64_t length, uint64_t
 }
 
 uint64_t sys_write_color(uint64_t fd, uint64_t buffer, uint64_t length, uint64_t color, uint64_t unused2, uint64_t unused3) {
+    if (fd == STDOUT) {
+        PCB *process = getCurrentProcess();
+        if (process == NULL) {
+            return -1;
+        }
+        uint8_t target = process->fd[STDOUT];
+        if (target != STDOUT) {
+            return pipe_write(target, (const char *)buffer, length);
+        }
+    }
     if (fd == STDOUT || fd == STDERR) {
         Color c;
         c.r = (char) color;
         c.g = (char) (color >> 8);
         c.b = (char) (color >> 16);
         printStringNColor((char *) buffer, length, c);
+        return length;
+    }
+    if (fd >= 2) {
+        return pipe_write((int)fd, (const char *)buffer, length);
     }
     return 0;
 }
@@ -191,4 +237,59 @@ uint64_t sys_timer_wait(uint64_t seconds, uint64_t unused1, uint64_t unused2, ui
 
 uint64_t sys_change_process_fd(uint64_t pid, uint64_t fd, uint64_t end, uint64_t unused3, uint64_t unused4, uint64_t unused5) {
 	return changeProcessFd(pid, fd, end);
+}
+
+uint64_t sys_get_mem_info(uint64_t buffer, uint64_t unused1, uint64_t unused2, uint64_t unused3, uint64_t unused4, uint64_t unused5) {
+    if (buffer == 0) {
+        return (uint64_t)-1;
+    }
+    MemoryDataPtr info = getMemoryData();
+    memcpy((void *)buffer, info, sizeof(memoryData));
+    return 0;
+}
+
+uint64_t sys_get_process_list(uint64_t buffer, uint64_t maxCount, uint64_t countPtr, uint64_t unused3, uint64_t unused4, uint64_t unused5) {
+    if (buffer == 0 || countPtr == 0) {
+        return (uint64_t)-1;
+    }
+    uint16_t max = (maxCount > MAX_PROCESSES) ? MAX_PROCESSES : (uint16_t)maxCount;
+    uint16_t written = ps((processInfo *)buffer, max);
+    *((uint16_t *)countPtr) = written;
+    return written;
+}
+
+uint64_t sys_get_process_info(uint64_t pid, uint64_t outPtr, uint64_t unused2, uint64_t unused3, uint64_t unused4, uint64_t unused5) {
+    if (outPtr == 0) {
+        return (uint64_t)-1;
+    }
+    return (uint64_t)getProcessInfo((pid_t)pid, (processInfo *)outPtr);
+}
+
+uint64_t sys_get_pid(uint64_t unused1, uint64_t unused2, uint64_t unused3, uint64_t unused4, uint64_t unused5, uint64_t unused6) {
+    return getCurrentPID();
+}
+
+uint64_t sys_process_kill(uint64_t pid, uint64_t unused1, uint64_t unused2, uint64_t unused3, uint64_t unused4, uint64_t unused5) {
+    return (uint64_t)killProcess((uint8_t)pid);
+}
+
+uint64_t sys_process_nice(uint64_t pid, uint64_t newPriority, uint64_t unused2, uint64_t unused3, uint64_t unused4, uint64_t unused5) {
+    if (pid >= MAX_PROCESSES) {
+        return (uint64_t)-1;
+    }
+    setPriority((pid_t)pid, (int)newPriority);
+    return 0;
+}
+
+uint64_t sys_process_block(uint64_t pid, uint64_t unused1, uint64_t unused2, uint64_t unused3, uint64_t unused4, uint64_t unused5) {
+    return (uint64_t)blockProcess((uint16_t)pid);
+}
+
+uint64_t sys_process_unblock(uint64_t pid, uint64_t unused1, uint64_t unused2, uint64_t unused3, uint64_t unused4, uint64_t unused5) {
+    return (uint64_t)unblockProcess((uint16_t)pid);
+}
+
+uint64_t sys_process_set_foreground(uint64_t pid, uint64_t value, uint64_t unused2, uint64_t unused3, uint64_t unused4, uint64_t unused5) {
+    setProcessForeground((pid_t)pid, (uint8_t)value);
+    return 0;
 }

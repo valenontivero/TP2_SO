@@ -13,6 +13,7 @@
 #include <scheduler.h>
 #include <processManager.h>
 #include <mem_manager.h>
+#include <keyboard.h>
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -67,6 +68,7 @@ int main()
 	save_original_regs();
 
 	startMemoryManager((void*)&endOfKernel, 0x2000000); //32MB for the heap
+	initKeyboard();
 	initializeProcesses();
 	initScheduler(getStackBase());
 	char* argv[]= {0};

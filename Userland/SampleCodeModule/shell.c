@@ -46,9 +46,19 @@ static void  (*instructionFunctions[])(uint8_t, char **) = {
 	testsem,
 	testpipe,
 	testpriority,
+    mem,
+    ps,
+    loop,
+    kill,
+    nice,
+    block,
+    wc,
+    filter,
+    cat,
+    mvar,
 	NULL};
 
-static char *commandsNames[] = {"help", "time", "date", "registers", "fillregs", "div0", "invalidop", "pong", "clear", "hello", "testprint", "testsem", "testpipe", "testpriority", 0};
+static char *commandsNames[] = {"help", "time", "date", "registers", "fillregs", "div0", "invalidop", "pong", "clear", "hello", "testprint", "testsem", "testpipe", "testpriority", "mem", "ps", "loop", "kill", "nice", "block", "wc", "filter", "cat", "mvar", 0};
 
 
 //
@@ -71,6 +81,9 @@ pid_t launchShell(){
 
 void shell() {
     printColor("Welcome to HomerOS. Type \"help\" for command list\n", ORANGE);
+	pid_t shellPid = sys_get_pid();
+	sys_put_in_fg(shellPid);
+	sys_process_set_foreground(shellPid, 1);
 	printColor("\nHomerOS: $> ", GREEN);
 
 	int count = 0;	
@@ -79,7 +92,23 @@ void shell() {
 	char flag = 0; // Used for up arrow
 	while(1) {
 		unsigned char c = getChar();
-		if (c == '\n') {
+		if (c == 3) { // Ctrl + C
+			printColor("^C\n", ORANGE);
+			if (fgProccess != 0) {
+				sys_process_kill(fgProccess);
+				sys_process_set_foreground(shellPid, 1);
+				sys_put_in_fg(shellPid);
+				fgProccess = 0;
+			}
+			count = 0;
+			buffer[0] = 0;
+			printColor("HomerOS: $> ", GREEN);
+		} else if (c == 4) { // Ctrl + D at prompt
+			count = 0;
+			buffer[0] = 0;
+			printColor("\nHomerOS: $> ", GREEN);
+		} else if (c == '\n') {
+			printChar('\n');
 			buffer[count] = 0;
 			analizeBuffer(buffer, count);
 			printColor("\nHomerOS: $> ", GREEN);
@@ -154,7 +183,8 @@ void analizeBuffer(char * buffer, int count) {
 	
 	
 	if (parsed.hasPipe) { //TODO: descomentar cuando esten las pipes (y probarlo(Si falla y no tienen ganas de arreglarlo, diganle al chile))
-		char* name;
+		char nameBuffer[16] = {0};
+		char *name = nameBuffer;
 		unsigned_num_to_str(pipeCounter,0,name);
 		uint8_t anonPipe=sys_pipe_open(name);
 		pipeCounter++;
@@ -168,15 +198,22 @@ void analizeBuffer(char * buffer, int count) {
 			return;
 		}
 
+		pid_t shellPid = sys_get_pid();
+
 		pid_t p1 = sys_launch_process(fn1, DEFAULT_PRIO ,countArgs(parsed.args1), parsed.args1);
+		sys_process_set_foreground(p1, 0);
 		sys_change_process_fd(p1,anonPipe,1);
 
 		pid_t p2 = sys_launch_process(fn2, DEFAULT_PRIO ,countArgs(parsed.args2), parsed.args2);
+		sys_process_set_foreground(p2, parsed.isBackground ? 0 : 1);
 		sys_change_process_fd(p2,anonPipe,0);
 
 		if (!parsed.isBackground) {
+			sys_process_set_foreground(shellPid, 0);
 			fgProccess = p2;
 			putInFg(p2);
+			wait(p2);
+			sys_process_set_foreground(shellPid, 1);
 		} else {
 			fgProccess = 0;
 		}
@@ -192,14 +229,21 @@ void analizeBuffer(char * buffer, int count) {
 		return;
 	}
 
+	pid_t shellPid = sys_get_pid();
+
 	pid_t pid = createProcess(fn, DEFAULT_PRIO, countArgs(parsed.args1), parsed.args1);
+	sys_process_set_foreground(pid, parsed.isBackground ? 0 : 1);
 	if (!parsed.isBackground){
+		sys_process_set_foreground(shellPid, 0);
 		fgProccess = pid;
 		putInFg(pid);
 	}
 	if (hasToWait && fgProccess != 0)
 	{
 		wait(fgProccess);
+		sys_process_set_foreground(shellPid, 1);
+		sys_put_in_fg(shellPid);
+		fgProccess = 0;
 	}
 }
 
