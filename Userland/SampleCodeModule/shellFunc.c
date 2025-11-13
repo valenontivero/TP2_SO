@@ -15,7 +15,7 @@
 #include <test_priority.h>
 #include <uSync.h>
 
-#define MVAR_MAX_PARTICIPANTS 10
+
 
 #define NAME_COL_WIDTH 16
 #define PID_COL_WIDTH 6
@@ -61,24 +61,8 @@ static char *commandsHelp[] = {
     "mvar <writers> <readers>: launches writers/readers synchronized through an mvar."
 };
 
-typedef struct {
-    int instanceId;
-    int writerCount;
-    int readerCount;
-    char instanceStr[8];
-    char writerCountStr[8];
-    char readerCountStr[8];
-    char writerIndexStr[MVAR_MAX_PARTICIPANTS][8];
-    char readerIndexStr[MVAR_MAX_PARTICIPANTS][8];
-    char *writerArgv[MVAR_MAX_PARTICIPANTS][4];
-    char *readerArgv[MVAR_MAX_PARTICIPANTS][4];
-} MVarContext;
 
-static MVarContext currentMVar = {0};
-static int mvarInstanceCounter = 0;
 
-static const uint64_t mvarColors[] = {RED, GREEN, BLUE, YELLOW, CYAN, ORANGE, WHITE};
-static const int mvarColorCount = sizeof(mvarColors) / sizeof(mvarColors[0]);
 
 typedef void (*PsCellPrinter)(const processInfo *info, int width);
 
@@ -88,56 +72,8 @@ typedef struct {
     PsCellPrinter printer;
 } PsColumnSpec;
 
-static void copyString(char *dest, const char *src) {
-    while (*src) {
-        *dest++ = *src++;
-    }
-    *dest = 0;
-}
 
-static void appendString(char *dest, const char *src) {
-    while (*dest) {
-        dest++;
-    }
-    while (*src) {
-        *dest++ = *src++;
-    }
-    *dest = 0;
-}
 
-static void buildMVarName(char *dest, const char *prefix, int instance) {
-    char suffix[16] = {0};
-    copyString(dest, prefix);
-    intToStr(instance, suffix);
-    appendString(dest, suffix);
-}
-
-static void buildMVarIndexedName(char *dest, const char *prefix, int instance, int index) {
-    char suffix[16] = {0};
-    char indexStr[8] = {0};
-    copyString(dest, prefix);
-    intToStr(instance, suffix);
-    appendString(dest, suffix);
-    appendString(dest, "_");
-    intToStr(index, indexStr);
-    appendString(dest, indexStr);
-}
-
-static void mvar_busy_wait(uint64_t loops) {
-    while (loops--) {
-        __asm__ volatile("nop");
-    }
-}
-
-static void mvar_random_delay(int seed) {
-    uint32_t ticks = 0;
-    sys_get_ticks(&ticks);
-    uint64_t loops = 40000 + ((ticks + seed * 37u) % 60000);
-    mvar_busy_wait(loops);
-}
-
-static void mvar_writer(uint8_t argc, char **argv);
-static void mvar_reader(uint8_t argc, char **argv);
 
 static const char *stateToString(State state) {
     switch (state) {
@@ -149,28 +85,7 @@ static const char *stateToString(State state) {
     }
 }
 
-static int isDigit(char c) {
-    return c >= '0' && c <= '9';
-}
 
-static int isNumber(const char *str) {
-    if (str == NULL || *str == 0) {
-        return 0;
-    }
-    int i = 0;
-    while (str[i]) {
-        if (!isDigit(str[i])) {
-            return 0;
-        }
-        i++;
-    }
-    return 1;
-}
-
-static int isVowel(char c) {
-    char lower = (c >= 'A' && c <= 'Z') ? c + ('a' - 'A') : c;
-    return lower == 'a' || lower == 'e' || lower == 'i' || lower == 'o' || lower == 'u';
-}
 
 static void printPaddedColor(const char *str, int width, uint64_t color) {
     int len = strlen((char *)str);
@@ -567,181 +482,3 @@ void echo(uint8_t argc, char **argv) {
     printChar('\0');
     printChar('\n');
 } 
-
-static void mvar_writer(uint8_t argc, char **argv) {
-    int index = (argc > 0 && argv[0]) ? (int)atoi(argv[0]) : 0;
-    int instance = (argc > 1 && argv[1]) ? (int)atoi(argv[1]) : 0;
-    int writers = (argc > 2 && argv[2]) ? (int)atoi(argv[2]) : 1;
-
-    char mutexName[32] = {0};
-    char emptyName[32] = {0};
-    char fullName[32] = {0};
-    char pipeName[32] = {0};
-    char turnName[32] = {0};
-    char nextTurnName[32] = {0};
-
-    buildMVarName(mutexName, "mvar_mutex_", instance);
-    buildMVarName(emptyName, "mvar_empty_", instance);
-    buildMVarName(fullName, "mvar_full_", instance);
-    buildMVarName(pipeName, "mvar_pipe_", instance);
-    buildMVarIndexedName(turnName, "mvar_turn_", instance, index);
-    int nextIndex = (writers <= 0) ? index : (index + 1) % writers;
-    buildMVarIndexedName(nextTurnName, "mvar_turn_", instance, nextIndex);
-
-    int mutexId = (int)sys_sem_open(mutexName, 0);
-    int emptyId = (int)sys_sem_open(emptyName, 0);
-    int fullId = (int)sys_sem_open(fullName, 0);
-    int pipeId = (int)sys_pipe_open(pipeName);
-    int turnId = (int)sys_sem_open(turnName, 0);
-    int nextTurnId = (int)sys_sem_open(nextTurnName, 0);
-
-    if (mutexId < 0 || emptyId < 0 || fullId < 0 || pipeId < 0 || turnId < 0 || nextTurnId < 0) {
-        printColor("mvar writer: init error\n", RED);
-        return;
-    }
-
-    char letter = (char)('A' + (index % 26));
-
-    while (1) {
-        mvar_random_delay(index + 1);
-        sys_sem_wait((uint8_t)turnId);
-        sys_sem_wait((uint8_t)emptyId);
-        sys_sem_wait((uint8_t)mutexId);
-        sys_pipe_write((unsigned int)pipeId, &letter, 1);
-        sys_sem_post((uint8_t)mutexId);
-        sys_sem_post((uint8_t)fullId);
-        if (writers > 1) {
-            sys_sem_post((uint8_t)nextTurnId);
-        } else {
-            sys_sem_post((uint8_t)turnId);
-        }
-    }
-}
-
-static void mvar_reader(uint8_t argc, char **argv) {
-    int index = (argc > 0 && argv[0]) ? (int)atoi(argv[0]) : 0;
-    int instance = (argc > 1 && argv[1]) ? (int)atoi(argv[1]) : 0;
-    int writers = (argc > 2 && argv[2]) ? (int)atoi(argv[2]) : 1;
-
-    char mutexName[32] = {0};
-    char emptyName[32] = {0};
-    char fullName[32] = {0};
-    char pipeName[32] = {0};
-
-    buildMVarName(mutexName, "mvar_mutex_", instance);
-    buildMVarName(emptyName, "mvar_empty_", instance);
-    buildMVarName(fullName, "mvar_full_", instance);
-    buildMVarName(pipeName, "mvar_pipe_", instance);
-
-    int mutexId = (int)sys_sem_open(mutexName, 0);
-    int emptyId = (int)sys_sem_open(emptyName, 0);
-    int fullId = (int)sys_sem_open(fullName, 0);
-    int pipeId = (int)sys_pipe_open(pipeName);
-
-    if (mutexId < 0 || emptyId < 0 || fullId < 0 || pipeId < 0) {
-        printColor("mvar reader: init error\n", RED);
-        return;
-    }
-
-    while (1) {
-        mvar_random_delay(writers + index + 1);
-        sys_sem_wait((uint8_t)fullId);
-        sys_sem_wait((uint8_t)mutexId);
-        char value = 0;
-        sys_pipe_read((unsigned int)pipeId, &value, 1);
-        sys_sem_post((uint8_t)mutexId);
-        sys_sem_post((uint8_t)emptyId);
-
-        uint64_t color = mvarColors[index % mvarColorCount];
-        printColorChar(value, color);
-    }
-}
-
-void mvar(uint8_t argc, char **argv) {
-    if (argc < 3) {
-        printColor("Usage: mvar <writers> <readers>\n", RED);
-        return;
-    }
-    if (!isNumber(argv[1]) || !isNumber(argv[2])) {
-        printColor("mvar: writers and readers must be numeric.\n", RED);
-        return;
-    }
-
-    int writers = (int)atoi(argv[1]);
-    int readers = (int)atoi(argv[2]);
-
-    if (writers <= 0 || readers <= 0) {
-        printColor("mvar: writers and readers must be positive.\n", RED);
-        return;
-    }
-    if (writers > MVAR_MAX_PARTICIPANTS) {
-        printColor("mvar: writers out of range (max 10).\n", RED);
-        return;
-    }
-    if (readers > MVAR_MAX_PARTICIPANTS) {
-        printColor("mvar: readers out of range (max 10).\n", RED);
-        return;
-    }
-
-    mvarInstanceCounter++;
-    currentMVar.instanceId = mvarInstanceCounter;
-    currentMVar.writerCount = writers;
-    currentMVar.readerCount = readers;
-
-    intToStr(currentMVar.instanceId, currentMVar.instanceStr);
-    intToStr(writers, currentMVar.writerCountStr);
-    intToStr(readers, currentMVar.readerCountStr);
-
-    char emptyName[32] = {0};
-    char fullName[32] = {0};
-    char mutexName[32] = {0};
-    char pipeName[32] = {0};
-
-    buildMVarName(emptyName, "mvar_empty_", currentMVar.instanceId);
-    buildMVarName(fullName, "mvar_full_", currentMVar.instanceId);
-    buildMVarName(mutexName, "mvar_mutex_", currentMVar.instanceId);
-    buildMVarName(pipeName, "mvar_pipe_", currentMVar.instanceId);
-
-    int mutexId = (int)sys_sem_open(mutexName, 1);
-    int emptyId = (int)sys_sem_open(emptyName, 1);
-    int fullId = (int)sys_sem_open(fullName, 0);
-    int pipeId = (int)sys_pipe_open(pipeName);
-
-    if (mutexId < 0 || emptyId < 0 || fullId < 0 || pipeId < 0) {
-        printColor("mvar: could not create synchronization primitives.\n", RED);
-        return;
-    }
-
-    uint8_t turnIds[MVAR_MAX_PARTICIPANTS] = {0};
-    for (int i = 0; i < writers; i++) {
-        char turnName[32] = {0};
-        buildMVarIndexedName(turnName, "mvar_turn_", currentMVar.instanceId, i);
-        uint64_t id = sys_sem_open(turnName, 0);
-        if (id == (uint64_t)-1) {
-            printColor("mvar: could not create writer turn semaphores.\n", RED);
-            return;
-        }
-        turnIds[i] = (uint8_t)id;
-    }
-
-    for (int i = 0; i < writers; i++) {
-        intToStr(i, currentMVar.writerIndexStr[i]);
-        currentMVar.writerArgv[i][0] = currentMVar.writerIndexStr[i];
-        currentMVar.writerArgv[i][1] = currentMVar.instanceStr;
-        currentMVar.writerArgv[i][2] = currentMVar.writerCountStr;
-        currentMVar.writerArgv[i][3] = NULL;
-        sys_launch_process((void *)mvar_writer, DEFAULT_PRIO, 3, currentMVar.writerArgv[i]);
-    }
-    if (writers > 0) {
-        sys_sem_post(turnIds[0]);
-    }
-
-    for (int i = 0; i < readers; i++) {
-        intToStr(i, currentMVar.readerIndexStr[i]);
-        currentMVar.readerArgv[i][0] = currentMVar.readerIndexStr[i];
-        currentMVar.readerArgv[i][1] = currentMVar.instanceStr;
-        currentMVar.readerArgv[i][2] = currentMVar.writerCountStr;
-        currentMVar.readerArgv[i][3] = NULL;
-        sys_launch_process((void *)mvar_reader, DEFAULT_PRIO, 3, currentMVar.readerArgv[i]);
-    }
-}

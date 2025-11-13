@@ -6,6 +6,7 @@
 #define PRIORITY_LEVELS 5
 #define DEFAULT_PRIORITY 1
 #define MAX_PROCESSES 256
+#define MAX_SEMS_PER_PROCESS 16
 
 #define STDIN 0
 #define STDOUT 1
@@ -44,6 +45,9 @@ typedef struct PCB {
     uint8_t waitingChildren;            // Track if wait() is needed. 1 = wait() needed, 0 = wait() not needed
     uint8_t waitSemaphore; // Semaphore for waiting on child processes
     uint8_t exitStatus; 
+
+    uint8_t heldSemCount;
+    uint8_t semaphoresHeld[MAX_SEMS_PER_PROCESS];
     
 	uint8_t argc;
 	char** argv;
@@ -125,4 +129,7 @@ void wait(pid_t pid);
 
 
 void idleProcess(uint8_t argc, char** argv);
+
+void addHeldSemaphoreToProcess(uint8_t semId);
+void removeHeldSemaphoreFromProcess(uint8_t semId);
 #endif

@@ -73,6 +73,7 @@ int sem_post(uint8_t id) {
     sem->value++;
     
     releaseLock(&sem->lock);
+    removeHeldSemaphoreFromProcess(id);
 	return sem->value;
 
 }
@@ -87,6 +88,7 @@ int sem_wait(uint8_t id) {
     acquireLock(&sem->lock);
     if (sem->value > 0) {
         sem->value--;
+        addHeldSemaphoreToProcess(id);
     }
 	else {
         PCB* current = getCurrentProcess();
@@ -102,4 +104,20 @@ int sem_wait(uint8_t id) {
 
 void sem_destroy(uint8_t id){
 	namedSemaphores[id].inUse = 0;
+}
+
+void releaseHeldSemaphores(PCB* process) {
+    for (int i = 0; i < process->heldSemCount; i++) {
+        uint8_t id = process->semaphoresHeld[i];
+        Semaphore* sem = &namedSemaphores[id].sem;
+        acquireLock(&sem->lock);
+        if (getPCBQueueSize(sem->waiters) > 0) {
+            PCB* p = dequeueProcess(sem->waiters);
+            unblockProcess(p->pid);
+        } else {
+            sem->value++;
+        }
+        releaseLock(&sem->lock);
+    }
+    process->heldSemCount = 0;
 }

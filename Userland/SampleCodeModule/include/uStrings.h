@@ -23,6 +23,16 @@ char* strchr(const char* str, int c);
 
 char* strtok(char* str, const char* delim);
 
+void appendString(char* dest, const char* src);
+
+void copyString(char* dest, const char* src);
+
+int isDigit(char c);
+
+int isVowel(char c);
+
+int isNumber(const char* str);
+
 void* memset(void* destiation, int32_t c, uint64_t length);
 
 #endif // U_STRINGS_H

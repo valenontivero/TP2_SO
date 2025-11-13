@@ -120,6 +120,7 @@ void createFirstProcess(void (*fn)(uint8_t, char **), int argc, char** argv){
     new->entryPoint=launchProcess;
     char name[]="init";
     memcpy(new->name,name,strlen(name));
+    new->heldSemCount=0;
     processStack *newStack = new->stackBase - sizeof(processStack);
     newStack->rsp = new->stackBase;
     newStack->rbp = new->stackBase;
@@ -151,6 +152,7 @@ pid_t createProcess(void (*fn)(uint8_t, char **), int priority, int argc, char**
     new->fd[1] = STDOUT; 
     new->argc = argc;
     new->argv = argv;
+    new->heldSemCount=0;
     new->entryPoint = launchProcess;
     new->parent = &processes[getCurrentPID()];
     new->next = NULL;
@@ -236,6 +238,7 @@ int killProcess(uint8_t pid){
             if(processes[i].parent->waitingChildren){
                 sem_post(processes[i].parent->waitSemaphore);
             }
+            releaseHeldSemaphores(&processes[i]);
             
             if (getCurrentPID() == pid)
             {
@@ -373,5 +376,26 @@ PCB* getForegroundProcess() {
 void idleProcess(uint8_t argc, char** argv) {
     while (1) {
         _hlt();
+    }
+}
+
+void addHeldSemaphoreToProcess(uint8_t semId) {
+    PCB* current = getCurrentProcess();
+    if (current->heldSemCount < MAX_SEMS_PER_PROCESS) {
+        current->semaphoresHeld[current->heldSemCount] = semId;
+        current->heldSemCount++;
+    }
+}
+
+void removeHeldSemaphoreFromProcess(uint8_t semId) {
+    PCB* current = getCurrentProcess();
+    for (uint8_t i = 0; i < current->heldSemCount; i++) {
+        if (current->semaphoresHeld[i] == semId) {
+            for (uint8_t j = i; j < current->heldSemCount - 1; j++) {
+                current->semaphoresHeld[j] = current->semaphoresHeld[j + 1];
+            }
+            current->heldSemCount--;
+            break;
+        }
     }
 }

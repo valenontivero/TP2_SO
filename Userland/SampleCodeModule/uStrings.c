@@ -142,3 +142,46 @@ void * memset(void * destiation, int32_t c, uint64_t length) {
 
 	return destiation;
 }
+
+
+void appendString(char* dest, const char* src) {
+    while (*dest) {
+        dest++;
+    }
+    while (*src) {
+        *dest = *src;
+        dest++;
+        src++;
+    }
+    *dest = 0;
+}
+
+void copyString(char *dest, const char *src) {
+    while (*src) {
+        *dest++ = *src++;
+    }
+    *dest = 0;
+}
+
+int isDigit(char c) {
+    return c >= '0' && c <= '9';
+}
+
+int isVowel(char c) {
+    char lower = (c >= 'A' && c <= 'Z') ? c + ('a' - 'A') : c;
+    return lower == 'a' || lower == 'e' || lower == 'i' || lower == 'o' || lower == 'u';
+}
+
+int isNumber(const char *str) {
+    if (str == NULL || *str == 0) {
+        return 0;
+    }
+    int i = 0;
+    while (str[i]) {
+        if (!isDigit(str[i])) {
+            return 0;
+        }
+        i++;
+    }
+    return 1;
+}
