@@ -10,6 +10,7 @@
 #include <mySem.h>
 #include <videodriver.h>
 #include <interrupts.h>
+#include <limits.h>
 
 static Pipe pipes[MAX_PIPES];
 static PipeFD pipeFDs[MAX_PIPES * 2];  // cada pipe puede tener hasta 2 descriptores
@@ -23,18 +24,6 @@ void initPipes() {
     for (int i = 0; i < MAX_PIPES * 2; i++) {
         pipeFDs[i].inUse = 0;
     }
-}
-
-static int allocateFD(Pipe* pipe, PipeEnd end) {
-    for (int i = 0; i < MAX_PIPES * 2; i++) {
-        if (!pipeFDs[i].inUse) {
-            pipeFDs[i].inUse = 1;
-            pipeFDs[i].pipe = pipe;
-            pipeFDs[i].end = end;
-            return i;
-        }
-    }
-    return -1;
 }
 
 uint8_t pipe_open(const char* name) {
@@ -68,7 +57,9 @@ uint8_t pipe_open(const char* name) {
                 char sem_write_name[MAX_PIPE_NAME + 5];
                 safe_strncpy(sem_write_name, name, MAX_PIPE_NAME);
                 my_strcat(sem_write_name, "read");
-               	pipe->write_sem=sem_open(sem_write_name, PIPE_BUFFER_SIZE-1);
+                uint64_t desiredSlots = PIPE_BUFFER_SIZE - 1;
+                uint8_t initialSlots = (desiredSlots > UINT8_MAX) ? UINT8_MAX : (uint8_t)desiredSlots;
+               	pipe->write_sem=sem_open(sem_write_name, initialSlots);
                 pipe->read_sem=sem_open(name, 0);
 				break;
 			}

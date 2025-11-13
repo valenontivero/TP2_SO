@@ -62,13 +62,17 @@ void putInFG(pid_t pid1,pid_t pid2){
 }
 
 static void killProcessInFG(pid_t pid, pid_t* fgVar){
-    if (pid==(pid_t)-1)
-    {
+    if (fgVar == NULL) {
         return;
     }
-    pid_t aux= pid;
-    fgVar= -1;
-    killProcess(aux);
+
+    if (pid <= 0 || pid == (pid_t)-1) {
+        *fgVar = -1;
+        return;
+    }
+
+    *fgVar = -1;
+    killProcess(pid);
 }
 
 void killProcessesInFG(){

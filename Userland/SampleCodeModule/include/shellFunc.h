@@ -1,4 +1,4 @@
-#define COMMANDS_QUANTITY 24  // ACORDARSE DE ESTO (y agregar la descripcion en commandsHelp en shellFunc.c)
+#define COMMANDS_QUANTITY 25  // ACORDARSE DE ESTO (y agregar la descripcion en commandsHelp en shellFunc.c)
 
 void help (uint8_t argc, char **argv);
 

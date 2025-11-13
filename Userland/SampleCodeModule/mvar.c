@@ -74,21 +74,9 @@ static void buildMVarName(char *dest, const char *prefix, int instance) {
 }
 
 
-static void buildMVarIndexedName(char *dest, const char *prefix, int instance, int index) {
-    char suffix[16] = {0};
-    char indexStr[8] = {0};
-    copyString(dest, prefix);
-    intToStr(instance, suffix);
-    appendString(dest, suffix);
-    appendString(dest, "_");
-    intToStr(index, indexStr);
-    appendString(dest, indexStr);
-}
-
 static void mvar_writer(uint8_t argc, char **argv) {
     int index = (argc > 0 && argv[1]) ? (int)atoi(argv[1]) : 0;
     int instance = (argc > 1 && argv[2]) ? (int)atoi(argv[2]) : 0;
-    int writers = (argc > 2 && argv[3]) ? (int)atoi(argv[3]) : 1;
 
     char mutexName[32] = {0};
     char emptyName[32] = {0};

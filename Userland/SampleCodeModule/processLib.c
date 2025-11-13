@@ -17,15 +17,13 @@ uint64_t blockProcess(pid_t pid) {
     processInfo info;
     if (sys_get_process_info(pid, &info) != 0) {
         printColor("block: process not found or terminated.\n", RED);
-        return;
+        return (uint64_t)-1;
     }
-    uint64_t res;
-    if (info.state == BLOCKED) {
-        res = sys_process_unblock(pid);
-    } else {
-        res = sys_process_block(pid);
-    }
+    uint64_t res = (info.state == BLOCKED)
+                       ? sys_process_unblock(pid)
+                       : sys_process_block(pid);
     if (res != 0) {
         printColor("block: operation failed.\n", RED);
     }
+    return res;
 }
