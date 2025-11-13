@@ -307,11 +307,7 @@ uint64_t sys_process_kill(uint64_t pid, uint64_t unused1, uint64_t unused2, uint
 }
 
 uint64_t sys_process_nice(uint64_t pid, uint64_t newPriority, uint64_t unused2, uint64_t unused3, uint64_t unused4, uint64_t unused5) {
-    if (pid >= MAX_PROCESSES) {
-        return (uint64_t)-1;
-    }
-    setPriority((pid_t)pid, (int)newPriority);
-    return 0;
+    return (uint64_t)setPriority((pid_t)pid, (int)newPriority);
 }
 
 uint64_t sys_process_block(uint64_t pid, uint64_t unused1, uint64_t unused2, uint64_t unused3, uint64_t unused4, uint64_t unused5) {

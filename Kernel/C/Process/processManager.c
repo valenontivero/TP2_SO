@@ -29,11 +29,21 @@ int getPriority(pid_t pid){
 	return processes[pid].priority;
 }
 
-void setPriority(pid_t pid, int newPriority){
+int setPriority(pid_t pid, int newPriority){
 	if(pid < 0 || pid >= MAX_PROCESSES){
-		return ;
+		return -1;
 	}
-	processes[pid].priority = (newPriority >= PRIORITY_LEVELS) ? PRIORITY_LEVELS - 1 : newPriority;
+	PCB *target = &processes[pid];
+	if (target->state == TERMINATED){
+		return -1;
+	}
+	if (newPriority < 0){
+		newPriority = 0;
+	}
+	int clampedPriority = (newPriority >= PRIORITY_LEVELS) ? PRIORITY_LEVELS - 1 : newPriority;
+	target->priority = clampedPriority;
+	target->remainingQuantum = quantumPerPriority[clampedPriority];
+	return 0;
 }
 
 void myExit(){
