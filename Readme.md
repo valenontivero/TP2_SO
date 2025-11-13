@@ -1,4 +1,4 @@
-#Kernel: main elements of an operating system
+# Kernel: main elements of an operating system
 
 ## How to build and run
 
@@ -41,6 +41,8 @@ Another way is to compile using the docker.sh script. This will create a docker 
 Be aware that you may need to change your audio device on the run.sh script.
 
 ## Comands that you can run on the kernel terminal
+
+### List of commands
 
 help: gives you a list of all existent commands.
 
