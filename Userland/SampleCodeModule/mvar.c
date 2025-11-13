@@ -42,7 +42,9 @@ static void mvar_busy_wait(uint64_t loops) {
 static void mvar_random_delay(int seed) {
     uint32_t ticks = 0;
     sys_get_ticks(&ticks);
-    uint64_t loops = 40000 + ((ticks + seed * 37u) % 60000);
+    uint64_t loops = 25000000 + ((ticks + seed * 37u) % 60000);
+    int prio= sys_get_prio(sys_get_pid());
+    loops *= (uint64_t)(1 << (4 - prio));  
     mvar_busy_wait(loops);
 }
 
@@ -245,7 +247,7 @@ void mvar(uint8_t argc, char **argv) {
         currentMVar.writerArgv[i][2] = currentMVar.instanceStr;
         currentMVar.writerArgv[i][3] = currentMVar.writerCountStr;
         currentMVar.writerArgv[i][4] = NULL;
-        sys_launch_process((void *)mvar_writer, DEFAULT_PRIO, 5, currentMVar.writerArgv[i]);
+        sys_launch_process((void *)mvar_writer, 2, 4, currentMVar.writerArgv[i]);
     }
     /* if (writers > 0) {
         sys_sem_post(turnIds[0]);
@@ -258,6 +260,6 @@ void mvar(uint8_t argc, char **argv) {
         currentMVar.readerArgv[i][2] = currentMVar.instanceStr;
         currentMVar.readerArgv[i][3] = currentMVar.writerCountStr;
         currentMVar.readerArgv[i][4] = NULL;
-        sys_launch_process((void *)mvar_reader, DEFAULT_PRIO, 5 , currentMVar.readerArgv[i]);
+        sys_launch_process((void *)mvar_reader, 2, 4 , currentMVar.readerArgv[i]);
     }
 }

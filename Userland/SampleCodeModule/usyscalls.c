@@ -153,3 +153,7 @@ uint64_t sys_process_unblock(pid_t pid) {
 uint64_t sys_process_set_foreground(pid_t pid, uint8_t isForeground) {
     return sys_call((uint64_t)35, (uint64_t)pid, (uint64_t)isForeground, (uint64_t)0, (uint64_t)0, (uint64_t)0);
 }
+
+uint64_t sys_get_prio(pid_t pid) {
+    return sys_call((uint64_t)36, (uint64_t)pid, (uint64_t)0, (uint64_t)0, (uint64_t)0, (uint64_t)0);
+}

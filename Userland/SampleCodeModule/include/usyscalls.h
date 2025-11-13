@@ -75,4 +75,6 @@ uint64_t sys_process_unblock(pid_t pid);
 
 uint64_t sys_process_set_foreground(pid_t pid, uint8_t isForeground);
 
+uint64_t sys_get_prio(pid_t pid);
+
 #endif
