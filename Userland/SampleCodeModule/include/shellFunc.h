@@ -46,4 +46,6 @@ void filter(uint8_t argc, char **argv);
 
 void cat(uint8_t argc, char **argv);
 
+void echo(uint8_t argc, char **argv);
+
 void mvar(uint8_t argc, char **argv);

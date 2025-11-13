@@ -112,9 +112,8 @@ uint64_t pipe_read(int fd, char* buf, uint64_t count) {
     while (read < count) {
         sem_wait(pipe->read_sem);
         buf[read] = pipe->buffer[pipe->readIdx];
-        printString(buf[read]);
         pipe->readIdx = (pipe->readIdx + 1) % PIPE_BUFFER_SIZE;
-        pipe->size--;
+        if (pipe->size >0) pipe->size--;
         read++;
         sem_post(pipe->write_sem);
     }
@@ -137,7 +136,7 @@ void resetBuffer(uint16_t fd){
         pipes[fd].buffer[i] = 0;
     }
 }
-//funciona bien
+
 int8_t changeProcessFd(uint16_t pid, uint8_t fd, uint8_t end){
     if(pid >= MAX_PROCESSES || fd >= MAX_PIPES || end >= 2) {
         return -1; // Invalid PID, fd, or end

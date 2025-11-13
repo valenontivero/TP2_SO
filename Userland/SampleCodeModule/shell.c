@@ -55,10 +55,11 @@ static void  (*instructionFunctions[])(uint8_t, char **) = {
     wc,
     filter,
     cat,
+	echo,
     mvar,
 	NULL};
 
-static char *commandsNames[] = {"help", "time", "date", "registers", "fillregs", "div0", "invalidop", "pong", "clear", "hello", "testprint", "testsem", "testpipe", "testpriority", "mem", "ps", "loop", "kill", "nice", "block", "wc", "filter", "cat", "mvar", 0};
+static char *commandsNames[] = {"help", "time", "date", "registers", "fillregs", "div0", "invalidop", "pong", "clear", "hello", "testprint", "testsem", "testpipe", "testpriority", "mem", "ps", "loop", "kill", "nice", "block", "wc", "filter", "cat","echo", "mvar", 0};
 
 
 //

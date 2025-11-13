@@ -57,6 +57,7 @@ static char *commandsHelp[] = {
 	"wc: counts the number of input lines.",
 	"filter: removes vowels from the input stream.",
 	"cat: prints the stdin exactly as received.",
+    "echo <text>: prints the provided arguments to the standard output.",
     "mvar <writers> <readers>: launches writers/readers synchronized through an mvar."
 };
 
@@ -555,6 +556,17 @@ void cat(uint8_t argc, char **argv) {
 		sys_write(STDOUT, buffer, 1);
 	}
 }
+
+void echo(uint8_t argc, char **argv) {
+    for (int i = 1; i < argc; i++) {
+        printColor(argv[i], WHITE);
+        if (i < argc - 1) {
+            printColor(" ", WHITE);
+        }
+    }
+    printChar('\0');
+    printChar('\n');
+} 
 
 static void mvar_writer(uint8_t argc, char **argv) {
     int index = (argc > 0 && argv[0]) ? (int)atoi(argv[0]) : 0;
