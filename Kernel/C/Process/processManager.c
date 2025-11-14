@@ -89,6 +89,7 @@ void initializeProcesses(){
     for (uint16_t i = 0; i < MAX_PROCESSES; i++)
     {
         processes[i].state=TERMINATED;
+        processes[i].waitingSemaphore = -1;
     }
     
 }
@@ -125,6 +126,7 @@ void createFirstProcess(void (*fn)(uint8_t, char **), int argc, char** argv){
     char name[]="init";
     memcpy(new->name,name,strlen(name));
     new->heldSemCount=0;
+    new->waitingSemaphore = -1;
     processStack *newStack = new->stackBase - sizeof(processStack);
     newStack->rsp = new->stackBase;
     newStack->rbp = new->stackBase;
@@ -157,6 +159,7 @@ pid_t createProcess(void (*fn)(uint8_t, char **), int priority, int argc, char**
     new->argc = argc;
     new->argv = argv;
     new->heldSemCount=0;
+    new->waitingSemaphore = -1;
     new->entryPoint = launchProcess;
     new->parent = &processes[getCurrentPID()];
     new->next = NULL;
@@ -239,6 +242,9 @@ int killProcess(uint8_t pid){
             
             processes[i].state = TERMINATED;
             processCount--;
+            if (processes[i].waitingSemaphore >= 0) {
+                sem_unregister_waiting_process((uint8_t)processes[i].waitingSemaphore, &processes[i]);
+            }
             if(processes[i].parent->waitingChildren){
                 sem_post(processes[i].parent->waitSemaphore);
             }

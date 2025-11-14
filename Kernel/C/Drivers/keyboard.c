@@ -159,6 +159,7 @@ char getChar() {
     char toReturn = buffer[readIndex];
     readIndex = (readIndex + 1) % BUFFER_SIZE;
     elemCount--;
+    removeHeldSemaphoreFromProcess((uint8_t)semaphoreId);
     return toReturn;
 }
 

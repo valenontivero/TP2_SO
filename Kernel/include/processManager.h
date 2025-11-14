@@ -48,6 +48,7 @@ typedef struct PCB {
 
     uint8_t heldSemCount;
     uint8_t semaphoresHeld[MAX_SEMS_PER_PROCESS];
+    int8_t waitingSemaphore;
     
 	uint8_t argc;
 	char** argv;

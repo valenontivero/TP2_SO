@@ -82,25 +82,16 @@ static void mvar_writer(uint8_t argc, char **argv) {
     char emptyName[32] = {0};
     char fullName[32] = {0};
     char pipeName[32] = {0};
-    /* char turnName[32] = {0};
-    char nextTurnName[32] = {0}; */
-
     buildMVarName(mutexName, "mvar_mutex_", instance);
     buildMVarName(emptyName, "mvar_empty_", instance);
     buildMVarName(fullName, "mvar_full_", instance);
     buildMVarName(pipeName, "mvar_pipe_", instance);
-    /* buildMVarIndexedName(turnName, "mvar_turn_", instance, index);
-    int nextIndex = (writers <= 0) ? index : (index + 1) % writers;
-    buildMVarIndexedName(nextTurnName, "mvar_turn_", instance, nextIndex); */
-
     int mutexId = (int)sys_sem_open(mutexName, 0);
     int emptyId = (int)sys_sem_open(emptyName, 0);
     int fullId = (int)sys_sem_open(fullName, 0);
     int pipeId = (int)sys_pipe_open(pipeName);
-    /* int turnId = (int)sys_sem_open(turnName, 0);
-    int nextTurnId = (int)sys_sem_open(nextTurnName, 0);
- */
-    if (mutexId < 0 || emptyId < 0 || fullId < 0 || pipeId < 0 /* || turnId < 0 || nextTurnId < 0 */) {
+
+    if (mutexId < 0 || emptyId < 0 || fullId < 0 || pipeId < 0) {
         printColor("mvar writer: init error\n", RED);
         return;
     }
@@ -109,17 +100,11 @@ static void mvar_writer(uint8_t argc, char **argv) {
 
     while (1) {
         mvar_random_delay(index + 1);
-        /* sys_sem_wait((uint8_t)turnId); */
         sys_sem_wait((uint8_t)emptyId);
         sys_sem_wait((uint8_t)mutexId);
         sys_pipe_write((unsigned int)pipeId, &letter, 1);
         sys_sem_post((uint8_t)mutexId);
         sys_sem_post((uint8_t)fullId);
-        /* if (writers > 1) {
-            sys_sem_post((uint8_t)nextTurnId);
-        } else {
-            sys_sem_post((uint8_t)turnId);
-        } */
     }
 }
 
@@ -216,17 +201,6 @@ void mvar(uint8_t argc, char **argv) {
         return;
     }
 
-    /* uint8_t turnIds[MVAR_MAX_PARTICIPANTS] = {0};
-    for (int i = 0; i < writers; i++) {
-        char turnName[32] = {0};
-        buildMVarIndexedName(turnName, "mvar_turn_", currentMVar.instanceId, i);
-        uint64_t id = sys_sem_open(turnName, 0);
-        if (id == (uint64_t)-1) {
-            printColor("mvar: could not create writer turn semaphores.\n", RED);
-            return;
-        }
-        turnIds[i] = (uint8_t)id;
-    } */
 
     for (int i = 0; i < writers; i++) {
         intToStr(i, currentMVar.writerIndexStr[i]);
@@ -237,9 +211,7 @@ void mvar(uint8_t argc, char **argv) {
         currentMVar.writerArgv[i][4] = NULL;
         sys_launch_process((void *)mvar_writer, 2, 4, currentMVar.writerArgv[i]);
     }
-    /* if (writers > 0) {
-        sys_sem_post(turnIds[0]);
-    } */
+  
 
     for (int i = 0; i < readers; i++) {
         intToStr(i, currentMVar.readerIndexStr[i]);
