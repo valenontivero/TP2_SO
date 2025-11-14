@@ -77,4 +77,7 @@ uint64_t sys_process_set_foreground(pid_t pid, uint8_t isForeground);
 
 uint64_t sys_get_prio(pid_t pid);
 
+void *sys_malloc(uint64_t size);
+uint64_t sys_free(void *ptr);
+
 #endif

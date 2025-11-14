@@ -4,8 +4,6 @@
 #include "test_util.h"
 
 #define SEM_ID "sem"
-#define TOTAL_PAIR_PROCESSES 2
-
 int64_t global; // shared memory
 
 void slowInc(int64_t *p, int64_t inc) {
@@ -51,29 +49,45 @@ uint64_t my_process_inc(uint64_t argc, char *argv[]) {
   return 0;
 }
 
-uint64_t test_sync(uint64_t argc, char *argv[]) { //{n, use_sem, 0}
-  uint64_t pids[2 * TOTAL_PAIR_PROCESSES];
-
+static uint64_t run_test_sync(uint64_t argc, char *argv[], uint8_t useSemaphore) {
   if (argc != 2)
     return -1;
 
-  char *argvDec[] = {argv[0], "-1", argv[1], NULL};
-  char *argvInc[] = {argv[0], "1", argv[1], NULL};
+  int64_t pairCount = satoi(argv[0]);
+  int64_t iterations = satoi(argv[1]);
+
+  if (pairCount <= 0 || iterations <= 0)
+    return -1;
+
+  uint64_t totalProcesses = (uint64_t)pairCount * 2;
+  uint64_t pids[totalProcesses];
+
+  char *iterationsStr = argv[1];
+  char useSemStr[2] = {useSemaphore ? '1' : '0', '\0'};
+
+  char *argvDec[] = {iterationsStr, "-1", useSemStr, NULL};
+  char *argvInc[] = {iterationsStr, "1", useSemStr, NULL};
 
   global = 0;
 
-  uint64_t i;
-  for (i = 0; i < TOTAL_PAIR_PROCESSES; i++) {
+  for (uint64_t i = 0; i < (uint64_t)pairCount; i++) {
     pids[i] = my_create_process("my_process_inc", 3, argvDec);
-    pids[i + TOTAL_PAIR_PROCESSES] = my_create_process("my_process_inc", 3, argvInc);
+    pids[i + pairCount] = my_create_process("my_process_inc", 3, argvInc);
   }
 
-  for (i = 0; i < TOTAL_PAIR_PROCESSES; i++) {
+  for (uint64_t i = 0; i < (uint64_t)pairCount; i++) {
     my_wait(pids[i]);
-    my_wait(pids[i + TOTAL_PAIR_PROCESSES]);
+    my_wait(pids[i + pairCount]);
   }
 
   printf("Final value: %d\n", global);
-
   return 0;
+}
+
+uint64_t test_synchro(uint64_t argc, char *argv[]) {
+  return run_test_sync(argc, argv, 1);
+}
+
+uint64_t test_no_synchro(uint64_t argc, char *argv[]) {
+  return run_test_sync(argc, argv, 0);
 }

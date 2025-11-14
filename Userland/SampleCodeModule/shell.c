@@ -13,9 +13,6 @@
 #include <uStrings.h>
 #include <shellFunc.h>
 #include <uSync.h>
-#include <test_print.h>
-#include <test_sem.h>
-#include <test_pipe.h>
 
 //
 // Necesarry functions declarations
@@ -41,11 +38,12 @@ static void  (*instructionFunctions[])(uint8_t, char **) = {
 	invalidop, 
 	pong, 
 	clear,
-	hello,
-	testprint,
-	testsem,
-	testpipe,
-	testpriority,
+    hello,
+    testmm,
+    testprocesses,
+    testsynchro,
+    testnosynchro,
+    testpriority,
     mem,
     ps,
     loop,
@@ -59,7 +57,7 @@ static void  (*instructionFunctions[])(uint8_t, char **) = {
     mvar,
 	NULL};
 
-static char *commandsNames[] = {"help", "time", "date", "registers", "fillregs", "div0", "invalidop", "pong", "clear", "hello", "testprint", "testsem", "testpipe", "testpriority", "mem", "ps", "loop", "kill", "nice", "block", "wc", "filter", "cat","echo", "mvar", 0};
+static char *commandsNames[] = {"help", "time", "date", "registers", "fillregs", "div0", "invalidop", "pong", "clear", "hello", "testmm", "testprocesses", "testsynchro", "testnosynchro", "testpriority", "mem", "ps", "loop", "kill", "nice", "block", "wc", "filter", "cat","echo", "mvar", 0};
 
 
 //

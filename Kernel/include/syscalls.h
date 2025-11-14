@@ -73,4 +73,7 @@ uint64_t sys_process_set_foreground(uint64_t pid, uint64_t value, uint64_t unuse
 
 uint64_t sys_get_prio(uint64_t pid, uint64_t unused1, uint64_t unused2, uint64_t unused3, uint64_t unused4, uint64_t unused5);
 
+uint64_t sys_mem_alloc(uint64_t size, uint64_t unused1, uint64_t unused2, uint64_t unused3, uint64_t unused4, uint64_t unused5);
+uint64_t sys_mem_free(uint64_t address, uint64_t unused1, uint64_t unused2, uint64_t unused3, uint64_t unused4, uint64_t unused5);
+
 #endif

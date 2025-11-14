@@ -9,12 +9,42 @@
 #include <usyscalls.h>
 #include <stddef.h>
 #include <utime.h>
-#include <test_print.h>
-#include <test_sem.h>
-#include <test_pipe.h>
-#include <test_priority.h>
 #include <uSync.h>
 
+extern uint64_t test_mm(uint64_t argc, char *argv[]);
+extern int64_t test_processes(uint64_t argc, char *argv[]);
+extern uint64_t test_prio(uint64_t argc, char *argv[]);
+extern uint64_t test_synchro(uint64_t argc, char *argv[]);
+extern uint64_t test_no_synchro(uint64_t argc, char *argv[]);
+
+static void test_mm_entry(uint8_t argc, char **argv) {
+    test_mm((uint64_t)argc, argv);
+}
+
+static void test_processes_entry(uint8_t argc, char **argv) {
+    test_processes((uint64_t)argc, argv);
+}
+
+static void test_prio_entry(uint8_t argc, char **argv) {
+    test_prio((uint64_t)argc, argv);
+}
+
+static void test_synchro_entry(uint8_t argc, char **argv) {
+    test_synchro((uint64_t)argc, argv);
+}
+
+static void test_no_synchro_entry(uint8_t argc, char **argv) {
+    test_no_synchro((uint64_t)argc, argv);
+}
+
+static void launch_test_process(const char *name, void (*entry)(uint8_t, char **), uint8_t argc, char **argv) {
+    pid_t pid = sys_launch_process((void *)entry, DEFAULT_PRIO, argc, argv);
+    if ((int64_t)pid < 0) {
+        printf("%s: unable to launch test process.\n", name);
+    } else {
+        printf("%s started with pid %d\n", name, (int)pid);
+    }
+}
 
 
 #define NAME_COL_WIDTH 16
@@ -44,10 +74,11 @@ static char *commandsHelp[] = {
 	"pong: go to play the \"pong\" game.",
 	"clear: clears the OS screen.",
     "hello: prints hello every 5 seconds.",
-	"testprint: tests that you can create a process and it can print on screen.",
-	"testsem: tests that a process can block itself with a semaphore and another process can unblock it",
-	"testpipe: tests that 2 processes can comunicate between pipes",
-	"testpriority: tests the priorities of 3 processes",
+    "testmm <max_mem>: stress tests the memory manager with random allocations.",
+    "testprocesses <max_procs>: exercises process creation/kill/block/unblock.",
+    "testsynchro <pairs> <iterations>: runs synced increment/decrement workload.",
+    "testnosynchro <pairs> <iterations>: same as testsynchro but without semaphores.",
+    "testpriority <limit>: demonstrates scheduler priority handling.",
 	"mem: prints current memory usage.",
 	"ps: lists the active processes with their attributes.",
 	"loop [seconds]: prints the process ID periodically (default 1 second).",
@@ -261,38 +292,64 @@ void hello (uint8_t argc, char **argv) {
     }
 }
 
-void testprint (uint8_t argc, char **argv){
-	char* argvv[] = {"testPrint"};
-	sys_launch_process((void*) testPrint, 1, 1, argvv);
+void testmm(uint8_t argc, char **argv) {
+    if (argc < 2) {
+        printColor("Usage: testmm <max_mem>\n", RED);
+        return;
+    }
+    if (!isNumber(argv[1])) {
+        printColor("testmm: max_mem must be numeric.\n", RED);
+        return;
+    }
+    launch_test_process("testmm", test_mm_entry, (uint8_t)(argc - 1), argv + 1);
 }
 
-void testsem (uint8_t argc, char **argv){
-	char* argv1[] = {"testSemPoster"};
-	char* argv2[] = {"testSemWaiter"};
-	sys_launch_process((void*) testSemPoster, 1, 1, argv1);
-	sys_launch_process((void*) testSemWaiter, 1, 1, argv2);
+void testprocesses(uint8_t argc, char **argv) {
+    if (argc < 2) {
+        printColor("Usage: testprocesses <max_procs>\n", RED);
+        return;
+    }
+    if (!isNumber(argv[1])) {
+        printColor("testprocesses: max_procs must be numeric.\n", RED);
+        return;
+    }
+    launch_test_process("testprocesses", test_processes_entry, (uint8_t)(argc - 1), argv + 1);
 }
 
-void testpipe (uint8_t argc, char **argv){
-	char* argv1[] = {"testPipeReader"};
-	char* argv2[] = {"testPipeWriter"};
-	pid_t pids[2];
-	pids[1]=sys_launch_process((void*) testPipeReader, 1, 1, argv1);
-	pids[2]=sys_launch_process((void*) testPipeWriter, 1, 1, argv2);
-	for (size_t i = 0; i < 2; i++)
-	{
-		wait(pids[i]);
-	}
-	
+void testsynchro(uint8_t argc, char **argv) {
+    if (argc < 3) {
+        printColor("Usage: testsynchro <pairs> <iterations>\n", RED);
+        return;
+    }
+    if (!isNumber(argv[1]) || !isNumber(argv[2])) {
+        printColor("testsynchro: arguments must be numeric.\n", RED);
+        return;
+    }
+    launch_test_process("testsynchro", test_synchro_entry, (uint8_t)(argc - 1), argv + 1);
 }
 
-void testpriority (uint8_t argc, char **argv){
-	char* argv1[] = {"testPriorityHigh"};
-	char* argv2[] = {"testPriorityMedium"};
-	char* argv3[] = {"testPriorityLow"};
-	sys_launch_process((void*) testPriorityHigh, 3, 1, argv1);
-	sys_launch_process((void*) testPriorityMedium, 2, 1, argv2);
-	sys_launch_process((void*) testPriorityLow, 1, 1, argv3);
+void testnosynchro(uint8_t argc, char **argv) {
+    if (argc < 3) {
+        printColor("Usage: testnosynchro <pairs> <iterations>\n", RED);
+        return;
+    }
+    if (!isNumber(argv[1]) || !isNumber(argv[2])) {
+        printColor("testnosynchro: arguments must be numeric.\n", RED);
+        return;
+    }
+    launch_test_process("testnosynchro", test_no_synchro_entry, (uint8_t)(argc - 1), argv + 1);
+}
+
+void testpriority(uint8_t argc, char **argv) {
+    if (argc < 2) {
+        printColor("Usage: testpriority <limit>\n", RED);
+        return;
+    }
+    if (!isNumber(argv[1])) {
+        printColor("testpriority: limit must be numeric.\n", RED);
+        return;
+    }
+    launch_test_process("testpriority", test_prio_entry, (uint8_t)(argc - 1), argv + 1);
 }
 
 void mem(uint8_t argc, char **argv) {

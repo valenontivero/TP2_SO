@@ -71,13 +71,17 @@ Be aware that you may need to change your audio device on the run.sh script.
 
 **hello**: prints hello every 5 seconds.
 
-**testprint**: tests that you can create a process and it can print on screen.
+**testmm** `<max_mem>`: stresses the memory allocator with random reservations up to the provided limit.
 
-**testsem**: tests that a process can block itself with a semaphore and another process can unblock it
+**testprocesses** `<max_procs>`: creates, blocks, unblocks and kills processes randomly to exercise the scheduler.
 
-**testpipe**: tests that 2 processes can comunicate between pipes
+**testsynchro** `<pairs> <iterations>`: runs synchronized reader/writer pairs using semaphores to avoid races.
 
-**testpriority**: tests the priorities of 3 processes
+**testnosynchro** `<pairs> <iterations>`: same scenario as testsynchro but without semaphores to expose race conditions.
+
+> These four commands are the userland counterparts of the official tests `test_mm`, `test_processes`, `test_synchro` and `test_no_synchro`. They run as ordinary user processes (not built-ins) and can be executed either in foreground or in background by appending `&`, satisfying the assignment requirement. For `testmm`, at least one of the provided memory managers must pass the test.
+
+**testpriority** `<limit>`: demonstrates the scheduler by running workers with different priorities until they reach the given limit.
 
 **mem**: prints current memory usage.
 

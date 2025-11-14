@@ -13,6 +13,7 @@
 #include <processManager.h>
 #include <lib.h>
 #include <scheduler.h>
+#include <mem_manager.h>
 
 extern const uint64_t registers[17];
 
@@ -325,4 +326,20 @@ uint64_t sys_process_set_foreground(uint64_t pid, uint64_t value, uint64_t unuse
 
 uint64_t sys_get_prio(uint64_t pid, uint64_t unused1, uint64_t unused2, uint64_t unused3, uint64_t unused4, uint64_t unused5) {
     return (uint64_t)getPriority((pid_t)pid);
+}
+
+uint64_t sys_mem_alloc(uint64_t size, uint64_t unused1, uint64_t unused2, uint64_t unused3, uint64_t unused4, uint64_t unused5) {
+    if (size == 0) {
+        return 0;
+    }
+    void *allocated = malloc(size);
+    return (uint64_t)allocated;
+}
+
+uint64_t sys_mem_free(uint64_t address, uint64_t unused1, uint64_t unused2, uint64_t unused3, uint64_t unused4, uint64_t unused5) {
+    if (address == 0) {
+        return 0;
+    }
+    free((void *)address);
+    return 0;
 }
