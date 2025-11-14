@@ -107,12 +107,12 @@ Be aware that you may need to change your audio device on the run.sh script.
 
 You can set a process in backgriund adding an '&' at the end of the command. For example:
 
-  loop 2 &
+    loop 2 &
 
 ### IPC by pipes
 You can create a pipe between two processes using the '|' character. For example:
 
-  echo hello | filter  (this should print 'hll')
+    echo hello | filter  (this should print 'hll')
  
 ### Special inputs
 
@@ -120,9 +120,9 @@ You can press Ctrl+C to send a kill signal to the foreground process, and Ctrl+D
 
 ### Example of combined features
 
-Ypu can combine background processes and pipes. For example:
+You can combine background processes and pipes. For example:
 
-  loop 2 | filter &
+    loop 2 | filter &
 
 This will launch a background process that prints the PID every 2 seconds, and pipes it to the filter process that removes vowels.
 
