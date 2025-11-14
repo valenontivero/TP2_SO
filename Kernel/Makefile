@@ -1,7 +1,11 @@
 include Makefile.inc
 
+ifdef BUDDY
+GCCFLAGS += -DBUDDY
+endif
+
 KERNEL=kernel.bin
-SOURCES=$(wildcard *.c)
+SOURCES= $(shell find C -type f -name '*.c')
 SOURCES_ASM=$(wildcard asm/*.asm)
 OBJECTS=$(SOURCES:.c=.o)
 OBJECTS_ASM=$(SOURCES_ASM:.asm=.o)
@@ -20,6 +24,10 @@ $(KERNEL): $(LOADEROBJECT) $(OBJECTS) $(STATICLIBS) $(OBJECTS_ASM)
 %.o: %.c
 	$(GCC) $(GCCFLAGS) -I./include -c $< -o $@
 
+buddy:
+	$(MAKE) clean
+	$(MAKE) BUDDY=1 $(KERNEL)
+
 %.o : %.asm
 	$(ASM) $(ASMFLAGS) $< -o $@
 
@@ -27,6 +35,7 @@ $(LOADEROBJECT):
 	$(ASM) $(ASMFLAGS) $(LOADERSRC) -o $(LOADEROBJECT)
 
 clean:
+	find C -name "*.o" -type f -delete
 	rm -rf asm/*.o *.o *.bin
 
-.PHONY: all clean
+.PHONY: all clean buddy

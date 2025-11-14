@@ -2,6 +2,7 @@
 #define USYSCALLS_H
 
 #include <stdint.h>
+#include <types.h>
 
 uint64_t sys_read(unsigned int fd, char* buffer, unsigned int size);
 
@@ -30,5 +31,50 @@ uint64_t sys_get_ticks(uint32_t * ticks);
 uint64_t sys_write_place(unsigned int fd, const char* buffer, unsigned int size, int x, int y);
 
 uint64_t sys_draw_image(const unsigned long * image, int width, int height);
+
+uint64_t sys_sem_open(const char *name, uint8_t initial_value);
+
+uint64_t sys_sem_wait(uint8_t id);
+
+uint64_t sys_sem_post(uint8_t id);
+
+uint64_t sys_sem_close(uint8_t id);
+
+uint64_t sys_launch_process(void* entryPoint, uint8_t prio, uint8_t argc, char** argv);
+
+uint64_t sys_pipe_open(const char *name);
+
+uint64_t sys_pipe_read(unsigned int fd, char *buffer, uint64_t size);
+
+uint64_t sys_pipe_write(unsigned int fd, const char *buffer, uint64_t size);
+
+uint64_t sys_pipe_close(unsigned int fd);
+uint64_t sys_wait(pid_t pid);
+
+uint64_t sys_put_in_fg(pid_t pid, pid_t pid2);
+
+uint64_t sys_timer_wait(int seconds);
+
+uint64_t sys_change_process_fd(uint64_t pid, uint64_t fd, uint64_t end);
+
+uint64_t sys_get_mem_info(memoryData *info);
+
+uint64_t sys_get_process_list(processInfo *buffer, uint16_t maxCount, uint16_t *written);
+
+uint64_t sys_get_process_info(pid_t pid, processInfo *info);
+
+uint64_t sys_get_pid();
+
+uint64_t sys_process_kill(pid_t pid);
+
+uint64_t sys_process_nice(pid_t pid, uint8_t newPriority);
+
+uint64_t sys_process_block(pid_t pid);
+
+uint64_t sys_process_unblock(pid_t pid);
+
+uint64_t sys_process_set_foreground(pid_t pid, uint8_t isForeground);
+
+uint64_t sys_get_prio(pid_t pid);
 
 #endif

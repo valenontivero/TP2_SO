@@ -1,8 +1,12 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: https://pvs-studio.com
 #include <usyscalls.h>
 #include <userio.h>
 #include <stdarg.h>
 #include <colors.h>
 #include <uStrings.h>
+
+#define MAX_NUMBER_LENGTH 100
 
 extern void fillRegs();
 
@@ -200,4 +204,28 @@ char * getDate() {
 	static char bufferDate[9];
 	sys_get_date(bufferDate);
 	return bufferDate;
+}
+
+void unsigned_num_to_str(uint32_t num, uint32_t start, char *buff)
+{
+
+    uint32_t i = start;
+    if (num == 0)
+        buff[i++] = '0';
+    while (i < MAX_NUMBER_LENGTH - 1 && num > 0)
+    {
+        buff[i++] = (num % 10) + '0';
+        num /= 10;
+    }
+    buff[i] = 0;
+    uint32_t revit = start;
+    uint32_t revend = i - 1;
+    while (revit < revend)
+    {
+        char aux = buff[revit];
+        buff[revit] = buff[revend];
+        buff[revend] = aux;
+        revit++;
+        revend--;
+    }
 }

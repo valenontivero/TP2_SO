@@ -1,3 +1,5 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: https://pvs-studio.com
 #include <usyscalls.h>
 #include <colors.h>
 #include <userio.h>
@@ -192,7 +194,7 @@ void win(int color, int player) {
     sys_toggle_cursor();
 
     if (c == 'r' || c == 'R') {
-        pong();
+        playPong();
         return;
     }
     goalMade = 1;
@@ -229,7 +231,7 @@ void handleKey(unsigned char key, char moves[]) {
     }
 }
 
-void pong() {
+void playPong() {
     sys_clear_screen();
     sys_toggle_cursor();
 

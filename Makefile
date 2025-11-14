@@ -7,6 +7,12 @@ bootloader:
 kernel:
 	cd Kernel; make all
 
+buddy:
+	cd Kernel; make buddy
+	cd Bootloader; make all
+	cd Userland; make all
+	cd Image; make all
+
 userland:
 	cd Userland; make all
 

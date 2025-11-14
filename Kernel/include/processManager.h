@@ -3,9 +3,10 @@
 
 #define PROCESS_MAX_NAME_LEN 40
 #define PROCESS_STACK_SIZE 16384 // 16KiB
-#define PRIORITY_LEVELS 8
-#define DEFAULT_PRIORITY 7
+#define PRIORITY_LEVELS 5
+#define DEFAULT_PRIORITY 1
 #define MAX_PROCESSES 256
+#define MAX_SEMS_PER_PROCESS 16
 
 #define STDIN 0
 #define STDOUT 1
@@ -28,6 +29,7 @@ typedef struct PCB {
     
     State state;                  	// e.g., READY, RUNNING, BLOCKED, TERMINATED
     uint8_t priority;               // For scheduling
+    uint8_t remainingQuantum;     // Remaining time slice
     
     void* stackBase;                // Base of the allocated stack
     void* stackPointer;             // Current stack pointer (for context switching)
@@ -43,6 +45,9 @@ typedef struct PCB {
     uint8_t waitingChildren;            // Track if wait() is needed. 1 = wait() needed, 0 = wait() not needed
     uint8_t waitSemaphore; // Semaphore for waiting on child processes
     uint8_t exitStatus; 
+
+    uint8_t heldSemCount;
+    uint8_t semaphoresHeld[MAX_SEMS_PER_PROCESS];
     
 	uint8_t argc;
 	char** argv;
@@ -76,6 +81,7 @@ typedef struct processInfo {
     pid_t pid;
     State state;
     uint8_t priority;
+    uint8_t foreground;
     void* stackBase;
     void* stackPointer;
 } processInfo;
@@ -86,13 +92,13 @@ pid_t createProcess(void (*fn)(uint8_t, char **), int priority, int argc, char**
 
 void initializeProcesses();
 
-void putInFG(pid_t pid);
+void putInFG(pid_t pid1, pid_t pid2);
 
 void terminateProcess();
 
 int killProcess(uint8_t pid);
 
-void killProcessInFG();
+void killProcessesInFG();
 
 void quantumTick(); //funcion para manejar los quantums
 
@@ -100,7 +106,7 @@ void showRunningProcesses();
 
 void createFirstProcess(void (*fn)(uint8_t, char **), int argc, char** argv);
 
-void setPriority(pid_t pid, int newPriority);
+int setPriority(pid_t pid, int newPriority);
 
 int getPriority(pid_t pid);
 
@@ -112,5 +118,18 @@ int blockProcess(uint16_t pid);
 
 int unblockProcess(uint16_t pid);
 
-uint8_t ps(processInfo* toReturn);
+PCB* getForegroundProcess();
+
+uint16_t ps(processInfo* toReturn, uint16_t maxCount);
+
+int getProcessInfo(pid_t pid, processInfo* out);
+
+void setProcessForeground(pid_t pid, uint8_t isForeground);
+void wait(pid_t pid);
+
+
+void idleProcess(uint8_t argc, char** argv);
+
+void addHeldSemaphoreToProcess(uint8_t semId);
+void removeHeldSemaphoreFromProcess(uint8_t semId);
 #endif
