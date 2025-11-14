@@ -51,55 +51,55 @@ Be aware that you may need to change your audio device on the run.sh script.
 
 ### List of commands
 
-help: gives you a list of all existent commands.
+**help**: gives you a list of all existent commands.
 
-time: prints the time of the OS.
+**time**: prints the time of the OS.
 
-date: prints the date of the OS.
+**date**: prints the date of the OS.
 
-registers: print the state of the registers at the time.
+**registers**: print the state of the registers at the time.
 
-fillregs: fill the registers with stepped values for testing.
+**fillregs**: fill the registers with stepped values for testing.
 
-div0: divide by zero to trigger exception
+**div0**: divide by zero to trigger exception
 
-invalidop: trigger invalid operation code exception
+**invalidop**: trigger invalid operation code exception
 
-pong: go to play the pong game.
+**pong**: go to play the pong game.
 
-clear: clears the OS screen.
+**clear**: clears the OS screen.
 
-hello: prints hello every 5 seconds.
+**hello**: prints hello every 5 seconds.
 
-testprint: tests that you can create a process and it can print on screen.
+**testprint**: tests that you can create a process and it can print on screen.
 
-testsem: tests that a process can block itself with a semaphore and another process can unblock it
+**testsem**: tests that a process can block itself with a semaphore and another process can unblock it
 
-testpipe: tests that 2 processes can comunicate between pipes
+**testpipe**: tests that 2 processes can comunicate between pipes
 
-testpriority: tests the priorities of 3 processes
+**testpriority**: tests the priorities of 3 processes
 
-mem: prints current memory usage.
+**mem**: prints current memory usage.
 
-ps: lists the active processes with their attributes.
+**ps**: lists the active processes with their attributes.
 
-loop <seconds>: prints the process ID periodically (default 1 second).
+**loop** <seconds>: prints the process ID periodically (default 1 second).
 
-kill <pid>: terminates the process with the given PID.
+**kill** <pid>: terminates the process with the given PID.
 
-nice <pid> <priority>: sets the process priority (0 is highest).
+**nice** <pid> <priority>: sets the process priority (0 is highest).
 
-block <pid>: toggles the blocked state of the process.
+**block** <pid>: toggles the blocked state of the process.
 
-wc: counts the number of input lines.
+**wc**: counts the number of input lines.
 
-filter: removes vowels from the input stream.
+**filter**: removes vowels from the input stream.
 
-cat: prints the stdin exactly as received.
+**cat**: prints the stdin exactly as received.
 
-echo <text>: prints the provided arguments to the standard output.
+**echo** <text>: prints the provided arguments to the standard output.
 
-mvar <writers> <readers>: launches writers/readers synchronized through an mvar.
+**mvar** <writers> <readers>: launches writers/readers synchronized through an mvar.
 
 ## Special features
 
@@ -131,6 +131,6 @@ While this process is running in background, you can kill, block/unblock or chan
 
 ## Limitations and known issues
 
- If you want to code your own processes that uses semaphores or pipes, be aware that you have to create/open/access them using a string identifier (name). 
+1. If you want to code your own processes that uses semaphores or pipes, be aware that you have to create/open/access them using a string identifier (name). 
  
- The Mvar command does a heavy busy waiting, that may affect performance if many writers/readers are waiting on it.
+2. The Mvar command does a heavy busy waiting, that may affect performance if many writers/readers are waiting on it.
