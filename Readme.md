@@ -116,7 +116,9 @@ You can create a pipe between two processes using the '|' character. For example
  
 ### Special inputs
 
-You can press Ctrl+C to send a kill signal to the foreground process, and Ctrl+D to send an EOF signal.
+- **Ctrl+C**: sends an interrupt signal to the foreground process. If it handles the signal, it terminates and the shell regains control.
+- **Ctrl+D**: injects the end-of-file (EOF) character into the foreground process input. Programs usually stop reading and exit, returning to the prompt.
+- **Ctrl+L**: clears the screen and redraws the shell prompt so you can keep typing.
 
 ### Example of combined features
 
