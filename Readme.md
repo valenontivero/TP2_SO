@@ -30,13 +30,20 @@ From the x64BareBones project directory run:
 
   user@linux:$ ./run.sh
 
-Another way is to compile using the docker.sh script. This will create a docker image with all the required dependencies and compile the kernel.
+Another way is to compile and run all at once is using the docker.sh script. This will create a docker image with all the required dependencies and compile the kernel.
   
     user@linux:$ ./docker.sh
+
+## Compile and run using buddy memory allocator
+
+To use the buddy memory allocator instead of the default one, you need to compile the kernel with the BUDDY_ALLOCATOR flag set to 1. You can do this by running:
+
+    user@linux:$ ./docker.sh buddy
+
+## Windows
+
+If you are using Windows, you can use WSL2 (Windows Subsystem for Linux) to run the above commands. Make sure to have WSL2 installed and set up with a Linux distribution of your choice, and to dos2unix all .sh files
   
-  Then you can run the kernel using the run.sh script.
-  
-    user@linux:$ ./run.sh
 
 Be aware that you may need to change your audio device on the run.sh script.
 
