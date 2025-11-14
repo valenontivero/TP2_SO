@@ -127,3 +127,10 @@ Ypu can combine background processes and pipes. For example:
 This will launch a background process that prints the PID every 2 seconds, and pipes it to the filter process that removes vowels.
 
 While this process is running in background, you can kill, block/unblock or change its priority from the terminal using its PID and the given commands. You can see all the running processes with the 'ps' command.
+
+
+## Limitations and known issues
+
+ If you want to code your own processes that uses semaphores or pipes, be aware that you have to create/open/access them using a string identifier (name). 
+ 
+ The Mvar command does a heavy busy waiting, that may affect performance if many writers/readers are waiting on it.
