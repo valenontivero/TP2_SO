@@ -16,6 +16,10 @@
 #include <test_print.h>
 #include <test_sem.h>
 #include <test_pipe.h>
+#include <test_sync.h>
+#include <test_processes.h>
+#include <test_prio.h>
+#include <test_mm.h>
 
 //
 // Necesarry functions declarations
@@ -57,9 +61,16 @@ static void  (*instructionFunctions[])(uint8_t, char **) = {
     cat,
 	echo,
     mvar,
+	ctestsync,
+	ctestprocesses,
+	ctestprio,
+	ctestmm,
 	NULL};
 
-static char *commandsNames[] = {"help", "time", "date", "registers", "fillregs", "div0", "invalidop", "pong", "clear", "hello", "testprint", "testsem", "testpipe", "testpriority", "mem", "ps", "loop", "kill", "nice", "block", "wc", "filter", "cat","echo", "mvar", 0};
+static char *commandsNames[] = {"help", "time", "date", "registers", "fillregs", "div0", "invalidop", \
+								"pong", "clear", "hello", "testprint", "testsem", "testpipe", "testpriority",\
+								"mem", "ps", "loop", "kill", "nice", "block", "wc", "filter", "cat","echo",\
+								"mvar", "ctestsync", "ctestprocesses", "ctestprio", "ctestmm", 0};
 
 
 //

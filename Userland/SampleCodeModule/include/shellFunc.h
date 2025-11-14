@@ -1,4 +1,4 @@
-#define COMMANDS_QUANTITY 25  // ACORDARSE DE ESTO (y agregar la descripcion en commandsHelp en shellFunc.c)
+#define COMMANDS_QUANTITY 29  // ACORDARSE DE ESTO (y agregar la descripcion en commandsHelp en shellFunc.c)
 
 void help (uint8_t argc, char **argv);
 
@@ -49,3 +49,11 @@ void cat(uint8_t argc, char **argv);
 void echo(uint8_t argc, char **argv);
 
 void mvar(uint8_t argc, char **argv);
+
+void ctestsync (uint64_t argc, char** argv);
+
+void ctestprocesses (uint64_t argc, char** argv);
+
+void ctestprio (uint64_t argc, char** argv);
+
+void ctestmm (uint64_t argc, char** argv);

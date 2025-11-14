@@ -14,6 +14,10 @@
 #include <test_pipe.h>
 #include <test_priority.h>
 #include <uSync.h>
+#include <test_sync.h>
+#include <test_processes.h>
+#include <test_prio.h>
+#include <test_mm.h>
 
 
 
@@ -293,6 +297,22 @@ void testpriority (uint8_t argc, char **argv){
 	sys_launch_process((void*) testPriorityHigh, 3, 1, argv1);
 	sys_launch_process((void*) testPriorityMedium, 2, 1, argv2);
 	sys_launch_process((void*) testPriorityLow, 1, 1, argv3);
+}
+
+void ctestsync (uint64_t argc, char** argv){
+	// TODO
+}
+
+void ctestprocesses (uint64_t argc, char** argv){
+	// TODO
+}
+
+void ctestprio (uint64_t argc, char** argv){
+	// TODO
+}
+
+void ctestmm (uint64_t argc, char** argv){
+	// TODO
 }
 
 void mem(uint8_t argc, char **argv) {
