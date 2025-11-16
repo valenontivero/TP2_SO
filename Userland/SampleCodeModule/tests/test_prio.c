@@ -11,15 +11,20 @@
 #define LOWEST 1
 #define MEDIUM 3
 #define HIGHEST 5
+#define MINOR_WAIT 1000000
+#define WAIT 10000000
 
 static int64_t prio[TOTAL_PROCESSES] = {LOWEST, MEDIUM, HIGHEST};
 static volatile uint64_t max_value = 0;
 
 static void zero_to_max() {
   uint64_t value = 0;
-  while (value++ != max_value)
-    ;
-  printf("PROCESS %d DONE!\n", (int)sys_get_pid());
+  int64_t pid = (int64_t)sys_get_pid();
+  while (value < max_value) {
+    value++;
+    bussy_wait(MINOR_WAIT);
+  }
+  printf("PROCESS %d DONE!\n", (int)pid);
 }
 
 static void zero_to_max_entry(uint8_t argc, char **argv) {
@@ -41,12 +46,6 @@ static int spawn_zero_to_max(pid_t *pid) {
   return 0;
 }
 
-static void wait_all(pid_t *pids) {
-  for (int i = 0; i < TOTAL_PROCESSES; i++) {
-    sys_wait(pids[i]);
-  }
-}
-
 uint64_t test_prio(uint64_t argc, char *argv[]) {
   if (argc != 1) {
     printf("test_priority: invalid argument count (%d)\n", (int)argc);
@@ -64,9 +63,9 @@ uint64_t test_prio(uint64_t argc, char *argv[]) {
     return -1;
   }
 
-  printf("SAME PRIORITY...\n");
-
   pid_t pids[TOTAL_PROCESSES];
+
+  printf("SAME PRIORITY...\n");
   for (int i = 0; i < TOTAL_PROCESSES; i++) {
     if (spawn_zero_to_max(&pids[i]) != 0) {
       printf("test_priority: ERROR creating process\n");
@@ -74,35 +73,67 @@ uint64_t test_prio(uint64_t argc, char *argv[]) {
     }
   }
 
-  wait_all(pids);
+  bussy_wait(WAIT);
 
-  printf("SAME PRIORITY, THEN CHANGE IT...\n");
+  printf("\nCHANGING PRIORITIES...\n");
+  for (int i = 0; i < TOTAL_PROCESSES; i++) {
+    int r = sys_process_nice(pids[i], prio[i]);
+    if (r != 0) {
+      printf("test_priority: ERROR: sys_process_nice\n");
+    } else {
+      printf("  PROCESS %d NEW PRIORITY: %d\n", pids[i], prio[i]);
+    }
+  }
+
+  bussy_wait(WAIT);
+
+  printf("\nKILLING PROCESSES...\n");
+  for (int i = 0; i < TOTAL_PROCESSES; i++) {
+    sys_process_kill(pids[i]);
+  }
+
+  printf("\nSAME PRIORITY, THEN CHANGE IT WHILE BLOCKED...\n");
   for (int i = 0; i < TOTAL_PROCESSES; i++) {
     if (spawn_zero_to_max(&pids[i]) != 0) {
       printf("test_priority: ERROR creating process\n");
       return -1;
     }
-    sys_process_nice(pids[i], prio[i]);
-    printf("  PROCESS %d NEW PRIORITY: %d\n", pids[i], prio[i]);
   }
 
-  wait_all(pids);
+  bussy_wait(WAIT / 2);
 
-  printf("SAME PRIORITY, THEN CHANGE IT WHILE BLOCKED...\n");
+  printf("\nBLOCKING...\n");
   for (int i = 0; i < TOTAL_PROCESSES; i++) {
-    if (spawn_zero_to_max(&pids[i]) != 0) {
-      printf("test_priority: ERROR creating process\n");
-      return -1;
+    int r = sys_process_block(pids[i]);
+    if (r != 0) {
+      printf("test_priority: ERROR: sys_process_block\n");
     }
-    sys_process_block(pids[i]);
-    sys_process_nice(pids[i], prio[i]);
-    printf("  PROCESS %d NEW PRIORITY: %d\n", pids[i], prio[i]);
   }
 
+  printf("CHANGING PRIORITIES WHILE BLOCKED...\n");
   for (int i = 0; i < TOTAL_PROCESSES; i++) {
-    sys_process_unblock(pids[i]);
+    int r = sys_process_nice(pids[i], prio[i]);
+    if (r != 0) {
+      printf("test_priority: ERROR: sys_process_nice\n");
+    } else {
+      printf("  PROCESS %d NEW PRIORITY: %d\n", pids[i], prio[i]);
+    }
   }
 
-  wait_all(pids);
+  printf("UNBLOCKING...\n");
+  for (int i = 0; i < TOTAL_PROCESSES; i++) {
+    int r = sys_process_unblock(pids[i]);
+    if (r != 0) {
+      printf("test_priority: ERROR: sys_process_unblock\n");
+    }
+  }
+
+  bussy_wait(WAIT);
+
+  printf("\nKILLING PROCESSES...\n");
+  for (int i = 0; i < TOTAL_PROCESSES; i++) {
+    sys_process_kill(pids[i]);
+  }
+
   return 0;
 }
