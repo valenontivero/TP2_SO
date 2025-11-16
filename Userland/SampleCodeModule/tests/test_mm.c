@@ -4,6 +4,7 @@
 #include <userio.h>
 #include <uStrings.h>
 #include "test_util.h"
+#include <stddef.h>
 
 #define MAX_BLOCKS 128
 
@@ -34,10 +35,14 @@ uint64_t test_mm(uint64_t argc, char *argv[]) {
       mm_rqs[rq].size = GetUniform(max_memory - total - 1) + 1;
       mm_rqs[rq].address = sys_malloc(mm_rqs[rq].size);
 
-      if (mm_rqs[rq].address) {
-        total += mm_rqs[rq].size;
-        rq++;
+      if (mm_rqs[rq].address == NULL) {
+        printf("testmm: out of memory (requested %d, total so far %d). Recycling...\n",
+               (int)mm_rqs[rq].size, (int)total);
+        break;  
       }
+
+      total += mm_rqs[rq].size;
+      rq++;
     }
 
     // Set

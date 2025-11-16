@@ -52,15 +52,17 @@ static void launch_test_process(const char *name, void (*entry)(uint8_t, char **
     }
 
     pid_t pid = sys_launch_process((void *)entry, DEFAULT_PRIO, count, argvWithName);
-    sys_process_set_foreground(pid, 0);
 
     processInfo self = {0};
-    if (sys_get_process_info((pid_t)sys_get_pid(), &self) == 0 && self.foreground == 0) {
+    if (sys_get_process_info((pid_t)sys_get_pid(), &self) == 0) {
+        sys_process_set_foreground(pid, self.foreground ? 1 : 0);
+    }
+
+    if (self.foreground == 0) {
         char pipeName[16] = {0};
         unsigned_num_to_str((uint32_t)pid, 0, pipeName);
         uint8_t out = (uint8_t)sys_pipe_open(pipeName);
         if (out != (uint8_t)-1) {
-          
             sys_change_process_fd((uint64_t)pid, (uint64_t)out, 1);
         }
     }
@@ -68,6 +70,9 @@ static void launch_test_process(const char *name, void (*entry)(uint8_t, char **
         printf("%s: unable to launch test process.\n", name);
     } else {
         printf("%s started with pid %d\n", name, (int)pid);
+        if (self.foreground) {
+            sys_wait(pid);
+        }
     }
 }
 
