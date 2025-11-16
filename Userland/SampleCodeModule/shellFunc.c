@@ -51,7 +51,7 @@ static void launch_test_process(const char *name, void (*entry)(uint8_t, char **
         argvWithName[count++] = argv[i];
     }
 
-    pid_t pid = sys_launch_process((void *)entry, DEFAULT_PRIO, count, argvWithName);
+    pid_t pid = (pid_t)sys_launch_process((void *)entry, DEFAULT_PRIO, count, argvWithName);
 
     processInfo self = {0};
     if (sys_get_process_info((pid_t)sys_get_pid(), &self) == 0) {
@@ -142,6 +142,7 @@ static const char *stateToString(State state) {
         case READY: return "READY";
         case RUNNING: return "RUNNING";
         case BLOCKED: return "BLOCKED";
+        case ZOMBIE: return "ZOMBIE";
         case TERMINATED: return "TERM";
         default: return "UNKNOWN";
     }

@@ -234,7 +234,7 @@ uint64_t sys_create_process(uint64_t entryPoint, uint64_t prio, uint64_t argc, u
     if (pid < 0) {
         return (uint64_t)-1;
     }
-    return pid;
+    return (uint64_t)pid;
 }
 
 uint64_t sys_pipe_open(uint64_t name, uint64_t unused1, uint64_t unused2, uint64_t unused3, uint64_t unused4, uint64_t unused5) {

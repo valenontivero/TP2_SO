@@ -34,7 +34,7 @@ int setPriority(pid_t pid, int newPriority){
 		return -1;
 	}
 	PCB *target = &processes[pid];
-	if (target->state == TERMINATED){
+	if (target->state == TERMINATED || target->state == ZOMBIE){
 		return -1;
 	}
 	if (newPriority < 0){
@@ -146,7 +146,7 @@ void createFirstProcess(void (*fn)(uint8_t, char **), int argc, char** argv){
 pid_t createProcess(void (*fn)(uint8_t, char **), int priority, int argc, char** argv, const char* name){
     if (processCount>= MAX_PROCESSES) return (pid_t)-1;
     PCB* new=NULL;
-    int pid= nextPID++;
+    pid_t pid = nextPID++;
     
     new = &processes[pid];
     new->pid = pid;
@@ -192,6 +192,9 @@ int blockProcess(uint16_t pid) {
     if (pid >= MAX_PROCESSES) {
         return -1; // Invalid PID or process already terminated
     }
+    if (processes[pid].state == ZOMBIE || processes[pid].state == TERMINATED) {
+        return -1;
+    }
     processes[pid].state = BLOCKED;
     if(getCurrentPID() == pid) {
         yield(); // If the current process is blocked, yield to allow other processes to run
@@ -206,6 +209,9 @@ int blockProcess(uint16_t pid) {
 int unblockProcess(uint16_t pid) {
     if (pid >= MAX_PROCESSES) {
         return -1; // Invalid PID or process already terminated
+    }
+    if (processes[pid].state == ZOMBIE || processes[pid].state == TERMINATED) {
+        return -1;
     }
     if (processes[pid].state == BLOCKED) {
         processes[pid].state = READY;
@@ -238,14 +244,21 @@ int killProcess(uint8_t pid){
     {
         if (processes[i].pid == pid)
         {
-            if (processes[i].state == TERMINATED) return -1;
+            if (processes[i].state == TERMINATED || processes[i].state == ZOMBIE) return -1;
             
-            processes[i].state = TERMINATED;
+            if (processes[i].parent != NULL && 
+                processes[i].parent->pid != processes[i].pid &&
+                processes[i].parent->state != ZOMBIE && 
+                processes[i].parent->state != TERMINATED) {
+                processes[i].state = ZOMBIE;
+            } else {
+                processes[i].state = TERMINATED;
+            }
             processCount--;
             if (processes[i].waitingSemaphore >= 0) {
                 sem_unregister_waiting_process((uint8_t)processes[i].waitingSemaphore, &processes[i]);
             }
-            if(processes[i].parent->waitingChildren){
+            if(processes[i].parent != NULL && processes[i].parent->waitingChildren){
                 sem_post(processes[i].parent->waitSemaphore);
             }
             releaseHeldSemaphores(&processes[i]);
@@ -284,6 +297,10 @@ void cleanTerminatedList(){
     for (uint8_t i = 0; i < size; i++)
     {
         current= dequeueProcess(terminatedProcessesQueue);
+        if (current->state == ZOMBIE) {
+            queueProcess(terminatedProcessesQueue, current);
+            continue;
+        }
         if (current->waitingChildren)
         {
             queueProcess(terminatedProcessesQueue,current);
@@ -310,6 +327,11 @@ void wait(pid_t pid) {
     if (child->parent != parent) return;
     if (child->state == TERMINATED) return;
     
+    if (child->state == ZOMBIE) {
+        child->state = TERMINATED;
+        return;
+    }
+    
     // Crear semáforo con nombre basado en child's PID
     char semName[12];
     itoa(pid, semName);
@@ -318,6 +340,11 @@ void wait(pid_t pid) {
     parent->waitingChildren = 1;
     
     sem_wait(parent->waitSemaphore);
+    
+    if (child->state == ZOMBIE) {
+        child->state = TERMINATED;
+    }
+    
     sem_destroy(parent->waitSemaphore);
     parent->waitingChildren = 0;
 }
@@ -329,13 +356,14 @@ uint16_t ps(processInfo *toReturn, uint16_t maxCount){
     }
     for (uint16_t i = 2; i < MAX_PROCESSES && count < maxCount; i++)
     {
-        if (processes[i].state==RUNNING || processes[i].state==READY || processes[i].state== BLOCKED)
+        if (processes[i].pid == i && 
+            (processes[i].state==RUNNING || processes[i].state==READY || processes[i].state== BLOCKED || processes[i].state == ZOMBIE))
         {
             
             PCB* aux= &processes[i];
             safe_strncpy(toReturn[count].name,aux->name,PROCESS_MAX_NAME_LEN);
             toReturn[count].name[PROCESS_MAX_NAME_LEN-1]='\0';
-            toReturn[count].pid=i;
+            toReturn[count].pid=aux->pid;  
             toReturn[count].priority=aux->priority;
             toReturn[count].state= aux->state;
             toReturn[count].foreground = aux->foreground;

@@ -18,6 +18,7 @@ typedef enum{
     READY = 0,
 	RUNNING,
 	BLOCKED,
+	ZOMBIE,
 	TERMINATED 
 } State;
 
