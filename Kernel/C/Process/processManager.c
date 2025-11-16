@@ -179,7 +179,7 @@ pid_t createProcess(void (*fn)(uint8_t, char **), int priority, int argc, char**
 
     
     prepareStack(new, new->stackBase, new->entryPoint);
-    loadArguments(fn, argc, argv,new->stackBase);
+    loadArguments(fn, argc, new->argv, new->stackBase);
     new->state = READY;
     scheduleProcess(new);
     

@@ -165,3 +165,7 @@ void *sys_malloc(uint64_t size) {
 uint64_t sys_free(void *ptr) {
     return sys_call((uint64_t)38, (uint64_t)ptr, (uint64_t)0, (uint64_t)0, (uint64_t)0, (uint64_t)0);
 }
+
+uint64_t sys_yield() {
+    return sys_call((uint64_t)39, (uint64_t)0, (uint64_t)0, (uint64_t)0, (uint64_t)0, (uint64_t)0);
+}

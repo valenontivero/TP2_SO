@@ -52,6 +52,11 @@ int strtoi(char * buffer, int * i) {
 
 void intToStr(int num, char* str) {
     int i = 0;
+    if (num == 0) {
+        str[0] = '0';
+        str[1] = '\0';
+        return;
+    }
     if (num < 0) {
         str[i] = '-';
         i++;

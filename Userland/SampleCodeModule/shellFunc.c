@@ -5,6 +5,7 @@
 #include <sounds.h>
 #include <pong.h>
 #include <uStrings.h>
+#include <shell.h>
 #include <processLib.h>
 #include <usyscalls.h>
 #include <stddef.h>
@@ -18,27 +19,51 @@ extern uint64_t test_synchro(uint64_t argc, char *argv[]);
 extern uint64_t test_no_synchro(uint64_t argc, char *argv[]);
 
 static void test_mm_entry(uint8_t argc, char **argv) {
-    test_mm((uint64_t)argc, argv);
+    if (argc == 0) { return; }
+    test_mm((uint64_t)(argc - 1), argv + 1);
 }
 
 static void test_processes_entry(uint8_t argc, char **argv) {
-    test_processes((uint64_t)argc, argv);
+    if (argc == 0) { return; }
+    test_processes((uint64_t)(argc - 1), argv + 1);
 }
 
 static void test_prio_entry(uint8_t argc, char **argv) {
-    test_prio((uint64_t)argc, argv);
+    if (argc == 0) { return; }
+    test_prio((uint64_t)(argc - 1), argv + 1);
 }
 
 static void test_synchro_entry(uint8_t argc, char **argv) {
-    test_synchro((uint64_t)argc, argv);
+    if (argc == 0) { return; }
+    test_synchro((uint64_t)(argc - 1), argv + 1);
 }
 
 static void test_no_synchro_entry(uint8_t argc, char **argv) {
-    test_no_synchro((uint64_t)argc, argv);
+    if (argc == 0) { return; }
+    test_no_synchro((uint64_t)(argc - 1), argv + 1);
 }
 
 static void launch_test_process(const char *name, void (*entry)(uint8_t, char **), uint8_t argc, char **argv) {
-    pid_t pid = sys_launch_process((void *)entry, DEFAULT_PRIO, argc, argv);
+    char *argvWithName[MAX_ARGS] = {0};
+    uint8_t count = 0;
+    argvWithName[count++] = (char *)name;
+    for (uint8_t i = 0; i < argc && count < MAX_ARGS - 1; i++) {
+        argvWithName[count++] = argv[i];
+    }
+
+    pid_t pid = sys_launch_process((void *)entry, DEFAULT_PRIO, count, argvWithName);
+    sys_process_set_foreground(pid, 0);
+
+    processInfo self = {0};
+    if (sys_get_process_info((pid_t)sys_get_pid(), &self) == 0 && self.foreground == 0) {
+        char pipeName[16] = {0};
+        unsigned_num_to_str((uint32_t)pid, 0, pipeName);
+        uint8_t out = (uint8_t)sys_pipe_open(pipeName);
+        if (out != (uint8_t)-1) {
+          
+            sys_change_process_fd((uint64_t)pid, (uint64_t)out, 1);
+        }
+    }
     if ((int64_t)pid < 0) {
         printf("%s: unable to launch test process.\n", name);
     } else {
@@ -89,7 +114,8 @@ static char *commandsHelp[] = {
 	"filter: removes vowels from the input stream.",
 	"cat: prints the stdin exactly as received.",
     "echo <text>: prints the provided arguments to the standard output.",
-    "mvar <writers> <readers>: launches writers/readers synchronized through an mvar."
+    "mvar <writers> <readers>: launches writers/readers synchronized through an mvar.",
+    "yield: voluntarily yield the CPU."
 };
 
 
@@ -361,6 +387,11 @@ void mem(uint8_t argc, char **argv) {
     printf("Total: %d bytes\n", (int)info.total);
     printf("Used: %d bytes\n", (int)info.used);
     printf("Free: %d bytes\n", (int)info.free);
+}
+
+void yield_cmd(uint8_t argc, char **argv) {
+    (void)argc; (void)argv;
+    sys_yield();
 }
 
 void ps(uint8_t argc, char **argv) {

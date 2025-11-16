@@ -80,4 +80,6 @@ uint64_t sys_get_prio(pid_t pid);
 void *sys_malloc(uint64_t size);
 uint64_t sys_free(void *ptr);
 
+uint64_t sys_yield();
+
 #endif

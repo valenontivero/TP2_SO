@@ -343,3 +343,8 @@ uint64_t sys_mem_free(uint64_t address, uint64_t unused1, uint64_t unused2, uint
     free((void *)address);
     return 0;
 }
+
+uint64_t sys_yield(uint64_t unused1, uint64_t unused2, uint64_t unused3, uint64_t unused4, uint64_t unused5, uint64_t unused6) {
+    yield();
+    return 0;
+}

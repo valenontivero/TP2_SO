@@ -1,6 +1,8 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: https://pvs-studio.com
 #include <stdint.h>
-#include <stdio.h>
-#include "syscall.h"
+#include <userio.h>
+#include <usyscalls.h>
 
 // Random
 static uint32_t m_z = 362436069;
@@ -13,8 +15,10 @@ uint32_t GetUint() {
 }
 
 uint32_t GetUniform(uint32_t max) {
+  if (max == 0)
+    return 0;
   uint32_t u = GetUint();
-  return (u + 1.0) * 2.328306435454494e-10 * max;
+  return (uint32_t)(((uint64_t)u * (uint64_t)max) >> 32);
 }
 
 // Memory
@@ -65,7 +69,7 @@ void endless_loop() {
 }
 
 void endless_loop_print(uint64_t wait) {
-  int64_t pid = my_getpid();
+  int64_t pid = (int64_t)sys_get_pid();
 
   while (1) {
     printf("%d ", pid);

@@ -55,9 +55,10 @@ static void  (*instructionFunctions[])(uint8_t, char **) = {
     cat,
 	echo,
     mvar,
+    yield_cmd,
 	NULL};
 
-static char *commandsNames[] = {"help", "time", "date", "registers", "fillregs", "div0", "invalidop", "pong", "clear", "hello", "testmm", "testprocesses", "testsynchro", "testnosynchro", "testpriority", "mem", "ps", "loop", "kill", "nice", "block", "wc", "filter", "cat","echo", "mvar", 0};
+static char *commandsNames[] = {"help", "time", "date", "registers", "fillregs", "div0", "invalidop", "pong", "clear", "hello", "testmm", "testprocesses", "testsynchro", "testnosynchro", "testpriority", "mem", "ps", "loop", "kill", "nice", "block", "wc", "filter", "cat","echo", "mvar", "yield", 0};
 
 
 //

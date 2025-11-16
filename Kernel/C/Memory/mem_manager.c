@@ -16,7 +16,31 @@ typedef struct mem_block {
 
 static mem_block head_block;     // primer bloque
 static void *node_region;        // dónde guardamos los metadatos
+static void *node_region_limit;  // fin de la región de metadatos
+static mem_block *free_nodes;    // lista de nodos reutilizables
 static memoryData mem_info;      // estadísticas globales
+
+static mem_block *get_free_node(void) {
+    if (free_nodes) {
+        mem_block *node = free_nodes;
+        free_nodes = free_nodes->next;
+        return node;
+    }
+    if ((uint64_t)node_region + sizeof(mem_block) > (uint64_t)node_region_limit) {
+        return NULL;
+    }
+    mem_block *newblk = (mem_block *)node_region;
+    node_region = (void *)((uint64_t)node_region + sizeof(mem_block));
+    return newblk;
+}
+
+static void release_node(mem_block *node) {
+    if (!node) {
+        return;
+    }
+    node->next = free_nodes;
+    free_nodes = node;
+}
 
 // Alineaa tamaño a multiplos de 8bytes
 static inline uint64_t align8(uint64_t n) {
@@ -29,7 +53,9 @@ void startMemoryManager(const void *start, uint64_t total_size) {
 
     // Primer parte del espacio como región para nodos
     node_region = (void *)start;
-    void *heap_start = (void *)((uint64_t)start + LIST_SPACE);
+    node_region_limit = (void *)((uint64_t)start + LIST_SPACE);
+    free_nodes = NULL;
+    void *heap_start = node_region_limit;
     uint64_t heap_size = total_size - LIST_SPACE;
 
     // Bloque inicial (todo libre)
@@ -63,8 +89,10 @@ void *malloc(uint64_t req_size) {
     }
     // Si sobra espacio, dividir bloque
     if (current->size > req_size + sizeof(mem_block)) {
-        mem_block *newblk = (mem_block *)node_region;
-        node_region = (void *)((uint64_t)node_region + sizeof(mem_block));
+        mem_block *newblk = get_free_node();
+        if (!newblk) {
+            return NULL;
+        }
 
         newblk->addr = (void *)((uint64_t)current->addr + req_size);
         newblk->size = current->size - req_size;
@@ -105,19 +133,23 @@ int free(void *ptr) {
 
     // fusionar hacia atrás
     if (curr->prev && curr->prev->free) {
+        mem_block *to_release = curr;
         curr->prev->size += curr->size;
         curr->prev->next = curr->next;
         if (curr->next)
             curr->next->prev = curr->prev;
         curr = curr->prev;
+        release_node(to_release);
     }
 
     // fusionar hacia adelante
     if (curr->next && curr->next->free) {
+        mem_block *to_release = curr->next;
         curr->size += curr->next->size;
         curr->next = curr->next->next;
         if (curr->next)
             curr->next->prev = curr;
+        release_node(to_release);
     }
 
     return 0;
