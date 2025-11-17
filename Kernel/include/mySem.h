@@ -23,6 +23,7 @@ typedef struct {
     char name[MAX_NAME_LEN];
     Semaphore sem;
     spinlock_t lock;
+    uint8_t refCount;  // Contador de referencias para semáforos compartidos
 } NamedSemaphore;
 
 uint8_t sem_init(Semaphore* sem, uint8_t initial_value);
@@ -32,5 +33,6 @@ int sem_post(uint8_t id);
 void sem_destroy(uint8_t id);
 void releaseHeldSemaphores(PCB* process);
 int sem_unregister_waiting_process(uint8_t id, PCB *process);
+void sem_decrement_ref_count(uint8_t id);
 
 #endif

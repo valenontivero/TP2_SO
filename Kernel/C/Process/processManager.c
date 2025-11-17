@@ -91,7 +91,7 @@ void initializeProcesses(){
         processes[i].state=TERMINATED;
         processes[i].waitingSemaphore = -1;
     }
-    
+    terminatedProcessesQueue = CreatePCBQueueADT();
 }
 
 void prepareStack(PCB* PCB, void* stack,void* entrypoint) {
@@ -112,6 +112,20 @@ void loadArguments(void (*fn)(uint8_t, char **), uint8_t argc, char *argv[],
     pStack->rsi = (void *)(uintptr_t)argc; 
     pStack->rdx = argv; 
 }
+
+static void freeProcessArgs(PCB* process) {
+    if (process == NULL || process->argv == NULL) {
+        return;
+    }
+    for (uint8_t j = 0; j < process->argc; j++) {
+        if (process->argv[j] != NULL) {
+            free(process->argv[j]);
+        }
+    }
+    free(process->argv);
+    process->argv = NULL;
+}
+
 void createFirstProcess(void (*fn)(uint8_t, char **), int argc, char** argv){
     PCB* new= &processes[0];
     new->pid=0;
@@ -147,8 +161,18 @@ pid_t createProcess(void (*fn)(uint8_t, char **), int priority, int argc, char**
     if (processCount>= MAX_PROCESSES) return (pid_t)-1;
     PCB* new=NULL;
     pid_t pid = nextPID++;
+    // Si nextPID se desborda, reiniciarlo a 1 (0 es el proceso init)
+    if (pid >= MAX_PROCESSES) {
+        nextPID = 1;
+        pid = 1;
+    }
     
     new = &processes[pid];
+    // Limpiar cualquier argumento anterior que pueda quedar (por si el proceso se reutiliza)
+    if (new->argv != NULL) {
+        freeProcessArgs(new);
+    }
+    
     new->pid = pid;
     new->priority = (priority >= PRIORITY_LEVELS) ? PRIORITY_LEVELS - 1 : priority;
     new->remainingQuantum= quantumPerPriority[new->priority];
@@ -157,7 +181,7 @@ pid_t createProcess(void (*fn)(uint8_t, char **), int priority, int argc, char**
     new->fd[0] = STDIN; 
     new->fd[1] = STDOUT; 
     new->argc = argc;
-    new->argv = argv;
+    new->argv = NULL; // Inicializar a NULL antes de asignar
     new->heldSemCount=0;
     new->waitingSemaphore = -1;
     new->entryPoint = launchProcess;
@@ -238,7 +262,6 @@ int unblockProcess(uint16_t pid) {
     return &processes[0];
 } */
 
-
 int killProcess(uint8_t pid){
     for (size_t i = 0; i < MAX_PROCESSES; i++)
     {
@@ -251,23 +274,42 @@ int killProcess(uint8_t pid){
                 processes[i].parent->state != ZOMBIE && 
                 processes[i].parent->state != TERMINATED) {
                 processes[i].state = ZOMBIE;
+                if (processes[i].argv != NULL) {
+                    for (uint8_t j = 0; j < processes[i].argc; j++) {
+                        if (processes[i].argv[j] != NULL) {
+                            free(processes[i].argv[j]);
+                        }
+                    }
+                    free(processes[i].argv);
+                    processes[i].argv = NULL;
+                }
             } else {
                 processes[i].state = TERMINATED;
+                if (processes[i].argv != NULL) {
+                    for (uint8_t j = 0; j < processes[i].argc; j++) {
+                        if (processes[i].argv[j] != NULL) {
+                            free(processes[i].argv[j]);
+                        }
+                    }
+                    free(processes[i].argv);
+                    processes[i].argv = NULL;
+                }
             }
             processCount--;
             if (processes[i].waitingSemaphore >= 0) {
-                sem_unregister_waiting_process((uint8_t)processes[i].waitingSemaphore, &processes[i]);
+                uint8_t semId = (uint8_t)processes[i].waitingSemaphore;
+                sem_unregister_waiting_process(semId, &processes[i]);
             }
             if(processes[i].parent != NULL && processes[i].parent->waitingChildren){
                 sem_post(processes[i].parent->waitSemaphore);
             }
             releaseHeldSemaphores(&processes[i]);
             
+            descheduleProcess(&processes[i]);
+            
             if (getCurrentPID() == pid)
             {
                 yield();
-            }else{
-                descheduleProcess(&processes[i]);
             }
             return 0;
         }
@@ -307,7 +349,6 @@ void cleanTerminatedList(){
         }
         else
         {
-            free(current->stackBase);
         }
     }
 }
@@ -332,12 +373,20 @@ void wait(pid_t pid) {
         return;
     }
     
-    // Crear semáforo con nombre basado en child's PID
     char semName[12];
     itoa(pid, semName);
     
     parent->waitSemaphore = sem_open(semName, 0);
     parent->waitingChildren = 1;
+    
+    if (child->state == ZOMBIE || child->state == TERMINATED) {
+        sem_destroy(parent->waitSemaphore);
+        if (child->state == ZOMBIE) {
+            child->state = TERMINATED;
+        }
+        parent->waitingChildren = 0;
+        return;
+    }
     
     sem_wait(parent->waitSemaphore);
     

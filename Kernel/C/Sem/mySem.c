@@ -31,18 +31,18 @@ uint8_t sem_open(const char* name, uint8_t initial_value) {
     if (!name) return -1;
 
     acquireLock(&createLock);
-    // First, search for existing
     for (uint8_t i = 0; i < MAX_SEMAPHORES; i++) {
         if (namedSemaphores[i].inUse && SEM_NAME_MATCH(namedSemaphores[i].name, name)) {
+            namedSemaphores[i].refCount++;
             releaseLock(&createLock);
             return i;
         }
     }
 
-    // Create new semaphore
     for (uint8_t i = 0; i < MAX_SEMAPHORES; i++) {
         if (!namedSemaphores[i].inUse) {
             namedSemaphores[i].inUse = 1;
+            namedSemaphores[i].refCount = 1;
             safe_strncpy(namedSemaphores[i].name, name, MAX_NAME_LEN);
             sem_init(&namedSemaphores[i].sem, initial_value);
             releaseLock(&createLock);
@@ -70,6 +70,7 @@ int sem_post(uint8_t id) {
             unblockProcess(p->pid);
         }
         releaseLock(&sem->lock);
+        removeHeldSemaphoreFromProcess(id);
         return sem->value;
     }
     
@@ -92,6 +93,8 @@ int sem_wait(uint8_t id) {
     if (sem->value > 0) {
         sem->value--;
         addHeldSemaphoreToProcess(id);
+        releaseLock(&sem->lock);
+        return sem->value;
     }
 	else {
         PCB* current = getCurrentProcess();
@@ -99,15 +102,59 @@ int sem_wait(uint8_t id) {
         queueProcess(sem->waiters, current);
         releaseLock(&sem->lock);
         blockProcess(current->pid);
-        yield();  // Voluntary context switch
-        return sem->value;
+        yield();
+        
+        if (id >= MAX_SEMAPHORES || !namedSemaphores[id].inUse) {
+            current->waitingSemaphore = -1;
+            return -1;
+        }
+        sem = &namedSemaphores[id].sem;
+        acquireLock(&sem->lock);
+        current->waitingSemaphore = -1;
+        addHeldSemaphoreToProcess(id);
+        releaseLock(&sem->lock);
+        return 0;
     }
-    releaseLock(&sem->lock);
-	return sem->value;
 }
 
 void sem_destroy(uint8_t id){
+	if (id >= MAX_SEMAPHORES || !namedSemaphores[id].inUse) {
+		return;
+	}
+	
+	acquireLock(&createLock);
+	
+	if (namedSemaphores[id].refCount > 0) {
+		namedSemaphores[id].refCount--;
+	}
+	
+	if (namedSemaphores[id].refCount > 0) {
+		
+		releaseLock(&createLock);
+		return;
+	}
+	
+	Semaphore* sem = &namedSemaphores[id].sem;
+	
+	acquireLock(&sem->lock);
+	
+	uint8_t waitersCount = (sem->waiters != NULL) ? getPCBQueueSize(sem->waiters) : 0;
+	if (waitersCount > 0) {
+		releaseLock(&sem->lock);
+		releaseLock(&createLock);
+		return;
+	}
+	
+	if (sem->waiters != NULL) {
+		releaseLock(&sem->lock);
+		free(sem->waiters);
+		sem->waiters = NULL;
+	} else {
+		releaseLock(&sem->lock);
+	}
+	
 	namedSemaphores[id].inUse = 0;
+	releaseLock(&createLock);
 }
 
 void releaseHeldSemaphores(PCB* process) {
@@ -117,13 +164,27 @@ void releaseHeldSemaphores(PCB* process) {
         acquireLock(&sem->lock);
         if (getPCBQueueSize(sem->waiters) > 0) {
             PCB* p = dequeueProcess(sem->waiters);
-            unblockProcess(p->pid);
+            if (p != NULL) {
+                p->waitingSemaphore = -1;
+                unblockProcess(p->pid);
+            }
         } else {
             sem->value++;
         }
         releaseLock(&sem->lock);
     }
     process->heldSemCount = 0;
+}
+
+void sem_decrement_ref_count(uint8_t id) {
+    if (id >= MAX_SEMAPHORES || !namedSemaphores[id].inUse) {
+        return;
+    }
+    acquireLock(&createLock);
+    if (namedSemaphores[id].refCount > 0) {
+        namedSemaphores[id].refCount--;
+    }
+    releaseLock(&createLock);
 }
 
 int sem_unregister_waiting_process(uint8_t id, PCB *process) {

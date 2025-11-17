@@ -28,7 +28,7 @@ static const uint64_t PageSize = 0x1000;
 
 static void * const sampleCodeModuleAddress = (void*)0x400000;
 static void * const sampleDataModuleAddress = (void*)0x500000;
-
+static void * const startMemoryAddress = (void*)0x600000;
 typedef int (*EntryPoint)();
 
 void clearBSS(void * bssAddress, uint64_t bssSize)
@@ -67,7 +67,8 @@ int main()
 
 	save_original_regs();
 
-	startMemoryManager((void*)&endOfKernel, 0x2000000); //32MB for the heap
+	// Inicializar memoria en dirección fija (0x600000) en lugar de endOfKernel
+	startMemoryManager(startMemoryAddress, 0x2000000); //32MB for the heap starting at 0x600000
 	initKeyboard();
 	initializeProcesses();
 	initScheduler(getStackBase());
