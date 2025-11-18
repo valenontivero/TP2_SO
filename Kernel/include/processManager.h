@@ -134,4 +134,5 @@ void idleProcess(uint8_t argc, char** argv);
 
 void addHeldSemaphoreToProcess(uint8_t semId);
 void removeHeldSemaphoreFromProcess(uint8_t semId);
+uint8_t countProcessesHoldingSemaphore(uint8_t semId);
 #endif

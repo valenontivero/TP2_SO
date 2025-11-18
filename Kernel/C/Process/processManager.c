@@ -301,7 +301,9 @@ int killProcess(uint8_t pid){
                 sem_unregister_waiting_process(semId, &processes[i]);
             }
             if(processes[i].parent != NULL && processes[i].parent->waitingChildren){
-                sem_post(processes[i].parent->waitSemaphore);
+                if(processes[i].parent->waitSemaphore < MAX_SEMAPHORES){
+                    sem_post(processes[i].parent->waitSemaphore);
+                }
             }
             releaseHeldSemaphores(&processes[i]);
             
@@ -377,10 +379,14 @@ void wait(pid_t pid) {
     itoa(pid, semName);
     
     parent->waitSemaphore = sem_open(semName, 0);
+    if (parent->waitSemaphore >= MAX_SEMAPHORES) {
+        return;
+    }
     parent->waitingChildren = 1;
     
     if (child->state == ZOMBIE || child->state == TERMINATED) {
         sem_destroy(parent->waitSemaphore);
+        parent->waitSemaphore = MAX_SEMAPHORES;
         if (child->state == ZOMBIE) {
             child->state = TERMINATED;
         }
@@ -388,13 +394,32 @@ void wait(pid_t pid) {
         return;
     }
     
-    sem_wait(parent->waitSemaphore);
+    int waitResult = sem_wait(parent->waitSemaphore);
+    if (waitResult < 0) {
+        if (child->state == ZOMBIE || child->state == TERMINATED) {
+            if (child->state == ZOMBIE) {
+                child->state = TERMINATED;
+            }
+        } else {
+            if (parent->waitSemaphore < MAX_SEMAPHORES) {
+                removeHeldSemaphoreFromProcess(parent->waitSemaphore);
+                sem_destroy(parent->waitSemaphore);
+            }
+            parent->waitSemaphore = MAX_SEMAPHORES;
+            parent->waitingChildren = 0;
+            return;
+        }
+    }
     
     if (child->state == ZOMBIE) {
         child->state = TERMINATED;
     }
     
-    sem_destroy(parent->waitSemaphore);
+    if (parent->waitSemaphore < MAX_SEMAPHORES) {
+        removeHeldSemaphoreFromProcess(parent->waitSemaphore);
+        sem_destroy(parent->waitSemaphore);
+    }
+    parent->waitSemaphore = MAX_SEMAPHORES;
     parent->waitingChildren = 0;
 }
 
@@ -485,4 +510,19 @@ void removeHeldSemaphoreFromProcess(uint8_t semId) {
             break;
         }
     }
+}
+
+uint8_t countProcessesHoldingSemaphore(uint8_t semId) {
+    uint8_t count = 0;
+    for (uint16_t i = 0; i < MAX_PROCESSES; i++) {
+        if (processes[i].state != TERMINATED && processes[i].state != ZOMBIE) {
+            for (uint8_t j = 0; j < processes[i].heldSemCount; j++) {
+                if (processes[i].semaphoresHeld[j] == semId) {
+                    count++;
+                    break;
+                }
+            }
+        }
+    }
+    return count;
 }
