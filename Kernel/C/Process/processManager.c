@@ -174,7 +174,7 @@ void createFirstProcess(void (*fn)(uint8_t, char **), int argc, char** argv){
 
 pid_t createProcess(void (*fn)(uint8_t, char **), int priority, int argc, char** argv, const char* name){
     if (processCount>= MAX_PROCESSES) return (pid_t)-1;
-    PCB* new=NULL;
+    PCB* new=NULL; 
     pid_t pid = nextPID++;
     // Si nextPID se desborda, reiniciarlo a 1 (0 es el proceso init)
     if (pid >= MAX_PROCESSES) {
@@ -213,12 +213,12 @@ pid_t createProcess(void (*fn)(uint8_t, char **), int priority, int argc, char**
     args[argc] = NULL; 
     new->argv = args;
     memcpy(new->name,name,strlen(name));
-    new->stackBase = (stackStart + new->pid * PROCESS_STACK_SIZE);
+    new->stackBase = malloc(PROCESS_STACK_SIZE);
 
-
+    void* stackTop= (void*)((uint64_t)new->stackBase + PROCESS_STACK_SIZE);
     
-    prepareStack(new, new->stackBase, new->entryPoint);
-    loadArguments(fn, argc, new->argv, new->stackBase);
+    prepareStack(new, stackTop, new->entryPoint);
+    loadArguments(fn, argc, new->argv, stackTop);
     new->state = READY;
     scheduleProcess(new);
     
@@ -259,29 +259,21 @@ int unblockProcess(uint16_t pid) {
     return 0; // Process unblocked successfully
 }
 
-/* PCB* getNextProcess() {
-    for (int priority = 0; priority < PRIORITY_LEVELS; priority++) {
-        PCBQueueADT queue = processQueues[priority];
-        int queueSize = getPCBQueueSize(queue);  
-
-        for (int i = 0; i < queueSize; i++) {
-            PCB* candidate = dequeueProcess(queue);  
-            if (candidate->state == READY ) {
-                queueProcess(queue, candidate);     
-                return candidate;
-            } else {
-                queueProcess(queue, candidate);     
-            }
-        }
+static void freeMemoryUsedByProcess(PCB* process) {
+    for (size_t i = 0; i < process->argc; i++)
+    {
+        free(process->argv[i]);
     }
-    return &processes[0];
-} */
+    free(process->argv);
+    free(process->stackBase);
+}
 
 int killProcess(uint8_t pid){
     for (size_t i = 0; i < MAX_PROCESSES; i++)
     {
         if (processes[i].pid == pid)
         {
+
             if (processes[i].state == TERMINATED || processes[i].state == ZOMBIE) return -1;
             
             int parentWaiting = processes[i].parent != NULL && processes[i].parent->waitingChildren;
@@ -310,6 +302,8 @@ int killProcess(uint8_t pid){
             
             descheduleProcess(&processes[i]);
             
+            freeMemoryUsedByProcess(&processes[i]);
+
             if (getCurrentPID() == pid)
             {
                 yield();
@@ -336,7 +330,7 @@ void showRunningProcesses(){
     }
     return;
 }
-
+/* 
 void cleanTerminatedList(){
     uint8_t size= getPCBQueueSize(terminatedProcessesQueue);
     PCB* current;
@@ -355,7 +349,7 @@ void cleanTerminatedList(){
         {
         }
     }
-}
+} */
 
 PCB* getPCBByPID(pid_t pid) {
     if (pid < 0 || pid >= MAX_PROCESSES) {
