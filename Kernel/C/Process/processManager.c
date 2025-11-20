@@ -284,32 +284,18 @@ int killProcess(uint8_t pid){
         {
             if (processes[i].state == TERMINATED || processes[i].state == ZOMBIE) return -1;
             
-            if (processes[i].parent != NULL && 
-                processes[i].parent->pid != processes[i].pid &&
-                processes[i].parent->state != ZOMBIE && 
-                processes[i].parent->state != TERMINATED) {
-                processes[i].state = ZOMBIE;
-                if (processes[i].argv != NULL) {
-                    for (uint8_t j = 0; j < processes[i].argc; j++) {
-                        if (processes[i].argv[j] != NULL) {
-                            free(processes[i].argv[j]);
-                        }
-                    }
-                    free(processes[i].argv);
-                    processes[i].argv = NULL;
-                }
-            } else {
-                processes[i].state = TERMINATED;
-                if (processes[i].argv != NULL) {
-                    for (uint8_t j = 0; j < processes[i].argc; j++) {
-                        if (processes[i].argv[j] != NULL) {
-                            free(processes[i].argv[j]);
-                        }
-                    }
-                    free(processes[i].argv);
-                    processes[i].argv = NULL;
-                }
-            }
+            int parentWaiting = processes[i].parent != NULL && processes[i].parent->waitingChildren;
+            int parentAlive = processes[i].parent != NULL &&
+                              processes[i].parent->pid != processes[i].pid &&
+                              processes[i].parent->state != ZOMBIE &&
+                              processes[i].parent->state != TERMINATED;
+
+              if (!processes[i].foreground || parentAlive) {
+                                processes[i].state = ZOMBIE;
+                } else {
+                                processes[i].state = TERMINATED;
+                 }
+            freeProcessArgs(&processes[i]);
             processCount--;
             if (processes[i].waitingSemaphore >= 0) {
                 uint8_t semId = (uint8_t)processes[i].waitingSemaphore;
@@ -444,16 +430,20 @@ uint16_t ps(processInfo *toReturn, uint16_t maxCount){
     if (toReturn == NULL || maxCount == 0) {
         return 0;
     }
-    for (uint16_t i = 2; i < MAX_PROCESSES && count < maxCount; i++)
+    for (uint16_t i = 0; i < MAX_PROCESSES && count < maxCount; i++)
     {
         if (processes[i].pid == i && 
             (processes[i].state==RUNNING || processes[i].state==READY || processes[i].state== BLOCKED || processes[i].state == ZOMBIE))
         {
+            if (processes[i].pid == 0) {
+                continue; // hide init from ps output
+            }
             
             PCB* aux= &processes[i];
             safe_strncpy(toReturn[count].name,aux->name,PROCESS_MAX_NAME_LEN);
             toReturn[count].name[PROCESS_MAX_NAME_LEN-1]='\0';
-            toReturn[count].pid=aux->pid;  
+            toReturn[count].pid=aux->pid;
+            toReturn[count].parentPid = (aux->parent != NULL) ? aux->parent->pid : (pid_t)-1;
             toReturn[count].priority=aux->priority;
             toReturn[count].state= aux->state;
             toReturn[count].foreground = aux->foreground;
@@ -479,6 +469,7 @@ int getProcessInfo(pid_t pid, processInfo* out) {
     safe_strncpy(out->name, aux->name, PROCESS_MAX_NAME_LEN);
     out->name[PROCESS_MAX_NAME_LEN-1] = '\0';
     out->pid = pid;
+    out->parentPid = (aux->parent != NULL) ? aux->parent->pid : (pid_t)-1;
     out->priority = aux->priority;
     out->state = aux->state;
     out->foreground = aux->foreground;

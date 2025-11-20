@@ -12,6 +12,20 @@
 #include <utime.h>
 #include <uSync.h>
 
+#define NAME_COL_WIDTH 16
+#define PID_COL_WIDTH 6
+#define PARENT_COL_WIDTH 8
+#define PRIO_COL_WIDTH 6
+#define STATE_COL_WIDTH 10
+#define FG_COL_WIDTH 6
+#define POINTER_COL_WIDTH 18
+
+#define PS_BORDER_COLOR ORANGE
+#define PS_HEADER_COLOR ORANGE
+#define PS_TEXT_COLOR WHITE
+#define PS_TRUE_TEXT "yes"
+#define PS_FALSE_TEXT "no"
+
 extern uint64_t test_mm(uint64_t argc, char *argv[]);
 extern int64_t test_processes(uint64_t argc, char *argv[]);
 extern uint64_t test_prio(uint64_t argc, char *argv[]);
@@ -77,18 +91,7 @@ static void launch_test_process(const char *name, void (*entry)(uint8_t, char **
 }
 
 
-#define NAME_COL_WIDTH 16
-#define PID_COL_WIDTH 6
-#define PRIO_COL_WIDTH 6
-#define STATE_COL_WIDTH 10
-#define FG_COL_WIDTH 6
-#define POINTER_COL_WIDTH 18
 
-#define PS_BORDER_COLOR ORANGE
-#define PS_HEADER_COLOR ORANGE
-#define PS_TEXT_COLOR WHITE
-#define PS_TRUE_TEXT "yes"
-#define PS_FALSE_TEXT "no"
 
 extern void divideByZero();
 extern void invalidOpcode();
@@ -227,13 +230,47 @@ static void printPsPidCell(const processInfo *info, int width) {
     printTableCellDec((int)info->pid, width, PS_TEXT_COLOR);
 }
 
+static void printPsParentCell(const processInfo *info, int width) {
+    printTableCellDec((int)info->parentPid, width, PS_TEXT_COLOR);
+}
+
+
 static void printPsPriorityCell(const processInfo *info, int width) {
     printTableCellDec((int)info->priority, width, PS_TEXT_COLOR);
 }
 
-static void printPsStateCell(const processInfo *info, int width) {
-    printTableCellText(stateToString(info->state), width, PS_TEXT_COLOR);
+static void formatStateLabel(const processInfo *info, char *buffer, int bufferSize) {
+    const char *baseLabel = stateToString(info->state);
+    int idx = 0;
+
+    while (baseLabel[idx] != '\0' && idx < bufferSize - 1) {
+        buffer[idx] = baseLabel[idx];
+        idx++;
+    }
+
+    if (info->state == ZOMBIE && idx < bufferSize - 1) {
+        buffer[idx++] = '(';
+
+        char parentId[12] = {0};
+        intToStr((int)info->parentPid, parentId);
+        for (int j = 0; parentId[j] != '\0' && idx < bufferSize - 1; j++) {
+            buffer[idx++] = parentId[j];
+        }
+
+        if (idx < bufferSize - 1) {
+            buffer[idx++] = ')';
+        }
+    }
+
+    buffer[idx] = '\0';
 }
+
+static void printPsStateCell(const processInfo *info, int width) {
+    char stateLabel[24] = {0};
+    formatStateLabel(info, stateLabel, sizeof(stateLabel));
+    printTableCellText(stateLabel, width, PS_TEXT_COLOR);
+}
+
 
 static void printPsForegroundCell(const processInfo *info, int width) {
     printTableCellText(info->foreground ? PS_TRUE_TEXT : PS_FALSE_TEXT, width, PS_TEXT_COLOR);
@@ -247,9 +284,11 @@ static void printPsStackPointerCell(const processInfo *info, int width) {
     printTableCellHex((uint64_t)info->stackPointer, width, PS_TEXT_COLOR);
 }
 
+
 static const PsColumnSpec psColumns[] = {
     {"NAME", NAME_COL_WIDTH, printPsNameCell},
     {"PID", PID_COL_WIDTH, printPsPidCell},
+    {"PARENT", PARENT_COL_WIDTH, printPsParentCell},
     {"PRIO", PRIO_COL_WIDTH, printPsPriorityCell},
     {"STATE", STATE_COL_WIDTH, printPsStateCell},
     {"FG", FG_COL_WIDTH, printPsForegroundCell},

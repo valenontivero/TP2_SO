@@ -81,6 +81,7 @@ typedef struct processStack{
 typedef struct processInfo {
     char name[PROCESS_MAX_NAME_LEN];
     pid_t pid;
+    pid_t parentPid;
     State state;
     uint8_t priority;
     uint8_t foreground;

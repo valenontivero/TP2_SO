@@ -36,6 +36,7 @@ void initScheduler(void *stackBase) {
   char *argv[] = { "idle", NULL };
   idlePID= createProcess((void*)idleProcess,0,0,argv,argv[0]);
   idlePCB= getPCBByPID(idlePID);
+  setProcessForeground(idlePID, 0);
 }
 
 void scheduleProcess(PCB *pcb) {
