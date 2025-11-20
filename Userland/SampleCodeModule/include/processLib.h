@@ -10,4 +10,6 @@ void putInFg(pid_t pid1, pid_t pid2);
 
 uint64_t blockProcess(pid_t pid);
 
+uint64_t killProcess(pid_t pid);
+
 #endif

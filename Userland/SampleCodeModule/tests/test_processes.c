@@ -102,7 +102,7 @@ int64_t test_processes(uint64_t argc, char *argv[]) {
           case 0:  // kill
             if (p_rqs[rq].state == PROC_RUNNING || p_rqs[rq].state == PROC_BLOCKED) {
               const char* state_str = (p_rqs[rq].state == PROC_RUNNING) ? "RUNNING" : "BLOCKED";
-              int64_t res = (int64_t)sys_process_kill(p_rqs[rq].pid);
+              int64_t res = (int64_t)killProcess(p_rqs[rq].pid);
               // Treat "already terminated" as success to avoid spurious failures
               if (res == 0 || res == -1) {
                 printf("testprocesses: Process %d killed (state: %s). Remaining alive: %d\n", 

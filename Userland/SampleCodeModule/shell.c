@@ -95,7 +95,7 @@ void shell() {
 		if (c == 3) { // Ctrl + C
 			printColor("^C\n", ORANGE);
 			if (fgProccess != 0) {
-				sys_process_kill(fgProccess);
+				killProcess(fgProccess);
 				sys_process_set_foreground(shellPid, 1);
 				sys_put_in_fg(shellPid,0);
 				fgProccess = 0;

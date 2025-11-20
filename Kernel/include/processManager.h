@@ -99,7 +99,7 @@ void putInFG(pid_t pid1, pid_t pid2);
 
 void terminateProcess();
 
-int killProcess(uint8_t pid);
+int killProcess(uint8_t pid, PCB* caller);
 
 void killProcessesInFG();
 

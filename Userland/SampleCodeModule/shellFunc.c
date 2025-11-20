@@ -499,7 +499,7 @@ void kill(uint8_t argc, char **argv) {
         printColor("kill: cannot terminate shell or init process.\n", RED);
         return;
     }
-    if (sys_process_kill(pid) != 0) {
+    if (killProcess(pid) != 0) {
         printColor("kill: could not terminate process.\n", RED);
     }
 }

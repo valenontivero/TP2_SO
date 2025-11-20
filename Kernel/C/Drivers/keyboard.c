@@ -63,7 +63,7 @@ static void handleCtrlC(void) {
         return;
     }
     if (currentProcess != NULL && currentProcess->pid != 0 && strcmp(currentProcess->name, "shell") != 0) {
-        killProcess(currentProcess->pid);
+        killProcess(currentProcess->pid,NULL);
     }
 }
 

@@ -89,7 +89,7 @@ uint64_t test_prio(uint64_t argc, char *argv[]) {
 
   printf("\nKILLING PROCESSES...\n");
   for (int i = 0; i < TOTAL_PROCESSES; i++) {
-    sys_process_kill(pids[i]);
+    killProcess(pids[i]);
   }
 
   printf("\nSAME PRIORITY, THEN CHANGE IT WHILE BLOCKED...\n");
@@ -132,7 +132,7 @@ uint64_t test_prio(uint64_t argc, char *argv[]) {
 
   printf("\nKILLING PROCESSES...\n");
   for (int i = 0; i < TOTAL_PROCESSES; i++) {
-    sys_process_kill(pids[i]);
+    killProcess(pids[i]);
   }
 
   return 0;

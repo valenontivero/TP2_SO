@@ -134,8 +134,8 @@ uint64_t sys_get_pid() {
     return sys_call((uint64_t)30, (uint64_t)0, (uint64_t)0, (uint64_t)0, (uint64_t)0, (uint64_t)0);
 }
 
-uint64_t sys_process_kill(pid_t pid) {
-    return sys_call((uint64_t)31, (uint64_t)pid, (uint64_t)0, (uint64_t)0, (uint64_t)0, (uint64_t)0);
+uint64_t sys_process_kill(pid_t pid, pid_t callerPid) {
+    return sys_call((uint64_t)31, (uint64_t)pid, (uint64_t)callerPid, (uint64_t)0, (uint64_t)0, (uint64_t)0);
 }
 
 uint64_t sys_process_nice(pid_t pid, uint8_t newPriority) {

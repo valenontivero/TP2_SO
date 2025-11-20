@@ -48,7 +48,7 @@ int setPriority(pid_t pid, int newPriority){
 
 void myExit(){
     uint16_t pid = getCurrentPID();
-    killProcess(pid);
+    killProcess(pid,NULL);
 }
 
 void launchProcess(void (*fn)(uint8_t, char **), uint8_t argc, char *argv[]) {
@@ -72,7 +72,7 @@ static void killProcessInFG(pid_t pid, pid_t* fgVar){
     }
 
     *fgVar = -1;
-    killProcess(pid);
+    killProcess(pid,NULL);
 }
 
 void killProcessesInFG(){
@@ -90,7 +90,7 @@ static void killChildProcesses(pid_t parentPid) {
             continue;
         }
         if (processes[i].parent != NULL && processes[i].parent->pid == parentPid) {
-            killProcess(processes[i].pid);
+            killProcess(processes[i].pid,NULL);
         }
     }
 }
@@ -268,7 +268,16 @@ static void freeMemoryUsedByProcess(PCB* process) {
     free(process->stackBase);
 }
 
-int killProcess(uint8_t pid){
+static int parentIsTheKiller(PCB* caller, pid_t killedIndex) {
+    if (caller == NULL) return 0;
+    
+    if (caller->pid == processes[killedIndex].parent->pid) {
+        return 1;
+    }
+    return 0;
+}
+
+int killProcess(uint8_t pid, PCB* caller) {
     for (size_t i = 0; i < MAX_PROCESSES; i++)
     {
         if (processes[i].pid == pid)
@@ -281,13 +290,13 @@ int killProcess(uint8_t pid){
                               processes[i].parent->pid != processes[i].pid &&
                               processes[i].parent->state != ZOMBIE &&
                               processes[i].parent->state != TERMINATED;
-
-              if (!processes[i].foreground || parentAlive) {
-                                processes[i].state = ZOMBIE;
-                } else {
-                                processes[i].state = TERMINATED;
-                 }
-            freeProcessArgs(&processes[i]);
+            
+            
+            if ((!processes[i].foreground || parentAlive) &&  !parentIsTheKiller(caller, i)) {
+                            processes[i].state = ZOMBIE;
+            } else {
+                            processes[i].state = TERMINATED;
+                }
             processCount--;
             if (processes[i].waitingSemaphore >= 0) {
                 uint8_t semId = (uint8_t)processes[i].waitingSemaphore;

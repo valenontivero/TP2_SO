@@ -65,7 +65,7 @@ uint64_t sys_get_process_info(pid_t pid, processInfo *info);
 
 uint64_t sys_get_pid();
 
-uint64_t sys_process_kill(pid_t pid);
+uint64_t sys_process_kill(pid_t pid, pid_t callerPid);
 
 uint64_t sys_process_nice(pid_t pid, uint8_t newPriority);
 

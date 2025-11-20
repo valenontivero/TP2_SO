@@ -303,8 +303,8 @@ uint64_t sys_get_pid(uint64_t unused1, uint64_t unused2, uint64_t unused3, uint6
     return getCurrentPID();
 }
 
-uint64_t sys_process_kill(uint64_t pid, uint64_t unused1, uint64_t unused2, uint64_t unused3, uint64_t unused4, uint64_t unused5) {
-    return (uint64_t)killProcess((uint8_t)pid);
+uint64_t sys_process_kill(uint64_t pid, uint64_t callerPid, uint64_t unused2, uint64_t unused3, uint64_t unused4, uint64_t unused5) {
+    return (uint64_t)killProcess((uint8_t)pid, (PCB*)getPCBByPID((pid_t)callerPid));
 }
 
 uint64_t sys_process_nice(uint64_t pid, uint64_t newPriority, uint64_t unused2, uint64_t unused3, uint64_t unused4, uint64_t unused5) {
