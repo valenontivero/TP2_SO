@@ -80,6 +80,21 @@ void killProcessesInFG(){
     killProcessInFG(fgPid2, &fgPid2);
 }
 
+static void killChildProcesses(pid_t parentPid) {
+    if (parentPid <= 0) {
+        return;
+    }
+
+    for (size_t i = 0; i < MAX_PROCESSES; i++) {
+        if (processes[i].state == TERMINATED || processes[i].state == ZOMBIE) {
+            continue;
+        }
+        if (processes[i].parent != NULL && processes[i].parent->pid == parentPid) {
+            killProcess(processes[i].pid);
+        }
+    }
+}
+
 
 
 void *stackStart= (void*) 0x1000000;
@@ -313,6 +328,7 @@ int killProcess(uint8_t pid){
             {
                 yield();
             }
+            killChildProcesses(pid);
             return 0;
         }
     }
